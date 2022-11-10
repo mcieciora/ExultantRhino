@@ -13,7 +13,8 @@ pipeline {
     stages {
         stage('Stage 1') {
             steps {
-                sh 'ls'
+                LS_COMMAND = sh (script: 'ls',returnStdout: true).trim()
+                echo "${LS_COMMAND}"
             }
         }
     }
