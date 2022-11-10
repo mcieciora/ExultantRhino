@@ -6,10 +6,6 @@ pipeline {
         }
     }
 
-    options {
-        skipDefaultCheckout()
-    }
-
     stages {
         stage('Stage') {
             steps {
