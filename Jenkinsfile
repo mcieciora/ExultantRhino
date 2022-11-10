@@ -14,8 +14,10 @@ pipeline {
         stage('Stage') {
             steps {
                 script {
-                    def PWD_COMMAND = sh (script: 'pwd', returnStdout: true).trim()
-                    echo "${PWD_COMMAND}"
+                    dir('automated_tests/') {
+                        sh 'tox -e lint src'
+                        sh 'tox -e lint automated_tests'
+                    }
                 }
             }
         }
