@@ -11,11 +11,11 @@ pipeline {
     }
 
     stages {
-        stage('Stage 1') {
+        stage('Stage') {
             steps {
                 script {
-                    def LS_COMMAND = sh (script: 'ls',returnStdout: true).trim()
-                    echo "${LS_COMMAND}"
+                    def PWD_COMMAND = sh (script: 'pwd', returnStdout: true).trim()
+                    echo "${PWD_COMMAND}"
                 }
             }
         }
