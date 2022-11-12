@@ -28,6 +28,7 @@ pipeline {
                                 sh "docker rmi exultant_rhino_app -f"
                             }
                             sh "sed -i 's/mongodb/localhost/1' src/pymongo_db.py"
+                            sh "cat src/pymongo_db.py"
                             sh 'docker compose up -d'
                             }
                         }
