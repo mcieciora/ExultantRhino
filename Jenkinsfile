@@ -58,25 +58,6 @@ pipeline {
                 }
             }
         }
-
-        stage ('Regular tests'){
-            steps {
-                script {
-                    sh "sed -i 's/localhost/mongodb/1' src/pymongo_db.py"
-                    sh 'docker compose up -d'
-                    dir('automated_tests/') {
-                        sh 'tox -e regression'
-                    }
-                }
-            }
-            post {
-                failure {
-                    script {
-                        sh 'docker logs exultant_rhino_app'
-                    }
-                }
-            }
-        }
     }
     post {
         always {
