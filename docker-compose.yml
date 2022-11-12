@@ -9,3 +9,11 @@ services:
       - './data:/data/db'
     ports:
       - "27017:27017"
+  api:
+    container_name: app
+    build: .
+    image: exultant_rhino_app
+    ports:
+      - "7999:7999"
+    links:
+      - db
