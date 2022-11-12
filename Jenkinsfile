@@ -27,7 +27,7 @@ pipeline {
                             if (all_images.contains('exultant_rhino_app')) {
                                 sh "docker rmi exultant_rhino_app -f"
                             }
-                            sh "sed -i 's/mongodb/localhost/1' src/mongodb.py"
+                            sh "sed -i 's/mongodb/localhost/1' src/pymongo_db.py"
                             sh 'docker compose up -d'
                             }
                         }
@@ -61,7 +61,7 @@ pipeline {
         stage ('Regular tests'){
             steps {
                 script {
-                    sh "sed -i 's/localhost/mongodb/1' src/mongodb.py"
+                    sh "sed -i 's/localhost/mongodb/1' src/pymongo_db.py"
                     sh 'docker compose up -d'
                     dir('automated_tests/') {
                         sh 'tox -e regression'
