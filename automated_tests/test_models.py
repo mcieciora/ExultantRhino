@@ -3,13 +3,21 @@ from src.models import Model, ModelCreationFailure, ModelValidationFailureKeys, 
 
 
 @mark.unittests
-def test__model_creation_failure():
+def test__model_creation_failure_empty_model():
     """
     Verifies: REQ-MO1
     :return: None
     """
     with raises(ModelCreationFailure):
         Model({})
+
+
+@mark.unittests
+def test__model_creation_failure_wrong_values_types():
+    """
+    Verifies: REQ-MO1
+    :return: None
+    """
     with raises(ModelCreationFailure):
         Model({'name': 'str', 'user_id': int, 'closed': bool})
 

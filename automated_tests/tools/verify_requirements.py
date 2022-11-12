@@ -15,9 +15,9 @@ def main():
             for test_case_content in f.read().split('@mark'):
                 requirements = findall(r'(?<=Verifies: ).*', test_case_content)
                 test_suite = findall(r'test__\w+', test_case_content)
-                asserts = findall(r'assert', test_case_content)
+                asserts = findall(r'assert|with raises', test_case_content)
                 if len(requirements) != len(asserts):
-                    print(f'[ERR] {test_suite}: Number of requirements should be equal to number of asserts in test '
+                    print(f'[ERR] {test_suite[0]}: Number of requirements should be equal to number of asserts in test '
                           f'case!')
                 if requirements and test_suite:
                     test_case_requirements_map[test_suite[0]] = requirements
