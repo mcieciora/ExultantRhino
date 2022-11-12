@@ -7,6 +7,18 @@ pipeline {
     stages {
         stage('Prepare for tests') {
             parallel {
+                stage ('Verify requirements'){
+                    steps {
+                        script {
+                            dir('automated_tests/tools') {
+                                def reqs_verification = sh(script: 'python3.10 verify_requirements.py', returnStdout: true)
+                                if (reqs_verification.contains('[ERR]')) {
+                                    error("${reqs_verification}")
+                                }
+                            }
+                        }
+                    }
+                }
                 stage ('Code linting'){
                     steps {
                         script {
@@ -40,7 +52,7 @@ pipeline {
             steps {
                 script {
                     dir('automated_tests/') {
-                        sh 'tox -e database_tests'
+                        sh 'tox -e unittests'
                     }
                 }
             }
@@ -65,7 +77,7 @@ pipeline {
                 sh 'docker compose down'
                 sh "docker rmi exultant_rhino_app -f"
             }
-            archiveArtifacts artifacts: 'automated_tests/*results.xml,automated_tests/results.html', fingerprint: true
+            archiveArtifacts artifacts: 'automated_tests/*results.xml', fingerprint: true
             junit 'automated_tests/*results.xml'
         }
     }

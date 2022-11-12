@@ -1,7 +1,7 @@
 from pytest import mark
 
 
-@mark.database_tests
+@mark.unittests
 def test__insert_and_find_one_record(test_db):
     """
     Verifies: REQ-DB1
@@ -14,7 +14,7 @@ def test__insert_and_find_one_record(test_db):
     assert len(list(test_db.find(test_data))) == 1, 'Size of returned query is not equal 1'
 
 
-@mark.database_tests
+@mark.unittests
 def test__delete_and_find_no_records(test_db):
     """
     Verifies: REQ-DB1
@@ -29,7 +29,7 @@ def test__delete_and_find_no_records(test_db):
     assert len(list(test_db.find(test_data))) == 0, 'Size of returned query is not equal 1'
 
 
-@mark.database_tests
+@mark.unittests
 def test__delete_nonexistent_record(test_db):
     """
     Verifies: REQ-DB3
@@ -40,7 +40,7 @@ def test__delete_nonexistent_record(test_db):
     assert test_db.delete(test_data) == 0, 'Deletion was not acknowledged'
 
 
-@mark.database_tests
+@mark.unittests
 def test__insert_and_update_one_record(test_db):
     """
     Verifies: REQ-DB1
