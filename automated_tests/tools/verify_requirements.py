@@ -10,9 +10,9 @@ def main():
     :return: dict of test cases names (key) and requirements list (value)
     """
     test_case_requirements_map = {}
-    for file in glob('../test_*.py'):
-        with open(file, 'r') as f:
-            for test_case_content in f.read().split('@mark'):
+    for python_file in glob('../test_*.py'):
+        with open(python_file, 'r', encoding='utf-8') as file:
+            for test_case_content in file.read().split('@mark'):
                 requirements = findall(r'(?<=Verifies: ).*', test_case_content)
                 test_suite = findall(r'test__\w+', test_case_content)
                 asserts = findall(r'assert|with raises', test_case_content)
