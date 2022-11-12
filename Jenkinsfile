@@ -29,7 +29,6 @@ pipeline {
                             }
                             sh "sed -i 's/mongodb/localhost/1' src/pymongo_db.py"
                             sh "sed -i 's/latest/4.4.6/1' docker-compose.yml"
-                            sh "cat src/pymongo_db.py"
                             sh 'docker compose up -d'
                             }
                         }
