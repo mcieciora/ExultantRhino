@@ -52,7 +52,7 @@ pipeline {
             steps {
                 script {
                     dir('automated_tests/') {
-                        sh 'tox -e database_tests'
+                        sh 'tox -e unittests'
                     }
                 }
             }
