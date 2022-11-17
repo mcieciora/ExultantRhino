@@ -7,7 +7,7 @@ class MongoDb:
     """
 
     def __init__(self, db_name, collection_name):
-        self.client = MongoClient(host='mongodb', port=27017)
+        self.client = MongoClient(host='localhost', port=27017)
         self.db_name = db_name
         self.collection_name = collection_name
 

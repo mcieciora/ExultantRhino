@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="refresh" content="60" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Excultant Rhino</title>
+</head>
+<body>
+<script>
+    function myFunction() {
+        document.getElementById("myDropdown").classList.toggle("show")l
+    }
+
+    window.onclick = function(e) {
+      if (!e.target.matches('.dropbtn')) {
+      var myDropdown = document.getElementById("myDropdown");
+        if (myDropdown.classList.contains('show')) {
+          myDropdown.classList.remove('show');
+        }
+      }
+    }
+</script>
+      <div class="navbar">
+          <div class="dropdown">
+              <button class="dropbtn" onclick="myFunction()">{{ current_project.title }}
+                <i class="fa fa-caret-down"></i>
+              </button>
+              <div class="dropdown-content" id="myDropdown">
+                  {% for project in projects %}
+                  <a href="/proj/{{project.project_id}}">{{ project.title }}</a>
+                  {% endfor %}
+              </div>
+          </div>
+          <a href="/requirements">Requirements</a>
+          <a href="/tc">Test cases</a>
+          <a href="/bugs">Bugs</a>
+          <div class="create_button">
+              <a href="/create">Create</a>
+          </div>
+      </div>
+    <div>
+        {{ current_project.title }}
+        {% block content %} {% endblock %}
+    </div>
+  </body>
+</html>
