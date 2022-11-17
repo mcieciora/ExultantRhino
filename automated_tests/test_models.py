@@ -35,7 +35,7 @@ def test__get_next_id_empty_database():
 
 
 @mark.unittests
-def test__get_next_id_empty_database():
+def test__get_next_id():
     """
     Verifies: REQ-MOD2
     :return: None
@@ -95,6 +95,7 @@ def test__get_all_projects():
 @mark.unittests
 def test__create_new_object():
     """
+    Verifies: REQ-MOD2
     Verifies: REQ-MOD3
     :return: None
     """
