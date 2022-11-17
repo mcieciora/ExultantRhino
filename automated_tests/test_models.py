@@ -103,7 +103,7 @@ def test__create_new_object():
     test_project = {'title': 'new_bug', 'description': 'this is new bug', 'object_type': 'bug', 'parent': 'TC-0',
                     'parent_project': 'PROJ-0'}
     test_models.create(test_project)
-    database_object = list(test_models.mongo.find({'object_type': 'project'}))[1]
+    database_object = list(test_models.mongo.find({'object_type': 'bug'}))[1]
     for key, value in test_project.items():
         assert value == database_object[key], 'Object database value is incorrect'
-    assert database_object['project_id'].startswith('PROJ-'), 'Object has got wrong id prefix'
+    assert database_object['bug_id'].startswith('BUG-'), 'Object has got wrong id prefix'
