@@ -100,10 +100,10 @@ def test__create_new_object():
     :return: None
     """
     test_models = Models()
-    test_project = {'title': 'new_bug', 'description': 'this is new bug', 'object_type': 'bug', 'parent': 'TC-0',
-                    'parent_project': 'PROJ-0'}
-    test_models.create(test_project)
-    database_object = list(test_models.mongo.find({'object_type': 'bug'}))[1]
-    for key, value in test_project.items():
+    test_bug = {'title': 'new_bug', 'description': 'this is new bug', 'object_type': 'bug', 'parent': 'TC-0',
+                'parent_project': 'PROJ-0'}
+    test_models.create(test_bug)
+    database_object = list(test_models.mongo.find({'object_type': 'bug'}))[0]
+    for key, value in test_bug.items():
         assert value == database_object[key], 'Object database value is incorrect'
     assert database_object['bug_id'].startswith('BUG-'), 'Object has got wrong id prefix'
