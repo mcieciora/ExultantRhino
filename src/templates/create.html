@@ -1,0 +1,30 @@
+{% extends "base.html" %} {% block content%}
+
+<div class="form">
+  <form method="post">
+    <label for="parent_project">Project</label>
+    <select id="parent_project" name="parent_project">
+      {% for project in projects %}
+      <option value="{{ project.title.lower() }}">{{ project.title }}</option>
+      {% endfor %}
+    </select>
+
+    <label for="object_type">Type</label>
+    <select id="object_type" name="object_type">
+      <option value="project">Project</option>
+      <option value="requirement">Requirement</option>
+      <option value="test_case">Test Case</option>
+      <option value="bug">Bug</option>
+    </select>
+
+    <label for="title">Title</label>
+    <input type="text" id="title" name="title" placeholder="Insert title..">
+
+    <label for="description">Description</label>
+    <textarea id="description" name="description" placeholder="Insert description.."></textarea>
+
+    <input type="submit" value="Create">
+  </form>
+</div>
+
+{% endblock %}
