@@ -1,6 +1,7 @@
 from pytest import fixture
 from subprocess import Popen, PIPE
 from selenium.webdriver import Firefox
+from selenium.webdriver.firefox.options import Options
 from src.pymongo_db import MongoDb
 
 
@@ -21,7 +22,9 @@ def firefox_driver(gecko_driver):
     Test fixture yielding Firefox webdriver for app frontend tests
     :return: Firefox webdriver from selenium library
     """
-    test_driver = Firefox()
+    options = Options()
+    options.headless = True
+    test_driver = Firefox(options=options)
     test_driver.get('http://localhost:8000')
     yield test_driver
     test_driver.close()
