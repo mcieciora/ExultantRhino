@@ -7,7 +7,7 @@ pipeline {
     stages {
         stage('Prepare for tests') {
             parallel {
-                stage ('Verify requirements'){
+                stage ('Verify requirements') {
                     steps {
                         script {
                             dir('automated_tests/tools') {
@@ -19,7 +19,7 @@ pipeline {
                         }
                     }
                 }
-                stage ('Code linting'){
+                stage ('Code linting') {
                     steps {
                         script {
                             dir('automated_tests/') {
@@ -29,7 +29,7 @@ pipeline {
                         }
                     }
                 }
-                stage ('Setup docker image'){
+                stage ('Setup docker image') {
                     steps {
                         script {
                             dir('automated_tests/') {
@@ -41,14 +41,14 @@ pipeline {
                             }
                             sh "sed -i 's/mongodb/localhost/1' src/pymongo_db.py"
                             sh "sed -i 's/latest/4.4.6/1' docker-compose.yml"
-                            sh 'docker compose up -d'
+                            sh 'docker compose up -d db'
                             }
                         }
                     }
                 }
             }
 
-        stage ('Unittests'){
+        stage ('Unittests') {
             steps {
                 script {
                     dir('automated_tests/') {
@@ -66,6 +66,17 @@ pipeline {
                 failure {
                     script {
                         sh 'docker logs exultant_rhino_app'
+                    }
+                }
+            }
+        }
+        stage ('Selenium tests') {
+            steps {
+                script {
+                    dir('automated_tests/') {
+                        sh "sed -i 's/localhost/mongodb/1' src/pymongo_db.py"
+                        sh 'docker compose up -d'
+                        sh 'tox -e selenium'
                     }
                 }
             }
