@@ -73,8 +73,8 @@ pipeline {
         stage ('Selenium tests') {
             steps {
                 script {
+                    sh "sed -i 's/localhost/mongodb/1' src/pymongo_db.py"
                     dir('automated_tests/') {
-                        sh "sed -i 's/localhost/mongodb/1' src/pymongo_db.py"
                         sh 'docker compose up -d'
                         sh 'tox -e selenium'
                     }
