@@ -16,7 +16,7 @@ def test_db():
 
 
 @fixture(scope='function')
-def firefox_driver():
+def firefox_driver(gecko_driver):
     """
     Test fixture yielding Firefox webdriver for app frontend tests
     :return: Firefox webdriver from selenium library

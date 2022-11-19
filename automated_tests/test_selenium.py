@@ -4,7 +4,7 @@ from selenium.webdriver.support.ui import Select
 
 
 @mark.selenium
-def test__check_app_content(firefox_driver, gecko_driver):
+def test__check_app_content(firefox_driver):
     """
     Verifies: REQ-SEL1
     :param firefox_driver: Firefox webdriver; taken from fixture
@@ -22,7 +22,7 @@ def test__check_app_content(firefox_driver, gecko_driver):
 
 
 @mark.selenium
-def test__check_create_page_content(firefox_driver, gecko_driver):
+def test__check_create_page_content(firefox_driver):
     """
     Verifies: REQ-SEL2
     :param firefox_driver: Firefox webdriver; taken from fixture
@@ -40,7 +40,7 @@ def test__check_create_page_content(firefox_driver, gecko_driver):
 
 
 @mark.selenium
-def test__create_project(firefox_driver, gecko_driver):
+def test__create_project(firefox_driver):
     """
     Verifies: REQ-SEL2
     Verifies: REQ-SEL3
@@ -57,7 +57,7 @@ def test__create_project(firefox_driver, gecko_driver):
 
 
 @mark.selenium
-def test__create_bug(firefox_driver, gecko_driver):
+def test__create_bug(firefox_driver):
     """
     Verifies: REQ-SEL3
     :param firefox_driver: Firefox webdriver; taken from fixture
@@ -74,7 +74,7 @@ def test__create_bug(firefox_driver, gecko_driver):
 
 
 @mark.selenium
-def test__create_test_case(firefox_driver, gecko_driver):
+def test__create_test_case(firefox_driver):
     """
     Verifies: REQ-SEL3
     :param firefox_driver: Firefox webdriver; taken from fixture
@@ -91,7 +91,7 @@ def test__create_test_case(firefox_driver, gecko_driver):
 
 
 @mark.selenium
-def test__create_requirement(firefox_driver, gecko_driver):
+def test__create_requirement(firefox_driver):
     """
     Verifies: REQ-SEL3
     :param firefox_driver: Firefox webdriver; taken from fixture
