@@ -29,6 +29,6 @@ def firefox_driver(gecko_driver):
 
 @fixture(scope='module')
 def gecko_driver():
-    gecko_proc = Popen(["tools/geckodriver"], stdout=PIPE)
+    gecko_proc = Popen(["tools/geckodriver"], stdout=PIPE, shell=True)
     yield
     gecko_proc.kill()
