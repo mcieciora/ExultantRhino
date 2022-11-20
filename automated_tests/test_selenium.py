@@ -6,19 +6,12 @@ from selenium.webdriver.support.ui import Select
 @mark.selenium
 def test__check_app_content(firefox_driver):
     """
-    Verifies: REQ-SEL1
     :param firefox_driver: Firefox webdriver; taken from fixture
     :return: None
     """
     available_tabs = ['Requirements', 'Test cases', 'Bugs', 'Create']
-    expected_content = ['<title>Excultant Rhino</title>', '<a href="/proj/PROJ-0">Template</a>',
-                        '<a href="/requirements">Requirements</a>', '<a href="/tc">Test cases</a>',
-                        '<a href="/bugs">Bugs</a>', '<a href="/create">Create</a>',
-                        '<button class="dropbtn" onclick="myFunction()">Template']
     for tab in available_tabs:
         firefox_driver.find_element(By.LINK_TEXT, tab).click()
-        for content in expected_content:
-            assert content in firefox_driver.page_source, 'Expected elements are not in page content'
 
 
 @mark.selenium
@@ -70,7 +63,25 @@ def test__create_bug(firefox_driver):
     firefox_driver.find_element(By.NAME, 'description').send_keys('test_description')
     firefox_driver.find_element(by=By.ID, value='submit').click()
     firefox_driver.find_element(by=By.LINK_TEXT, value='Bugs').click()
-    assert '<a href="/bug/BUG-0">View</a>' in firefox_driver.page_source, 'Bug was not added properly'
+    firefox_driver.find_element(by=By.ID, value='collapsible').click()
+    firefox_driver.find_element(by=By.LINK_TEXT, value='View').click()
+    assert firefox_driver.title == 'Excultant Rhino', 'Page was not loaded properly'
+
+
+@mark.selenium
+def test__bug_page_content(firefox_driver):
+    """
+    Verifies: REQ-SEL4
+    :param firefox_driver: Firefox webdriver; taken from fixture
+    :return: None
+    """
+    expected_content = ['test_description']
+    firefox_driver.find_element(by=By.LINK_TEXT, value='Bugs').click()
+    firefox_driver.find_element(by=By.ID, value='collapsible').click()
+    firefox_driver.find_element(value='test_description')
+    firefox_driver.find_element(by=By.LINK_TEXT, value='View').click()
+    for content in expected_content:
+        assert content in firefox_driver.page_source, 'Expected elements are not in page content'
 
 
 @mark.selenium
@@ -87,7 +98,25 @@ def test__create_test_case(firefox_driver):
     firefox_driver.find_element(By.NAME, 'description').send_keys('test_description')
     firefox_driver.find_element(by=By.ID, value='submit').click()
     firefox_driver.find_element(by=By.LINK_TEXT, value='Test cases').click()
-    assert '<a href="/tc/TC-0">View</a>' in firefox_driver.page_source, 'Test case was not added properly'
+    firefox_driver.find_element(by=By.ID, value='collapsible').click()
+    firefox_driver.find_element(by=By.LINK_TEXT, value='View').click()
+    assert firefox_driver.title == 'Excultant Rhino', 'Page was not loaded properly'
+
+
+@mark.selenium
+def test__tc_page_content(firefox_driver):
+    """
+    Verifies: REQ-SEL4
+    :param firefox_driver: Firefox webdriver; taken from fixture
+    :return: None
+    """
+    expected_content = ['test_description']
+    firefox_driver.find_element(by=By.LINK_TEXT, value='Test cases').click()
+    firefox_driver.find_element(by=By.ID, value='collapsible').click()
+    firefox_driver.find_element(value='test_description')
+    firefox_driver.find_element(by=By.LINK_TEXT, value='View').click()
+    for content in expected_content:
+        assert content in firefox_driver.page_source, 'Expected elements are not in page content'
 
 
 @mark.selenium
@@ -104,4 +133,22 @@ def test__create_requirement(firefox_driver):
     firefox_driver.find_element(By.NAME, 'description').send_keys('test_description')
     firefox_driver.find_element(by=By.ID, value='submit').click()
     firefox_driver.find_element(by=By.LINK_TEXT, value='Requirements').click()
-    assert '<a href="/req/REQ-0">View</a>' in firefox_driver.page_source, 'Requirement was not added properly'
+    firefox_driver.find_element(by=By.ID, value='collapsible').click()
+    firefox_driver.find_element(by=By.LINK_TEXT, value='View').click()
+    assert firefox_driver.title == 'Excultant Rhino', 'Page was not loaded properly'
+
+
+@mark.selenium
+def test__req_page_content(firefox_driver):
+    """
+    Verifies: REQ-SEL4
+    :param firefox_driver: Firefox webdriver; taken from fixture
+    :return: None
+    """
+    expected_content = ['test_description']
+    firefox_driver.find_element(by=By.LINK_TEXT, value='Requirements').click()
+    firefox_driver.find_element(by=By.ID, value='collapsible').click()
+    firefox_driver.find_element(value='test_description')
+    firefox_driver.find_element(by=By.LINK_TEXT, value='View').click()
+    for content in expected_content:
+        assert content in firefox_driver.page_source, 'Expected elements are not in page content'

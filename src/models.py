@@ -41,21 +41,21 @@ class Models:
         """
         return list(self.mongo.find({'object_type': 'project'}))
 
-    def get_next_id(self, object_type, prefix):
+    def get_next_id(self, object_type, model):
         """
         get_next_id looks for latest object in database with specified object type and gets last id number and returns
         id string
         :param object_type: object type from list [requirement, project, bug, test_case]
-        :param prefix: prefix that is corresponding to object_type: [REQ, PROJ, BUG, TC]
+        :param model: object data model
         :return: full id string in format: {prefix}-{id_number}
         """
         all_objects_with_type = list(self.mongo.find({'object_type': object_type}))
         if all_objects_with_type:
-            id_number = all_objects_with_type[-1]['project_id'].split('-')[1]
+            id_number = all_objects_with_type[-1][model['object_id']].split('-')[1]
             next_id_number = int(id_number) + 1
         else:
             next_id_number = 0
-        return f'{prefix}-{next_id_number}'
+        return f"{model['object_id_prefix']}-{next_id_number}"
 
     def create(self, input_dict):
         """
@@ -67,7 +67,7 @@ class Models:
         model = self.models[input_dict['object_type']]
         new_object = {'title': input_dict['title'], 'description': input_dict['description'],
                       'object_type': input_dict['object_type'],
-                      model['object_id']: self.get_next_id(input_dict['object_type'], model['object_id_prefix'])}
+                      model['object_id']: self.get_next_id(input_dict['object_type'], model)}
         if 'parent_project' in input_dict.keys() and input_dict['object_type'] != 'project':
             new_object['parent_project'] = input_dict['parent_project']
         if 'parent' in input_dict.keys():
