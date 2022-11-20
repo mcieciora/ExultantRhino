@@ -31,7 +31,8 @@ def test__get_next_id_empty_database():
     :return: None
     """
     test_models = Models()
-    assert test_models.get_next_id('bug', 'BUG') == 'BUG-0', 'Wrong id has been returned'
+    assert test_models.get_next_id('bug', test_models.models['bug']) == 'BUG-0', \
+        'Wrong id has been returned'
 
 
 @mark.unittests
@@ -41,7 +42,7 @@ def test__get_next_id():
     :return: None
     """
     test_models = Models()
-    assert test_models.get_next_id('project', 'PROJ') == 'PROJ-1', 'Wrong id has been returned'
+    assert test_models.get_next_id('project', test_models.models['project']) == 'PROJ-1', 'Wrong id has been returned'
 
 
 @mark.unittests
@@ -107,3 +108,13 @@ def test__create_new_object():
     for key, value in test_bug.items():
         assert value == database_object[key], 'Object database value is incorrect'
     assert database_object['bug_id'].startswith('BUG-'), 'Object has got wrong id prefix'
+
+
+@mark.unittests
+def test__get_next_id_new_bug_object():
+    """
+    Verifies: REQ-MOD2
+    :return: None
+    """
+    test_models = Models()
+    assert test_models.get_next_id('bug', test_models.models['bug']) == 'BUG-1', 'Wrong id has been returned'

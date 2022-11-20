@@ -2,7 +2,9 @@ FROM python:3.10.4-alpine3.15
 
 MAINTAINER mcieciora
 
-COPY ./src /app
+COPY ./src /app/src
+
+COPY ./main.py /app
 
 COPY requirements.txt /app
 
