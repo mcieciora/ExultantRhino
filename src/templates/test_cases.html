@@ -1,9 +1,9 @@
 {% extends "base.html" %} {% block content%}
-{% for req in requirements %}
-    <button type="button" id="collapsible" class="collapsible">{{ req.requirement_id }}: {{ req.title }}</button>
+{% for tc in all_tcs %}
+    <button type="button" id="collapsible" class="collapsible">{{ tc.tc_id }}: {{ tc.title }}</button>
     <div class="content">
-        <p>{{ req.description }}</p>
-        <a href="/req/{{ req.requirement_id }}">View</a>
+        <p>{{ tc.description }}</p>
+        <a href="/tc/{{ tc.tc_id }}">View</a>
     </div>
 {% endfor %}
 <script>

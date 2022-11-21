@@ -75,10 +75,9 @@ def test__bug_page_content(firefox_driver):
     :param firefox_driver: Firefox webdriver; taken from fixture
     :return: None
     """
-    expected_content = ['test_description']
+    expected_content = ['BUG-0', 'test_title', 'test_case', 'test_description', 'template']
     firefox_driver.find_element(by=By.LINK_TEXT, value='Bugs').click()
     firefox_driver.find_element(by=By.ID, value='collapsible').click()
-    firefox_driver.find_element(value='test_description')
     firefox_driver.find_element(by=By.LINK_TEXT, value='View').click()
     for content in expected_content:
         assert content in firefox_driver.page_source, 'Expected elements are not in page content'
@@ -110,10 +109,9 @@ def test__tc_page_content(firefox_driver):
     :param firefox_driver: Firefox webdriver; taken from fixture
     :return: None
     """
-    expected_content = ['test_description']
+    expected_content = ['TC-0', 'test_title', 'bug', 'test_description', 'template']
     firefox_driver.find_element(by=By.LINK_TEXT, value='Test cases').click()
     firefox_driver.find_element(by=By.ID, value='collapsible').click()
-    firefox_driver.find_element(value='test_description')
     firefox_driver.find_element(by=By.LINK_TEXT, value='View').click()
     for content in expected_content:
         assert content in firefox_driver.page_source, 'Expected elements are not in page content'
@@ -145,10 +143,9 @@ def test__req_page_content(firefox_driver):
     :param firefox_driver: Firefox webdriver; taken from fixture
     :return: None
     """
-    expected_content = ['test_description']
+    expected_content = ['REQ-0', 'test_title', ' requirement', 'test_description', 'template']
     firefox_driver.find_element(by=By.LINK_TEXT, value='Requirements').click()
     firefox_driver.find_element(by=By.ID, value='collapsible').click()
-    firefox_driver.find_element(value='test_description')
     firefox_driver.find_element(by=By.LINK_TEXT, value='View').click()
     for content in expected_content:
         assert content in firefox_driver.page_source, 'Expected elements are not in page content'
