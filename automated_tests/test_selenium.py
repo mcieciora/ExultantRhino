@@ -81,7 +81,7 @@ def test__bug_page_content(firefox_driver):
     :param firefox_driver: Firefox webdriver; taken from fixture
     :return: None
     """
-    expected_content = ['test_title', 'test_case', 'test_description', 'Template']
+    expected_content = ['test_title', 'testcase', 'test_description', 'Template']
     firefox_driver.find_element(by=By.LINK_TEXT, value='Bugs').click()
     firefox_driver.find_element(by=By.ID, value='collapsible').click()
     firefox_driver.find_element(by=By.LINK_TEXT, value='View').click()
@@ -149,7 +149,7 @@ def test__req_page_content(firefox_driver):
     :param firefox_driver: Firefox webdriver; taken from fixture
     :return: None
     """
-    expected_content = ['test_title', ' requirement', 'test_description', 'Template']
+    expected_content = ['test_title', 'requirement', 'test_description', 'Template']
     firefox_driver.find_element(by=By.LINK_TEXT, value='Requirements').click()
     firefox_driver.find_element(by=By.ID, value='collapsible').click()
     firefox_driver.find_element(by=By.LINK_TEXT, value='View').click()
