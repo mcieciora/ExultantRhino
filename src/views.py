@@ -28,49 +28,20 @@ def proj(project_id):
     return redirect('/')
 
 
-@views.route('/requirements', methods=['GET', 'POST'])
-def requirements():
+@views.route('/view_objects/<string:object_type>', methods=['GET', 'POST'])
+def view_objects(object_type):
     """
     Requirements endpoint
-    :return: requirements template
+    :return: view_objects template
     """
-    all_reqs = list(models.mongo.find(({"$and":
-                                        [{'requirement_id': {'$exists': 'true'}},
-                                         {'parent_project': models.get_current_project_id()['title'].lower()}]})))
-    return render_template('requirements.html',
+    all_objects = list(models.mongo.find(({"$and": [{'object_id': {'$exists': 'true'}},
+                                                    {'object_type': object_type},
+                                                    {'parent_project': models.get_current_project_id()['title']
+                                                    .lower()}]})))
+    return render_template('view_objects.html',
                            current_project=models.get_current_project_id(),
                            projects=models.get_all_projects(),
-                           requirements=all_reqs)
-
-
-@views.route('/bugs', methods=['GET', 'POST'])
-def bugs():
-    """
-    Bugs endpoint
-    :return: bugs template
-    """
-    all_bugs = list(models.mongo.find(({"$and":
-                                        [{'bug_id': {'$exists': 'true'}},
-                                         {'parent_project': models.get_current_project_id()['title'].lower()}]})))
-    return render_template('bugs.html',
-                           current_project=models.get_current_project_id(),
-                           projects=models.get_all_projects(),
-                           all_bugs=all_bugs)
-
-
-@views.route('/test_cases', methods=['GET', 'POST'])
-def test_cases():
-    """
-    Test cases endpoint
-    :return: test_cases template
-    """
-    all_tcs = list(models.mongo.find(({"$and":
-                                        [{'tc_id': {'$exists': 'true'}},
-                                         {'parent_project': models.get_current_project_id()['title'].lower()}]})))
-    return render_template('test_cases.html',
-                           current_project=models.get_current_project_id(),
-                           projects=models.get_all_projects(),
-                           all_tcs=all_tcs)
+                           all_objects=all_objects)
 
 
 @views.route('/create', methods=['GET', 'POST'])
@@ -87,52 +58,18 @@ def create():
                            projects=models.get_all_projects())
 
 
-@views.route('/req/<string:req_id>', methods=['GET', 'POST'])
-def req(req_id):
+@views.route('/view/<string:object_id>', methods=['GET', 'POST'])
+def view(object_id):
     """
-    req endpoint
-    :param req_id: requirement id in format REQ-{req_number}
-    :return: req template
+    view endpoint
+    :param object_id: object id in format OBJ-{object_number}
+    :return: view template
     """
-    found_req = list(models.mongo.find({"requirement_id": req_id}))
-    if found_req:
-        return render_template('req.html',
-                               req=found_req[0],
+    found_object = list(models.mongo.find({"object_id": object_id}))
+    if found_object:
+        return render_template('view.html',
+                               object=found_object[0],
                                current_project=models.get_current_project_id(),
                                projects=models.get_all_projects())
     else:
-        return redirect('/requirements')
-
-
-@views.route('/bug/<string:bug_id>', methods=['GET', 'POST'])
-def bug(bug_id):
-    """
-    bug endpoint
-    :param bug_id: bug id in format BUG-{bug_number}
-    :return: bug template
-    """
-    found_bug = list(models.mongo.find({"bug_id": bug_id}))
-    if found_bug:
-        return render_template('bug.html',
-                               bug=found_bug[0],
-                               current_project=models.get_current_project_id(),
-                               projects=models.get_all_projects())
-    else:
-        return redirect('/bugs')
-
-
-@views.route('/tc/<string:tc_id>', methods=['GET', 'POST'])
-def tc(tc_id):
-    """
-    tc endpoint
-    :param tc_id: tc id in format BUG-{tc_number}
-    :return: tc template
-    """
-    found_tc = list(models.mongo.find({"tc_id": tc_id}))
-    if found_tc:
-        return render_template('tc.html',
-                               tc=found_tc[0],
-                               current_project=models.get_current_project_id(),
-                               projects=models.get_all_projects())
-    else:
-        return redirect('/test_cases')
+        return redirect('/')

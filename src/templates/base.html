@@ -29,13 +29,13 @@
               </button>
               <div class="dropdown-content" id="myDropdown">
                   {% for project in projects %}
-                  <a href="/proj/{{project.project_id}}">{{ project.title }}</a>
+                  <a href="/proj/{{project.object_id}}">{{ project.title }}</a>
                   {% endfor %}
               </div>
           </div>
-          <a href="/requirements">Requirements</a>
-          <a href="/test_cases">Test cases</a>
-          <a href="/bugs">Bugs</a>
+          <a href="/view_objects/requirement">Requirements</a>
+          <a href="/view_objects/test_case">Test cases</a>
+          <a href="/view_objects/bug">Bugs</a>
           <div class="create_button">
               <a href="/create">Create</a>
           </div>

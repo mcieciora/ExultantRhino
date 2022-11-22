@@ -6,12 +6,19 @@ from selenium.webdriver.support.ui import Select
 @mark.selenium
 def test__check_app_content(firefox_driver):
     """
+    Verifies: REQ-SEL1
     :param firefox_driver: Firefox webdriver; taken from fixture
     :return: None
     """
-    available_tabs = ['Requirements', 'Test cases', 'Bugs', 'Create']
-    for tab in available_tabs:
-        firefox_driver.find_element(By.LINK_TEXT, tab).click()
+    available_tabs = {
+        'Requirements': '/view_objects/requirement',
+        'Test cases': '/view_objects/test_case',
+        'Bugs': '/view_objects/bug',
+        'Create': '/create',
+    }
+    for tab_name, url_value in available_tabs.items():
+        firefox_driver.find_element(By.LINK_TEXT, tab_name).click()
+        assert url_value in firefox_driver.current_url
 
 
 @mark.selenium
@@ -75,7 +82,7 @@ def test__bug_page_content(firefox_driver):
     :param firefox_driver: Firefox webdriver; taken from fixture
     :return: None
     """
-    expected_content = ['BUG-0', 'test_title', 'test_case', 'test_description', 'template']
+    expected_content = ['OBJ-2', 'test_title', 'test_case', 'test_description', 'template']
     firefox_driver.find_element(by=By.LINK_TEXT, value='Bugs').click()
     firefox_driver.find_element(by=By.ID, value='collapsible').click()
     firefox_driver.find_element(by=By.LINK_TEXT, value='View').click()
@@ -109,7 +116,7 @@ def test__tc_page_content(firefox_driver):
     :param firefox_driver: Firefox webdriver; taken from fixture
     :return: None
     """
-    expected_content = ['TC-0', 'test_title', 'bug', 'test_description', 'template']
+    expected_content = ['OBJ-3', 'test_title', 'bug', 'test_description', 'template']
     firefox_driver.find_element(by=By.LINK_TEXT, value='Test cases').click()
     firefox_driver.find_element(by=By.ID, value='collapsible').click()
     firefox_driver.find_element(by=By.LINK_TEXT, value='View').click()
@@ -143,7 +150,7 @@ def test__req_page_content(firefox_driver):
     :param firefox_driver: Firefox webdriver; taken from fixture
     :return: None
     """
-    expected_content = ['REQ-0', 'test_title', ' requirement', 'test_description', 'template']
+    expected_content = ['OBJ-4', 'test_title', ' requirement', 'test_description', 'template']
     firefox_driver.find_element(by=By.LINK_TEXT, value='Requirements').click()
     firefox_driver.find_element(by=By.ID, value='collapsible').click()
     firefox_driver.find_element(by=By.LINK_TEXT, value='View').click()

@@ -1,9 +1,9 @@
 {% extends "base.html" %} {% block content%}
-{% for tc in all_tcs %}
-    <button type="button" id="collapsible" class="collapsible">{{ tc.tc_id }}: {{ tc.title }}</button>
+{% for object in all_objects %}
+    <button type="button" id="collapsible" class="collapsible">{{ object.object_id }}: {{ object.title }}</button>
     <div class="content">
-        <p>{{ tc.description }}</p>
-        <a href="/tc/{{ tc.tc_id }}">View</a>
+        <p>{{ object.description }}</p>
+        <a href="/view/{{ object.object_id }}">View</a>
     </div>
 {% endfor %}
 <script>
