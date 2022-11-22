@@ -61,6 +61,7 @@ pipeline {
                     script {
                         sh 'docker compose down'
                         sh 'docker rmi exultant_rhino_app:latest -f'
+                        sh 'rm -rf data/'
                     }
                 }
                 failure {
@@ -71,12 +72,33 @@ pipeline {
             }
         }
         stage ('Selenium tests') {
+            parallel {
+                stage ('Mozilla tests') {
+                    steps {
+                        script {
+                            sh "sed -i 's/localhost/mongodb/1' src/pymongo_db.py"
+                            dir('automated_tests/') {
+                                sh 'docker compose up -d'
+                                sh 'tox -e selenium'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        stage ('Scan for skipped tests') {
+            when {
+                expression {
+                    return env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'release'
+                }
+            }
             steps {
                 script {
-                    sh "sed -i 's/localhost/mongodb/1' src/pymongo_db.py"
-                    dir('automated_tests/') {
-                        sh 'docker compose up -d'
-                        sh 'tox -e selenium'
+                    dir('automated_tests/tools') {
+                        def skipped_tests = sh(script: 'python3.10 scan_for_skipped_tests.py', returnStdout: true)
+                        if (skipped_tests.contains('[ERR]')) {
+                            error("Found @mark.skip among test scripts.\n${skipped_tests}")
+                        }
                     }
                 }
             }
