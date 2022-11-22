@@ -61,7 +61,9 @@ pipeline {
                     script {
                         sh 'docker compose down'
                         sh 'docker rmi exultant_rhino_app:latest -f'
-                        sh 'rm -rf data/'
+                        dir('automated_tests/data') {
+                            deleteDir()
+                        }
                     }
                 }
                 failure {
