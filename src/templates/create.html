@@ -2,13 +2,6 @@
 
 <div class="form">
   <form method="post">
-    <label for="parent_project">Project</label>
-    <select id="parent_project" name="parent_project">
-      {% for project in projects %}
-      <option value="{{ project.title.lower() }}">{{ project.title }}</option>
-      {% endfor %}
-    </select>
-
     <label for="object_type">Type</label>
     <select id="object_type" name="object_type">
       <option value="project">Project</option>
