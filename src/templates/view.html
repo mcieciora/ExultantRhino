@@ -1,15 +1,14 @@
 {% extends "base.html" %} {% block content%}
 
-{{ object.object_type }}
-{{ object.parent_project }}
 {{ object.parent }}
+{{ object.object_type }}
 
 <div class="form">
   <form method="post">
     <label for="parent_project">Project</label>
     <select id="parent_project" name="parent_project">
       {% for project in projects %}
-        {% if project.title == project.title %}
+        {% if project.title == object.parent_project %}
           <option value="{{ project.title }}" selected="selected">{{ project.title }}</option>
         {% else %}
           <option value="{{ project.title }}">{{ project.title }}</option>
@@ -19,10 +18,13 @@
 
     <label for="object_type">Type</label>
     <select id="object_type" name="object_type">
-      <option value="project">Project</option>
-      <option value="requirement">Requirement</option>
-      <option value="test_case">Test Case</option>
-      <option value="bug">Bug</option>
+      {% for type in ['Project', 'Requirement',  'TestCase', 'Bug'] %}
+        {% if type.lower() == object.object_type %}
+          <option value="{{ type.lower() }}" selected="selected">{{ type }}</option>
+        {% else %}
+          <option value="{{ type.lower() }}">{{ type }}</option>
+        {% endif %}
+      {% endfor %}
     </select>
 
     <label for="title">Title</label>

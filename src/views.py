@@ -36,8 +36,7 @@ def view_objects(object_type):
     """
     all_objects = list(models.mongo.find(({"$and": [{'object_id': {'$exists': 'true'}},
                                                     {'object_type': object_type},
-                                                    {'parent_project': models.get_current_project_id()['title']
-                                                    .lower()}]})))
+                                                    {'parent_project': models.get_current_project_id()['title']}]})))
     return render_template('view_objects.html',
                            current_project=models.get_current_project_id(),
                            projects=models.get_all_projects(),
@@ -51,7 +50,8 @@ def create():
     :return: create template
     """
     if request.method == 'POST':
-        post_form = request.form
+        post_form = dict(request.form)
+        post_form['parent_project'] = models.get_current_project_id()['title']
         models.create(post_form)
     return render_template('create.html',
                            current_project=models.get_current_project_id(),
