@@ -187,7 +187,7 @@ def test__edit_object_into_different_object(firefox_driver):
 
 
 @mark.selenium
-def test__edit_object_into_different_object(firefox_driver):
+def test__edit_object_into_project(firefox_driver):
     """
     Verifies: REQ-SEL5
     :param firefox_driver: Firefox webdriver; taken from fixture
@@ -200,4 +200,3 @@ def test__edit_object_into_different_object(firefox_driver):
     select.select_by_visible_text('Project')
     firefox_driver.find_element(by=By.ID, value='submit').click()
     assert '<a href="/proj/OBJ-6">test_title</a>' in firefox_driver.page_source, 'Object was not edited into project'
-
