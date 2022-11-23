@@ -1,0 +1,39 @@
+{% extends "base.html" %} {% block content%}
+
+{{ object.parent }}
+
+<div class="form">
+  <form method="post">
+    <label for="parent_project">Project</label>
+    <select id="parent_project" name="parent_project">
+      {% for project in projects %}
+        {% if project.title == object.parent_project %}
+          <option value="{{ project.title }}" selected="selected">{{ project.title }}</option>
+        {% else %}
+          <option value="{{ project.title }}">{{ project.title }}</option>
+        {% endif %}
+      {% endfor %}
+    </select>
+
+    <label for="object_type">Type</label>
+    <select id="object_type" name="object_type">
+      {% for type in ['Project', 'Requirement',  'TestCase', 'Bug'] %}
+        {% if type.lower() == object.object_type %}
+          <option value="{{ type.lower() }}" selected="selected">{{ type }}</option>
+        {% else %}
+          <option value="{{ type.lower() }}">{{ type }}</option>
+        {% endif %}
+      {% endfor %}
+    </select>
+
+    <label for="title">Title</label>
+    <input type="text" id="title" name="title" value="{{ object.title }}">
+
+    <label for="description">Description</label>
+    <textarea id="description" name="description">{{ object.description }}</textarea>
+
+    <input id="submit" type="submit" value="Update">
+  </form>
+</div>
+
+{% endblock %}

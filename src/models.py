@@ -1,6 +1,10 @@
 from src.pymongo_db import MongoDb
 
 
+class ProjectExistsError(Exception):
+    """Project with given title already exists in database"""
+
+
 class Models:
     """
     Model class is used for database models creation and validation of inputs.
@@ -58,6 +62,9 @@ class Models:
         :param input_dict: data dict
         :return: None
         """
+        if list(self.mongo.find({"$and": [{'title': input_dict['title']},
+                                          {'object_type': input_dict['object_type']}]})):
+            raise ProjectExistsError
         new_object = {'title': input_dict['title'], 'description': input_dict['description'],
                       'object_type': input_dict['object_type'],
                       'object_id': self.get_next_id()}
@@ -66,3 +73,12 @@ class Models:
         if 'parent' in input_dict.keys():
             new_object['parent'] = input_dict['parent']
         self.mongo.insert(new_object)
+
+    def edit(self, object_id, input_dict):
+        """
+        edit function takes object_id, search for it in database and replace its values with input_dict
+        :param object_id: database object id
+        :param input_dict: data dict
+        :return: None
+        """
+        self.mongo.update({'object_id': object_id}, {"$set": input_dict})

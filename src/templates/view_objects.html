@@ -3,7 +3,7 @@
     <button type="button" id="collapsible" class="collapsible">{{ object.object_id }}: {{ object.title }}</button>
     <div class="content">
         <p>{{ object.description }}</p>
-        <a href="/view/{{ object.object_id }}">View</a>
+        <a href="/edit/{{ object.object_id }}">Edit</a>
     </div>
 {% endfor %}
 <script>

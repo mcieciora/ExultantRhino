@@ -1,5 +1,5 @@
 from flask import render_template, Blueprint, request, redirect
-from src.models import Models
+from src.models import Models, ProjectExistsError
 
 
 views = Blueprint('views', __name__)
@@ -36,8 +36,7 @@ def view_objects(object_type):
     """
     all_objects = list(models.mongo.find(({"$and": [{'object_id': {'$exists': 'true'}},
                                                     {'object_type': object_type},
-                                                    {'parent_project': models.get_current_project_id()['title']
-                                                    .lower()}]})))
+                                                    {'parent_project': models.get_current_project_id()['title']}]})))
     return render_template('view_objects.html',
                            current_project=models.get_current_project_id(),
                            projects=models.get_all_projects(),
@@ -51,14 +50,18 @@ def create():
     :return: create template
     """
     if request.method == 'POST':
-        post_form = request.form
-        models.create(post_form)
+        post_form = dict(request.form)
+        post_form['parent_project'] = models.get_current_project_id()['title']
+        try:
+            models.create(post_form)
+        except ProjectExistsError:
+            pass
     return render_template('create.html',
                            current_project=models.get_current_project_id(),
                            projects=models.get_all_projects())
 
 
-@views.route('/view/<string:object_id>', methods=['GET', 'POST'])
+@views.route('/edit/<string:object_id>', methods=['GET', 'POST'])
 def view(object_id):
     """
     view endpoint
@@ -66,10 +69,12 @@ def view(object_id):
     :return: view template
     """
     found_object = list(models.mongo.find({"object_id": object_id}))
-    if found_object:
-        return render_template('view.html',
+    if request.method == 'POST':
+        post_form = dict(request.form)
+        models.edit(object_id, post_form)
+    elif found_object:
+        return render_template('edit.html',
                                object=found_object[0],
                                current_project=models.get_current_project_id(),
                                projects=models.get_all_projects())
-    else:
-        return redirect('/')
+    return redirect('/')
