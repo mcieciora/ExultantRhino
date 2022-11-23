@@ -70,7 +70,7 @@ def test__create_bug(firefox_driver):
     firefox_driver.find_element(by=By.ID, value='submit').click()
     firefox_driver.find_element(by=By.LINK_TEXT, value='Bugs').click()
     firefox_driver.find_element(by=By.ID, value='collapsible').click()
-    firefox_driver.find_element(by=By.LINK_TEXT, value='View').click()
+    firefox_driver.find_element(by=By.LINK_TEXT, value='Edit').click()
     assert firefox_driver.title == 'Excultant Rhino', 'Page was not loaded properly'
 
 
@@ -84,7 +84,7 @@ def test__bug_page_content(firefox_driver):
     expected_content = ['test_title', 'testcase', 'test_description', 'Template']
     firefox_driver.find_element(by=By.LINK_TEXT, value='Bugs').click()
     firefox_driver.find_element(by=By.ID, value='collapsible').click()
-    firefox_driver.find_element(by=By.LINK_TEXT, value='View').click()
+    firefox_driver.find_element(by=By.LINK_TEXT, value='Edit').click()
     for content in expected_content:
         assert content in firefox_driver.page_source, 'Expected elements are not in page content'
 
@@ -104,7 +104,7 @@ def test__create_test_case(firefox_driver):
     firefox_driver.find_element(by=By.ID, value='submit').click()
     firefox_driver.find_element(by=By.LINK_TEXT, value='Test cases').click()
     firefox_driver.find_element(by=By.ID, value='collapsible').click()
-    firefox_driver.find_element(by=By.LINK_TEXT, value='View').click()
+    firefox_driver.find_element(by=By.LINK_TEXT, value='Edit').click()
     assert firefox_driver.title == 'Excultant Rhino', 'Page was not loaded properly'
 
 
@@ -118,7 +118,7 @@ def test__tc_page_content(firefox_driver):
     expected_content = ['test_title', 'bug', 'test_description', 'Template']
     firefox_driver.find_element(by=By.LINK_TEXT, value='Test cases').click()
     firefox_driver.find_element(by=By.ID, value='collapsible').click()
-    firefox_driver.find_element(by=By.LINK_TEXT, value='View').click()
+    firefox_driver.find_element(by=By.LINK_TEXT, value='Edit').click()
     for content in expected_content:
         assert content in firefox_driver.page_source, 'Expected elements are not in page content'
 
@@ -138,7 +138,7 @@ def test__create_requirement(firefox_driver):
     firefox_driver.find_element(by=By.ID, value='submit').click()
     firefox_driver.find_element(by=By.LINK_TEXT, value='Requirements').click()
     firefox_driver.find_element(by=By.ID, value='collapsible').click()
-    firefox_driver.find_element(by=By.LINK_TEXT, value='View').click()
+    firefox_driver.find_element(by=By.LINK_TEXT, value='Edit').click()
     assert firefox_driver.title == 'Excultant Rhino', 'Page was not loaded properly'
 
 
@@ -152,6 +152,6 @@ def test__req_page_content(firefox_driver):
     expected_content = ['test_title', 'requirement', 'test_description', 'Template']
     firefox_driver.find_element(by=By.LINK_TEXT, value='Requirements').click()
     firefox_driver.find_element(by=By.ID, value='collapsible').click()
-    firefox_driver.find_element(by=By.LINK_TEXT, value='View').click()
+    firefox_driver.find_element(by=By.LINK_TEXT, value='Edit').click()
     for content in expected_content:
         assert content in firefox_driver.page_source, 'Expected elements are not in page content'

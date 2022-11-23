@@ -1,7 +1,6 @@
 {% extends "base.html" %} {% block content%}
 
 {{ object.parent }}
-{{ object.object_type }}
 
 <div class="form">
   <form method="post">
@@ -28,12 +27,12 @@
     </select>
 
     <label for="title">Title</label>
-    <input type="text" id="title" name="title" placeholder="{{ object.title }}">
+    <input type="text" id="title" name="title" value="{{ object.title }}">
 
     <label for="description">Description</label>
-    <textarea id="description" name="description" placeholder="{{ object.description }}"></textarea>
+    <textarea id="description" name="description">{{ object.description }}</textarea>
 
-    <input id="submit" type="submit" value="Submit">
+    <input id="submit" type="submit" value="Update">
   </form>
 </div>
 

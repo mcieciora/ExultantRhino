@@ -58,7 +58,7 @@ def create():
                            projects=models.get_all_projects())
 
 
-@views.route('/view/<string:object_id>', methods=['GET', 'POST'])
+@views.route('/edit/<string:object_id>', methods=['GET', 'POST'])
 def view(object_id):
     """
     view endpoint
@@ -66,10 +66,12 @@ def view(object_id):
     :return: view template
     """
     found_object = list(models.mongo.find({"object_id": object_id}))
-    if found_object:
-        return render_template('view.html',
+    if request.method == 'POST':
+        post_form = dict(request.form)
+        models.edit(object_id, post_form)
+    elif found_object:
+        return render_template('edit.html',
                                object=found_object[0],
                                current_project=models.get_current_project_id(),
                                projects=models.get_all_projects())
-    else:
-        return redirect('/')
+    return redirect('/')
