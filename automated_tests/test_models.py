@@ -62,6 +62,16 @@ def test__create_new_project():
 
 
 @mark.unittests
+def test__double_project_creation():
+    """
+    Verifies: REQ-MOD2
+    Verifies: REQ-MOD3
+    :return: None
+    """
+    pass
+
+
+@mark.unittests
 def test__get_current_project_id():
     """
     Verifies: REQ-MOD4

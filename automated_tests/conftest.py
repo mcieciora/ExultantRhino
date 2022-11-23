@@ -30,7 +30,7 @@ def firefox_driver(gecko_driver):
     test_driver.close()
 
 
-@fixture(scope='module')
+@fixture(scope='session')
 def gecko_driver():
     gecko_proc = Popen(["tools/geckodriver"], stdout=PIPE, shell=True)
     yield
