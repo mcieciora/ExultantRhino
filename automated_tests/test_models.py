@@ -1,5 +1,5 @@
 import pytest
-from pytest import mark
+from pytest import mark, raises
 from src.models import Models, ProjectExistsError
 
 
@@ -70,7 +70,7 @@ def test__double_project_creation():
     """
     test_models = Models()
     test_project = {'title': 'new_proj', 'description': 'this is new proj', 'object_type': 'project'}
-    with pytest.raises(ProjectExistsError):
+    with raises(ProjectExistsError):
         test_models.create(test_project)
 
 
