@@ -1,5 +1,5 @@
 from flask import render_template, Blueprint, request, redirect
-from src.models import Models
+from src.models import Models, ProjectExistsError
 
 
 views = Blueprint('views', __name__)
@@ -52,7 +52,10 @@ def create():
     if request.method == 'POST':
         post_form = dict(request.form)
         post_form['parent_project'] = models.get_current_project_id()['title']
-        models.create(post_form)
+        try:
+            models.create(post_form)
+        except ProjectExistsError:
+            pass
     return render_template('create.html',
                            current_project=models.get_current_project_id(),
                            projects=models.get_all_projects())

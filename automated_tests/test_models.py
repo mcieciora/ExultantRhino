@@ -1,5 +1,6 @@
+import pytest
 from pytest import mark
-from src.models import Models
+from src.models import Models, ProjectExistsError
 
 
 @mark.unittests
@@ -64,11 +65,13 @@ def test__create_new_project():
 @mark.unittests
 def test__double_project_creation():
     """
-    Verifies: REQ-MOD2
     Verifies: REQ-MOD3
     :return: None
     """
-    pass
+    test_models = Models()
+    test_project = {'title': 'new_proj', 'description': 'this is new proj', 'object_type': 'project'}
+    with pytest.raises(ProjectExistsError):
+        test_models.create(test_project)
 
 
 @mark.unittests
