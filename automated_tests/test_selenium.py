@@ -193,10 +193,10 @@ def test__edit_object_into_project(firefox_driver):
     :param firefox_driver: Firefox webdriver; taken from fixture
     :return: None
     """
-    firefox_driver.find_element(by=By.LINK_TEXT, value='Requirements').click()
+    firefox_driver.find_element(by=By.LINK_TEXT, value='Bugs').click()
     firefox_driver.find_element(by=By.ID, value='collapsible').click()
     firefox_driver.find_element(by=By.LINK_TEXT, value='Edit').click()
     select = Select(firefox_driver.find_element(by=By.ID, value='object_type'))
     select.select_by_visible_text('Project')
     firefox_driver.find_element(by=By.ID, value='submit').click()
-    assert '<a href="/proj/OBJ-6">test_title</a>' in firefox_driver.page_source, 'Object was not edited into project'
+    assert '<a href="/proj/OBJ-5">edited_title</a>' in firefox_driver.page_source, 'Object was not edited into project'
