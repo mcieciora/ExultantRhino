@@ -155,3 +155,49 @@ def test__req_page_content(firefox_driver):
     firefox_driver.find_element(by=By.LINK_TEXT, value='Edit').click()
     for content in expected_content:
         assert content in firefox_driver.page_source, 'Expected elements are not in page content'
+
+
+@mark.selenium
+def test__edit_object_into_different_object(firefox_driver):
+    """
+    Verifies: REQ-SEL5
+    :param firefox_driver: Firefox webdriver; taken from fixture
+    :return: None
+    """
+    expected_data = ['<option value="bug" selected="selected">Bug</option>', '>edited_description</textarea>',
+                     'value="edited_title">', '<option value="test_title" selected="selected">test_title</option>']
+    firefox_driver.find_element(by=By.LINK_TEXT, value='Test cases').click()
+    firefox_driver.find_element(by=By.ID, value='collapsible').click()
+    firefox_driver.find_element(by=By.LINK_TEXT, value='Edit').click()
+    select = Select(firefox_driver.find_element(by=By.ID, value='parent_project'))
+    select.select_by_visible_text('test_title')
+    select = Select(firefox_driver.find_element(by=By.ID, value='object_type'))
+    select.select_by_visible_text('Bug')
+    firefox_driver.find_element(by=By.ID, value='title').clear()
+    firefox_driver.find_element(by=By.ID, value='title').send_keys('edited_title')
+    firefox_driver.find_element(by=By.ID, value='description').clear()
+    firefox_driver.find_element(by=By.ID, value='description').send_keys('edited_description')
+    firefox_driver.find_element(by=By.ID, value='submit').click()
+    firefox_driver.get('http://localhost:8000/proj/OBJ-3')
+    firefox_driver.find_element(by=By.LINK_TEXT, value='Bugs').click()
+    firefox_driver.find_element(by=By.ID, value='collapsible').click()
+    firefox_driver.find_element(by=By.LINK_TEXT, value='Edit').click()
+    for data in expected_data:
+        assert data in firefox_driver.page_source, 'Object was not edited properly.'
+
+
+@mark.selenium
+def test__edit_object_into_different_object(firefox_driver):
+    """
+    Verifies: REQ-SEL5
+    :param firefox_driver: Firefox webdriver; taken from fixture
+    :return: None
+    """
+    firefox_driver.find_element(by=By.LINK_TEXT, value='Requirements').click()
+    firefox_driver.find_element(by=By.ID, value='collapsible').click()
+    firefox_driver.find_element(by=By.LINK_TEXT, value='Edit').click()
+    select = Select(firefox_driver.find_element(by=By.ID, value='object_type'))
+    select.select_by_visible_text('Project')
+    firefox_driver.find_element(by=By.ID, value='submit').click()
+    assert '<a href="/proj/OBJ-6">test_title</a>' in firefox_driver.page_source, 'Object was not edited into project'
+
