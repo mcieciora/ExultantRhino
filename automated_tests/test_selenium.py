@@ -52,7 +52,7 @@ def test__create_project(firefox_driver):
     firefox_driver.find_element(by=By.ID, value='submit').click()
     page_content = firefox_driver.page_source
     assert 'test_title' in firefox_driver.page_source, 'Project was not added properly'
-    assert '<a href="/proj/OBJ-3">test_title</a>' in page_content, 'Project was not added properly'
+    assert '<a href="/proj/OBJ-2">test_title</a>' in page_content, 'Project was not added properly'
 
 
 @mark.selenium
