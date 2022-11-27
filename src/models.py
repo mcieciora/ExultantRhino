@@ -76,9 +76,17 @@ class Models:
 
     def edit(self, object_id, input_dict):
         """
-        edit function takes object_id, search for it in database and replace its values with input_dict
+        edit function takes object_id, searches for it in database and replace its values with input_dict
         :param object_id: database object id
         :param input_dict: data dict
         :return: None
         """
         self.mongo.update({'object_id': object_id}, {"$set": input_dict})
+
+    def delete(self, object_id):
+        """
+        delete function takes object_id, searches for it in database and deletes an object
+        :param object_id: database object id
+        :return: None
+        """
+        self.mongo.delete({'object_id': object_id})

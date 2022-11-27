@@ -1,11 +1,14 @@
 {% extends "base.html" %} {% block content%}
+<div class="list_row">
 {% for object in all_objects %}
     <button type="button" id="collapsible" class="collapsible">{{ object.object_id }}: {{ object.title }}</button>
     <div class="content">
         <p>{{ object.description }}</p>
         <a href="/edit/{{ object.object_id }}">Edit</a>
+        <a class="delete" href="/delete/{{ object.object_id }}">Delete</a>
     </div>
 {% endfor %}
+    </div>
 <script>
     var coll = document.getElementsByClassName("collapsible");
     var i;

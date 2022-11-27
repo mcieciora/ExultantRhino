@@ -3,6 +3,15 @@ body {
   background-color: #f2f2f2;
 }
 
+a {
+    padding-left: 10px;
+    color: green;
+}
+
+a.delete {
+    color: red;
+}
+
 .navbar {
   overflow: hidden;
   background-color: #333;
@@ -18,7 +27,7 @@ body {
 }
 
 .navbar a:hover, .dropdown:hover {
-  background-color: indianred;
+  background-color: #cc0000;
 }
 
 .create_button a {
@@ -28,11 +37,11 @@ body {
   text-align: center;
   padding: 14px 16px;
   text-decoration: none;
-  background-color: royalblue;
+  background-color: #005ce6;
 }
 
 .create_button a:hover {
-  background-color: lightblue;
+  background-color: #0066ff;
 }
 
 .dropdown {
@@ -46,10 +55,10 @@ body {
   outline: none;
   color: white;
   padding: 14px 16px;
-  width: 75px;
+  width: auto;
   background-color: inherit;
   font-family: inherit;
-  background-color: red;
+  background-color: #e60000;
 }
 
 .dropdown-content {
@@ -81,7 +90,7 @@ body {
 }
 
 .collapsible {
-  margin-top:50px;
+  margin-top: 10px;
   background-color: #eee;
   color: #444;
   cursor: pointer;
@@ -98,13 +107,12 @@ body {
 }
 
 .content {
-  padding: 10px 10px;
   display: none;
   overflow: hidden;
   background-color: #f1f1f1;
 }
 
-input[type=text], select {
+input[type=text], select, textarea {
   width: 100%;
   padding: 12px 20px;
   margin: 8px 0;
@@ -129,21 +137,18 @@ input[type=submit]:hover {
   background-color: #45a049;
 }
 
-textarea {
-  width: 100%;
-  padding: 12px 20px;
-  margin: 8px 0;
-  display: inline-block;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-  resize: none;
-}
-
 .form {
   border-radius: 5px;
   background-color: #f2f2f2;
   padding: 20px;
   width: 50%;
-  margin: 0 auto;
+  margin: auto;
+  margin-top: 25px;
+}
+
+.list_row {
+    margin-top: 30px;
+    position: fixed;
+    left: 25%;
+    width: 50%;
 }

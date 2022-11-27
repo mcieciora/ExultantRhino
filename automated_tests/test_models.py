@@ -147,3 +147,14 @@ def test__edit_object():
     for key, value in database_object.items():
         if key in test_bug:
             assert test_bug[key] == value, 'Object has got incorrect values after edition.'
+
+
+@mark.unittests
+def test__delete_object():
+    """
+    Verifies: REQ-MOD5
+    :return: None
+    """
+    test_models = Models()
+    test_models.delete('OBJ-2')
+    assert not list(test_models.mongo.find({'object_id': 'OBJ-2'})), 'Object was not deleted.'

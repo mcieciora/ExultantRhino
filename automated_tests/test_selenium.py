@@ -52,7 +52,7 @@ def test__create_project(firefox_driver):
     firefox_driver.find_element(by=By.ID, value='submit').click()
     page_content = firefox_driver.page_source
     assert 'test_title' in firefox_driver.page_source, 'Project was not added properly'
-    assert '<a href="/proj/OBJ-3">test_title</a>' in page_content, 'Project was not added properly'
+    assert '<a href="/proj/OBJ-2">test_title</a>' in page_content, 'Project was not added properly'
 
 
 @mark.selenium
@@ -199,4 +199,24 @@ def test__edit_object_into_project(firefox_driver):
     select = Select(firefox_driver.find_element(by=By.ID, value='object_type'))
     select.select_by_visible_text('Project')
     firefox_driver.find_element(by=By.ID, value='submit').click()
-    assert '<a href="/proj/OBJ-5">edited_title</a>' in firefox_driver.page_source, 'Object was not edited into project'
+    assert '<a href="/proj/OBJ-4">edited_title</a>' in firefox_driver.page_source, 'Object was not edited into project'
+
+
+@mark.selenium
+def test__delete_object(firefox_driver):
+    """
+    Verifies: REQ-SEL6
+    :param firefox_driver: Firefox webdriver; taken from fixture
+    :return: None
+    """
+    firefox_driver.find_element(by=By.LINK_TEXT, value='Create').click()
+    select = Select(firefox_driver.find_element(by=By.ID, value='object_type'))
+    select.select_by_visible_text('TestCase')
+    firefox_driver.find_element(By.NAME, 'title').send_keys('object_to_delete')
+    firefox_driver.find_element(By.NAME, 'description').send_keys('test_object_to_delete')
+    firefox_driver.find_element(by=By.ID, value='submit').click()
+    firefox_driver.find_element(by=By.LINK_TEXT, value='Test cases').click()
+    firefox_driver.find_element(by=By.ID, value='collapsible').click()
+    firefox_driver.find_element(by=By.LINK_TEXT, value='Delete').click()
+    firefox_driver.find_element(by=By.LINK_TEXT, value='Test cases').click()
+    assert 'object_to_delete' not in firefox_driver.page_source, 'Object was not deleted'
