@@ -4,6 +4,7 @@
     <button type="button" id="collapsible" class="collapsible">{{ object.object_id }}: {{ object.title }}</button>
     <div class="content">
         <p>{{ object.description }}</p>
+        <p>Depends on: {{ object.parent }}</p>
         <a href="/edit/{{ object.object_id }}">Edit</a>
         <a class="delete" href="/delete/{{ object.object_id }}">Delete</a>
     </div>

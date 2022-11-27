@@ -58,11 +58,12 @@ def create():
             pass
     return render_template('create.html',
                            current_project=models.get_current_project_id(),
-                           projects=models.get_all_projects())
+                           projects=models.get_all_projects(),
+                           objects=models.mongo.find({}))
 
 
 @views.route('/edit/<string:object_id>', methods=['GET', 'POST'])
-def view(object_id):
+def edit(object_id):
     """
     view endpoint
     :param object_id: object id in format OBJ-{object_number}
@@ -76,7 +77,8 @@ def view(object_id):
         return render_template('edit.html',
                                object=found_object[0],
                                current_project=models.get_current_project_id(),
-                               projects=models.get_all_projects())
+                               projects=models.get_all_projects(),
+                               objects=models.mongo.find({}))
     return redirect('/')
 
 
