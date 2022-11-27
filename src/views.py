@@ -78,3 +78,9 @@ def view(object_id):
                                current_project=models.get_current_project_id(),
                                projects=models.get_all_projects())
     return redirect('/')
+
+
+@views.route('/delete/<string:object_id>', methods=['GET', 'POST'])
+def delete(object_id):
+    models.delete(object_id)
+    return redirect('/')
