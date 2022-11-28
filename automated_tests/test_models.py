@@ -1,4 +1,3 @@
-import pytest
 from pytest import mark, raises
 from src.models import Models, ProjectExistsError
 

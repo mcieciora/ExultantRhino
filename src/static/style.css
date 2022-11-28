@@ -4,7 +4,11 @@ body {
 }
 
 a {
-    padding-left: 10px;
+    padding-right: 10px;
+    color: blue;
+}
+
+a.edit {
     color: green;
 }
 
@@ -151,4 +155,34 @@ input[type=submit]:hover {
     position: fixed;
     left: 25%;
     width: 50%;
+}
+
+.autocomplete {
+  position: relative;
+}
+
+.autocomplete-items {
+  position: relative;
+  border: 1px solid #d4d4d4;
+  border-bottom: none;
+  border-top: none;
+  z-index: 99;
+  top: 100%;
+}
+
+.autocomplete-items div {
+  padding: 10px;
+  cursor: pointer;
+  background-color: #fff;
+  border-bottom: 1px solid #d4d4d4;
+}
+
+.autocomplete-items div:hover {
+  background-color: #e9e9e9;
+}
+
+.autocomplete-active {
+  background-color: DodgerBlue !important;
+  color: #ffffff;
+>>>>>>> Stashed changes
 }

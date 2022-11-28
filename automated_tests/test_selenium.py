@@ -1,4 +1,5 @@
 from pytest import mark
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 
@@ -67,11 +68,15 @@ def test__create_bug(firefox_driver):
     select.select_by_visible_text('Bug')
     firefox_driver.find_element(By.NAME, 'title').send_keys('test_title')
     firefox_driver.find_element(By.NAME, 'description').send_keys('test_description')
+    autocomplete_object = firefox_driver.find_element(By.NAME, 'parent')
+    autocomplete_object.send_keys('oBj-')
+    autocomplete_object.send_keys(Keys.ARROW_DOWN)
+    autocomplete_object.send_keys(Keys.RETURN)
     firefox_driver.find_element(by=By.ID, value='submit').click()
     firefox_driver.find_element(by=By.LINK_TEXT, value='Bugs').click()
     firefox_driver.find_element(by=By.ID, value='collapsible').click()
     firefox_driver.find_element(by=By.LINK_TEXT, value='Edit').click()
-    assert firefox_driver.title == 'Excultant Rhino', 'Page was not loaded properly'
+    assert firefox_driver.title == 'Exultant Rhino', 'Page was not loaded properly'
 
 
 @mark.selenium
@@ -81,7 +86,7 @@ def test__bug_page_content(firefox_driver):
     :param firefox_driver: Firefox webdriver; taken from fixture
     :return: None
     """
-    expected_content = ['test_title', 'testcase', 'test_description', 'Template']
+    expected_content = ['test_title', 'testcase', 'test_description', 'Template', 'OBJ-0: Template']
     firefox_driver.find_element(by=By.LINK_TEXT, value='Bugs').click()
     firefox_driver.find_element(by=By.ID, value='collapsible').click()
     firefox_driver.find_element(by=By.LINK_TEXT, value='Edit').click()
@@ -105,7 +110,7 @@ def test__create_test_case(firefox_driver):
     firefox_driver.find_element(by=By.LINK_TEXT, value='Test cases').click()
     firefox_driver.find_element(by=By.ID, value='collapsible').click()
     firefox_driver.find_element(by=By.LINK_TEXT, value='Edit').click()
-    assert firefox_driver.title == 'Excultant Rhino', 'Page was not loaded properly'
+    assert firefox_driver.title == 'Exultant Rhino', 'Page was not loaded properly'
 
 
 @mark.selenium
@@ -139,7 +144,7 @@ def test__create_requirement(firefox_driver):
     firefox_driver.find_element(by=By.LINK_TEXT, value='Requirements').click()
     firefox_driver.find_element(by=By.ID, value='collapsible').click()
     firefox_driver.find_element(by=By.LINK_TEXT, value='Edit').click()
-    assert firefox_driver.title == 'Excultant Rhino', 'Page was not loaded properly'
+    assert firefox_driver.title == 'Exultant Rhino', 'Page was not loaded properly'
 
 
 @mark.selenium
@@ -165,7 +170,8 @@ def test__edit_object_into_different_object(firefox_driver):
     :return: None
     """
     expected_data = ['<option value="bug" selected="selected">Bug</option>', '>edited_description</textarea>',
-                     'value="edited_title">', '<option value="test_title" selected="selected">test_title</option>']
+                     'value="edited_title">', '<option value="test_title" selected="selected">test_title</option>',
+                     '<input type="text" id="parent" name="parent" value="OBJ-1: new_proj">']
     firefox_driver.find_element(by=By.LINK_TEXT, value='Test cases').click()
     firefox_driver.find_element(by=By.ID, value='collapsible').click()
     firefox_driver.find_element(by=By.LINK_TEXT, value='Edit').click()
@@ -177,6 +183,11 @@ def test__edit_object_into_different_object(firefox_driver):
     firefox_driver.find_element(by=By.ID, value='title').send_keys('edited_title')
     firefox_driver.find_element(by=By.ID, value='description').clear()
     firefox_driver.find_element(by=By.ID, value='description').send_keys('edited_description')
+    autocomplete_object = firefox_driver.find_element(By.NAME, 'parent')
+    autocomplete_object.send_keys('oBj-')
+    autocomplete_object.send_keys(Keys.ARROW_DOWN)
+    autocomplete_object.send_keys(Keys.ARROW_DOWN)
+    autocomplete_object.send_keys(Keys.RETURN)
     firefox_driver.find_element(by=By.ID, value='submit').click()
     firefox_driver.get('http://localhost:8000/proj/OBJ-3')
     firefox_driver.find_element(by=By.LINK_TEXT, value='Bugs').click()
@@ -220,3 +231,39 @@ def test__delete_object(firefox_driver):
     firefox_driver.find_element(by=By.LINK_TEXT, value='Delete').click()
     firefox_driver.find_element(by=By.LINK_TEXT, value='Test cases').click()
     assert 'object_to_delete' not in firefox_driver.page_source, 'Object was not deleted'
+
+
+@mark.selenium
+def test__check_dependencies(firefox_driver):
+    """
+    Verifies: REQ-SEL7
+    :param firefox_driver: Firefox webdriver; taken from fixture
+    :return: None
+    """
+    expected_data = ['<a href="/edit/OBJ-7" target="_blank" rel="noopener noreferrer">test_case_title</a>',
+                     '<p>Depends on: <a href="/edit/OBJ-0" target="_blank" rel="noopener noreferrer">OBJ-0: '
+                     'Template</a></p>', '<a class="edit" href="/edit/OBJ-6">Edit</a>',
+                     '<a class="delete" href="/delete/OBJ-6">Delete</a>']
+    firefox_driver.find_element(by=By.LINK_TEXT, value='Create').click()
+    select = Select(firefox_driver.find_element(by=By.ID, value='object_type'))
+    select.select_by_visible_text('Requirement')
+    firefox_driver.find_element(By.NAME, 'title').send_keys('test_req_title')
+    firefox_driver.find_element(By.NAME, 'description').send_keys('test_req_description')
+    autocomplete_object = firefox_driver.find_element(By.NAME, 'parent')
+    autocomplete_object.send_keys('oBj-')
+    autocomplete_object.send_keys(Keys.ARROW_DOWN)
+    autocomplete_object.send_keys(Keys.RETURN)
+    firefox_driver.find_element(by=By.ID, value='submit').click()
+    firefox_driver.find_element(by=By.LINK_TEXT, value='Create').click()
+    select = Select(firefox_driver.find_element(by=By.ID, value='object_type'))
+    select.select_by_visible_text('TestCase')
+    firefox_driver.find_element(By.NAME, 'title').send_keys('test_case_title')
+    firefox_driver.find_element(By.NAME, 'description').send_keys('test_case_description')
+    autocomplete_object = firefox_driver.find_element(By.NAME, 'parent')
+    autocomplete_object.send_keys('test_req_title')
+    autocomplete_object.send_keys(Keys.ARROW_DOWN)
+    autocomplete_object.send_keys(Keys.RETURN)
+    firefox_driver.find_element(by=By.ID, value='submit').click()
+    firefox_driver.find_element(by=By.LINK_TEXT, value='Requirements').click()
+    for data in expected_data:
+        assert data in firefox_driver.page_source, 'Object has incorrect dependencies.'

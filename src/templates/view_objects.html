@@ -4,7 +4,13 @@
     <button type="button" id="collapsible" class="collapsible">{{ object.object_id }}: {{ object.title }}</button>
     <div class="content">
         <p>{{ object.description }}</p>
-        <a href="/edit/{{ object.object_id }}">Edit</a>
+        <p>Depends on: <a href="/edit/{{ object.parent.split(':')[0] }}" target="_blank" rel="noopener noreferrer">{{ object.parent }}</a></p>
+        <p>Dependencies:
+            {% for dependency in dependencies[object.object_id] %}
+                <a href="/edit/{{ dependency.object_id }}" target="_blank" rel="noopener noreferrer">{{ dependency.title }}</a>
+            {% endfor %}
+        </p>
+        <a class="edit" href="/edit/{{ object.object_id }}">Edit</a>
         <a class="delete" href="/delete/{{ object.object_id }}">Delete</a>
     </div>
 {% endfor %}

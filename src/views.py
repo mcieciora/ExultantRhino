@@ -31,16 +31,21 @@ def proj(project_id):
 @views.route('/view_objects/<string:object_type>', methods=['GET', 'POST'])
 def view_objects(object_type):
     """
-    Requirements endpoint
+    View objects endpoint
     :return: view_objects template
     """
     all_objects = list(models.mongo.find(({"$and": [{'object_id': {'$exists': 'true'}},
                                                     {'object_type': object_type},
                                                     {'parent_project': models.get_current_project_id()['title']}]})))
+    dependencies = {}
+    for obj in all_objects:
+        _id = obj['object_id']
+        dependencies[_id] = list(models.mongo.find({'parent': {'$regex': _id}}))
     return render_template('view_objects.html',
                            current_project=models.get_current_project_id(),
                            projects=models.get_all_projects(),
-                           all_objects=all_objects)
+                           all_objects=all_objects,
+                           dependencies=dependencies)
 
 
 @views.route('/create', methods=['GET', 'POST'])
@@ -58,11 +63,12 @@ def create():
             pass
     return render_template('create.html',
                            current_project=models.get_current_project_id(),
-                           projects=models.get_all_projects())
+                           projects=models.get_all_projects(),
+                           objects=models.mongo.find({}))
 
 
 @views.route('/edit/<string:object_id>', methods=['GET', 'POST'])
-def view(object_id):
+def edit(object_id):
     """
     view endpoint
     :param object_id: object id in format OBJ-{object_number}
@@ -76,11 +82,17 @@ def view(object_id):
         return render_template('edit.html',
                                object=found_object[0],
                                current_project=models.get_current_project_id(),
-                               projects=models.get_all_projects())
+                               projects=models.get_all_projects(),
+                               objects=models.mongo.find({}))
     return redirect('/')
 
 
 @views.route('/delete/<string:object_id>', methods=['GET', 'POST'])
 def delete(object_id):
+    """
+    delete endpoint
+    :param object_id: object id in format OBJ-{object_number}
+    :return: home redirection
+    """
     models.delete(object_id)
     return redirect('/')
