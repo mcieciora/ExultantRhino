@@ -22,11 +22,10 @@ def firefox_driver():
     Test fixture yielding Firefox webdriver for app frontend tests
     :return: Firefox webdriver from selenium library
     """
-    gecko_proc = Popen(["tools/geckodriver"], stdout=PIPE, shell=True)
-    options = Options()
-    options.headless = True
-    test_driver = Firefox(options=options)
-    test_driver.get('http://localhost:8000')
-    yield test_driver
-    test_driver.close()
-    gecko_proc.kill()
+    with Popen(["tools/geckodriver"], stdout=PIPE, shell=True):
+        options = Options()
+        options.headless = True
+        test_driver = Firefox(options=options)
+        test_driver.get('http://localhost:8000')
+        yield test_driver
+        test_driver.close()
