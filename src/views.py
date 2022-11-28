@@ -89,5 +89,10 @@ def edit(object_id):
 
 @views.route('/delete/<string:object_id>', methods=['GET', 'POST'])
 def delete(object_id):
+    """
+    delete endpoint
+    :param object_id: object id in format OBJ-{object_number}
+    :return: home redirection
+    """
     models.delete(object_id)
     return redirect('/')

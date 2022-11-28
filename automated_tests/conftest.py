@@ -1,5 +1,5 @@
-from pytest import fixture
 from subprocess import Popen, PIPE
+from pytest import fixture
 from selenium.webdriver import Firefox
 from selenium.webdriver.firefox.options import Options
 from src.pymongo_db import MongoDb
@@ -17,21 +17,16 @@ def test_db():
 
 
 @fixture(scope='function')
-def firefox_driver(gecko_driver):
+def firefox_driver():
     """
     Test fixture yielding Firefox webdriver for app frontend tests
     :return: Firefox webdriver from selenium library
     """
+    gecko_proc = Popen(["tools/geckodriver"], stdout=PIPE, shell=True)
     options = Options()
     options.headless = True
     test_driver = Firefox(options=options)
     test_driver.get('http://localhost:8000')
     yield test_driver
     test_driver.close()
-
-
-@fixture(scope='session')
-def gecko_driver():
-    gecko_proc = Popen(["tools/geckodriver"], stdout=PIPE, shell=True)
-    yield
     gecko_proc.kill()
