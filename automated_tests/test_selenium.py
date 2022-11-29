@@ -167,7 +167,7 @@ def test__edit_object_into_different_object(firefox_driver):
     expected_data = ['<option value="bug" selected="selected">Bug</option>', '>edited_description</textarea>',
                      'value="edited_title" required="">', '<option value="test_title" selected="selected">test_title'
                                                           '</option>',
-                     '<input type="text" id="parent" name="parent" value="OBJ-1: new_proj" required="">']
+                     '<input type="text" id="parent" name="parent" value="OBJ-1: new_proj">']
     firefox_driver.find_element(by=By.LINK_TEXT, value='Test cases').click()
     firefox_driver.find_element(by=By.ID, value='collapsible').click()
     firefox_driver.find_element(by=By.LINK_TEXT, value='Edit').click()
