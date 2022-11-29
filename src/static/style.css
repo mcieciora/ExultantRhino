@@ -31,7 +31,7 @@ a.delete {
 }
 
 .navbar a:hover, .dropdown:hover {
-  background-color: #cc0000;
+  background-color: #cf4a4a;
 }
 
 .create_button a {
@@ -41,11 +41,11 @@ a.delete {
   text-align: center;
   padding: 14px 16px;
   text-decoration: none;
-  background-color: #005ce6;
+  background-color: #0066ff;
 }
 
 .create_button a:hover {
-  background-color: #0066ff;
+  background-color: #1a75ff;
 }
 
 .dropdown {
@@ -62,7 +62,7 @@ a.delete {
   width: auto;
   background-color: inherit;
   font-family: inherit;
-  background-color: #e60000;
+  background-color: #ca3535;
 }
 
 .dropdown-content {
@@ -184,5 +184,53 @@ input[type=submit]:hover {
 .autocomplete-active {
   background-color: DodgerBlue !important;
   color: #ffffff;
->>>>>>> Stashed changes
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 250%;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+.failure {
+  padding: 20px;
+  background-color: #ca3535;
+  color: white;
+}
+
+.success {
+   padding: 20px;
+   background-color: #4CAF50;
+   color: white;
+}
+
+.closebtn {
+  margin-left: 15px;
+  color: white;
+  font-weight: bold;
+  float: right;
+  font-size: 22px;
+  line-height: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.closebtn:hover {
+  color: black;
 }

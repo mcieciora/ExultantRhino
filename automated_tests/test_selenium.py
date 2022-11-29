@@ -31,7 +31,8 @@ def test__check_create_page_content(firefox_driver):
     """
     firefox_driver.find_element(by=By.LINK_TEXT, value='Create').click()
     expected_content = ['<textarea id="description" name="description" placeholder="Insert description.."></textarea>',
-                        '<input type="text" id="title" name="title" placeholder="Insert title..">',
+                        '<input type="text" id="title" name="title" placeholder="Insert title.." required="">',
+                        '<input type="text" id="parent" name="parent" placeholder="Search objects..">',
                         '<option value="bug">Bug</option>', '<option value="testcase">TestCase</option>',
                         '<option value="requirement">Requirement</option>', '<option value="project">Project</option>',
                         '<input id="submit" type="submit" value="Submit">']
@@ -43,17 +44,17 @@ def test__check_create_page_content(firefox_driver):
 def test__create_project(firefox_driver):
     """
     Verifies: REQ-SEL2
-    Verifies: REQ-SEL3
     :param firefox_driver: Firefox webdriver; taken from fixture
     :return: None
     """
+    expected_content = ['<a href="/proj/OBJ-2">test_title</a>',
+                        '<strong>Info</strong> test_title was successfully created.']
     firefox_driver.find_element(by=By.LINK_TEXT, value='Create').click()
     firefox_driver.find_element(By.NAME, 'title').send_keys('test_title')
     firefox_driver.find_element(By.NAME, 'description').send_keys('test_description')
     firefox_driver.find_element(by=By.ID, value='submit').click()
-    page_content = firefox_driver.page_source
-    assert 'test_title' in firefox_driver.page_source, 'Project was not added properly'
-    assert '<a href="/proj/OBJ-2">test_title</a>' in page_content, 'Project was not added properly'
+    for content in expected_content:
+        assert content in firefox_driver.page_source, 'Project was not added properly'
 
 
 @mark.selenium
@@ -73,10 +74,8 @@ def test__create_bug(firefox_driver):
     autocomplete_object.send_keys(Keys.ARROW_DOWN)
     autocomplete_object.send_keys(Keys.RETURN)
     firefox_driver.find_element(by=By.ID, value='submit').click()
-    firefox_driver.find_element(by=By.LINK_TEXT, value='Bugs').click()
-    firefox_driver.find_element(by=By.ID, value='collapsible').click()
-    firefox_driver.find_element(by=By.LINK_TEXT, value='Edit').click()
-    assert firefox_driver.title == 'Exultant Rhino', 'Page was not loaded properly'
+    assert '<strong>Info</strong> test_title was successfully created.' in firefox_driver.page_source, \
+        'Bug was not created properly.'
 
 
 @mark.selenium
@@ -107,10 +106,8 @@ def test__create_test_case(firefox_driver):
     firefox_driver.find_element(By.NAME, 'title').send_keys('test_title')
     firefox_driver.find_element(By.NAME, 'description').send_keys('test_description')
     firefox_driver.find_element(by=By.ID, value='submit').click()
-    firefox_driver.find_element(by=By.LINK_TEXT, value='Test cases').click()
-    firefox_driver.find_element(by=By.ID, value='collapsible').click()
-    firefox_driver.find_element(by=By.LINK_TEXT, value='Edit').click()
-    assert firefox_driver.title == 'Exultant Rhino', 'Page was not loaded properly'
+    assert '<strong>Info</strong> test_title was successfully created.' in firefox_driver.page_source, \
+        'Test case was not created properly.'
 
 
 @mark.selenium
@@ -141,10 +138,8 @@ def test__create_requirement(firefox_driver):
     firefox_driver.find_element(By.NAME, 'title').send_keys('test_title')
     firefox_driver.find_element(By.NAME, 'description').send_keys('test_description')
     firefox_driver.find_element(by=By.ID, value='submit').click()
-    firefox_driver.find_element(by=By.LINK_TEXT, value='Requirements').click()
-    firefox_driver.find_element(by=By.ID, value='collapsible').click()
-    firefox_driver.find_element(by=By.LINK_TEXT, value='Edit').click()
-    assert firefox_driver.title == 'Exultant Rhino', 'Page was not loaded properly'
+    assert '<strong>Info</strong> test_title was successfully created.' in firefox_driver.page_source, \
+        'Requirement was not created properly.'
 
 
 @mark.selenium
@@ -170,7 +165,8 @@ def test__edit_object_into_different_object(firefox_driver):
     :return: None
     """
     expected_data = ['<option value="bug" selected="selected">Bug</option>', '>edited_description</textarea>',
-                     'value="edited_title">', '<option value="test_title" selected="selected">test_title</option>',
+                     'value="edited_title" required="">', '<option value="test_title" selected="selected">test_title'
+                                                          '</option>',
                      '<input type="text" id="parent" name="parent" value="OBJ-1: new_proj">']
     firefox_driver.find_element(by=By.LINK_TEXT, value='Test cases').click()
     firefox_driver.find_element(by=By.ID, value='collapsible').click()
@@ -194,7 +190,7 @@ def test__edit_object_into_different_object(firefox_driver):
     firefox_driver.find_element(by=By.ID, value='collapsible').click()
     firefox_driver.find_element(by=By.LINK_TEXT, value='Edit').click()
     for data in expected_data:
-        assert data in firefox_driver.page_source, 'Object was not edited properly.'
+        assert data in firefox_driver.page_source, f'Object {data} was not edited properly.'
 
 
 @mark.selenium
@@ -204,18 +200,22 @@ def test__edit_object_into_project(firefox_driver):
     :param firefox_driver: Firefox webdriver; taken from fixture
     :return: None
     """
+    expected_data = ['<strong>Info</strong> edited_title was successfully edited.',
+                     '<a href="/proj/OBJ-4">edited_title</a>']
     firefox_driver.find_element(by=By.LINK_TEXT, value='Bugs').click()
     firefox_driver.find_element(by=By.ID, value='collapsible').click()
     firefox_driver.find_element(by=By.LINK_TEXT, value='Edit').click()
     select = Select(firefox_driver.find_element(by=By.ID, value='object_type'))
     select.select_by_visible_text('Project')
     firefox_driver.find_element(by=By.ID, value='submit').click()
-    assert '<a href="/proj/OBJ-4">edited_title</a>' in firefox_driver.page_source, 'Object was not edited into project'
+    for content in expected_data:
+        assert content in firefox_driver.page_source, 'Object was not edited into project'
 
 
 @mark.selenium
 def test__delete_object(firefox_driver):
     """
+    Verifies: REQ-SEL3
     Verifies: REQ-SEL6
     :param firefox_driver: Firefox webdriver; taken from fixture
     :return: None
@@ -229,6 +229,8 @@ def test__delete_object(firefox_driver):
     firefox_driver.find_element(by=By.LINK_TEXT, value='Test cases').click()
     firefox_driver.find_element(by=By.ID, value='collapsible').click()
     firefox_driver.find_element(by=By.LINK_TEXT, value='Delete').click()
+    assert '<strong>Info</strong> OBJ-6 was successfully deleted.' in firefox_driver.page_source, \
+        'Bug was not added properly'
     firefox_driver.find_element(by=By.LINK_TEXT, value='Test cases').click()
     assert 'object_to_delete' not in firefox_driver.page_source, 'Object was not deleted'
 

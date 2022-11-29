@@ -25,13 +25,17 @@
     </select>
 
     <label for="title">Title</label>
-    <input type="text" id="title" name="title" value="{{ object.title }}">
+    <input type="text" id="title" name="title" value="{{ object.title }}" required>
 
     <label for="description">Description</label>
     <textarea id="description" name="description">{{ object.description }}</textarea>
 
     <div class="autocomplete">
-      <label for="parent">Parent object</label>
+      <label for="parent">
+        <div class="tooltip">Parent object ?
+          <span class="tooltiptext">If you want to leave this field blank declare 'OBJ-0: Template' instead.</span>
+        </div>
+      </label>
       <input type="text" id="parent" name="parent" value="{{ object.parent }}">
     </div>
 

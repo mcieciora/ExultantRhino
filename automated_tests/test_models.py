@@ -1,5 +1,5 @@
-from pytest import mark, raises
-from src.models import Models, ProjectExistsError
+from pytest import mark
+from src.models import Models
 
 
 @mark.unittests
@@ -48,29 +48,15 @@ def test__get_next_id():
 @mark.unittests
 def test__create_new_project():
     """
-    Verifies: REQ-MOD2
     Verifies: REQ-MOD3
     :return: None
     """
     test_models = Models()
-    test_project = {'title': 'new_proj', 'description': 'this is new proj', 'object_type': 'project'}
-    test_models.create(test_project)
+    expected_data = {'title': 'new_proj', 'description': 'this is new proj', 'object_type': 'project'}
+    test_models.create({'title': 'new_proj', 'description': 'this is new proj', 'object_type': 'project'})
     database_object = list(test_models.mongo.find({'object_type': 'project'}))[1]
-    for key, value in test_project.items():
+    for key, value in expected_data.items():
         assert value == database_object[key], 'Object database value is incorrect'
-    assert database_object['object_id'].startswith('OBJ-'), 'Object has got wrong id prefix'
-
-
-@mark.unittests
-def test__double_project_creation():
-    """
-    Verifies: REQ-MOD3
-    :return: None
-    """
-    test_models = Models()
-    test_project = {'title': 'new_proj', 'description': 'this is new proj', 'object_type': 'project'}
-    with raises(ProjectExistsError):
-        test_models.create(test_project)
 
 
 @mark.unittests
@@ -113,11 +99,12 @@ def test__create_new_object():
     :return: None
     """
     test_models = Models()
-    test_bug = {'title': 'new_bug', 'description': 'this is new bug', 'object_type': 'bug', 'parent': 'OBJ-10',
-                'parent_project': 'OBJ-0'}
-    test_models.create(test_bug)
+    expected_data = {'title': 'new_bug', 'description': 'this is new bug', 'object_type': 'bug', 'parent': 'OBJ-10',
+                     'parent_project': 'OBJ-0'}
+    test_models.create({'title': 'new_bug', 'description': 'this is new bug', 'object_type': 'bug', 'parent': 'OBJ-10',
+                        'parent_project': 'OBJ-0'})
     database_object = list(test_models.mongo.find({'object_type': 'bug'}))[0]
-    for key, value in test_bug.items():
+    for key, value in expected_data.items():
         assert value == database_object[key], 'Object database value is incorrect'
     assert database_object['object_id'].startswith('OBJ-'), 'Object has got wrong id prefix'
 
