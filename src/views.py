@@ -62,6 +62,7 @@ def create():
             post_form['parent_project'] = models.get_current_project_id()['title']
 
         models.create(post_form)
+        flash(f"{post_form['title']} was successfully created.", category='success')
     return render_template('create.html',
                            current_project=models.get_current_project_id(),
                            projects=models.get_all_projects(),
@@ -79,6 +80,7 @@ def edit(object_id):
     if request.method == 'POST':
         post_form = dict(request.form)
         models.edit(object_id, post_form)
+        flash(f"{post_form['title']} was successfully edited.", category='success')
     elif found_object:
         return render_template('edit.html',
                                object=found_object[0],
@@ -96,4 +98,5 @@ def delete(object_id):
     :return: home redirection
     """
     models.delete(object_id)
+    flash(f"{object_id} was successfully deleted.", category='success')
     return redirect('/')
