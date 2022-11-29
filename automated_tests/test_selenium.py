@@ -37,7 +37,7 @@ def test__check_create_page_content(firefox_driver):
                         '<option value="requirement">Requirement</option>', '<option value="project">Project</option>',
                         '<input id="submit" type="submit" value="Submit">']
     for content in expected_content:
-        assert content in firefox_driver.page_source, f'Expected elements are not in page content'
+        assert content in firefox_driver.page_source, 'Expected elements are not in page content'
 
 
 @mark.selenium
@@ -165,7 +165,8 @@ def test__edit_object_into_different_object(firefox_driver):
     :return: None
     """
     expected_data = ['<option value="bug" selected="selected">Bug</option>', '>edited_description</textarea>',
-                     'value="edited_title" required="">', '<option value="test_title" selected="selected">test_title</option>',
+                     'value="edited_title" required="">', '<option value="test_title" selected="selected">test_title'
+                                                          '</option>',
                      '<input type="text" id="parent" name="parent" value="OBJ-1: new_proj" required="">']
     firefox_driver.find_element(by=By.LINK_TEXT, value='Test cases').click()
     firefox_driver.find_element(by=By.ID, value='collapsible').click()
@@ -228,7 +229,8 @@ def test__delete_object(firefox_driver):
     firefox_driver.find_element(by=By.LINK_TEXT, value='Test cases').click()
     firefox_driver.find_element(by=By.ID, value='collapsible').click()
     firefox_driver.find_element(by=By.LINK_TEXT, value='Delete').click()
-    assert '<strong>Info</strong> OBJ-6 was successfully deleted.' in firefox_driver.page_source, 'Bug was not added properly'
+    assert '<strong>Info</strong> OBJ-6 was successfully deleted.' in firefox_driver.page_source, \
+        'Bug was not added properly'
     firefox_driver.find_element(by=By.LINK_TEXT, value='Test cases').click()
     assert 'object_to_delete' not in firefox_driver.page_source, 'Object was not deleted'
 

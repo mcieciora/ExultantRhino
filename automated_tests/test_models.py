@@ -1,4 +1,4 @@
-from pytest import mark, raises
+from pytest import mark
 from src.models import Models
 
 
