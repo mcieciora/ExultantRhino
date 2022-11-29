@@ -44,7 +44,6 @@ def test__check_create_page_content(firefox_driver):
 def test__create_project(firefox_driver):
     """
     Verifies: REQ-SEL2
-    Verifies: REQ-SEL3
     :param firefox_driver: Firefox webdriver; taken from fixture
     :return: None
     """
