@@ -12,9 +12,19 @@ def index():
     Default endpoint
     :return: home template
     """
+    active_bugs = list(models.mongo.find({'object_type': 'bug'}))
+    number_of_test_cases = len(list(models.mongo.find({'object_type': 'testcase'})))
+    not_covered_requirements = [key for key, value in models.get_dependencies('requirement').items() if len(value) == 0]
+    number_of_requirements = len(list(models.mongo.find({'object_type': 'requirement'})))
+    total_release_coverage = None
     return render_template('home.html',
                            current_project=models.get_current_project_id(),
-                           projects=models.get_all_projects())
+                           projects=models.get_all_projects(),
+                           active_bugs=active_bugs,
+                           not_covered_requirements=not_covered_requirements,
+                           total_release_coverage=total_release_coverage,
+                           number_of_test_cases=number_of_test_cases,
+                           number_of_requirements=number_of_requirements)
 
 
 @views.route('/proj/<string:project_id>', methods=['GET', 'POST'])
@@ -34,18 +44,11 @@ def view_objects(object_type):
     View objects endpoint
     :return: view_objects template
     """
-    all_objects = list(models.mongo.find(({"$and": [{'object_id': {'$exists': 'true'}},
-                                                    {'object_type': object_type},
-                                                    {'parent_project': models.get_current_project_id()['title']}]})))
-    dependencies = {}
-    for obj in all_objects:
-        _id = obj['object_id']
-        dependencies[_id] = list(models.mongo.find({'parent': {'$regex': _id}}))
     return render_template('view_objects.html',
                            current_project=models.get_current_project_id(),
                            projects=models.get_all_projects(),
-                           all_objects=all_objects,
-                           dependencies=dependencies)
+                           all_objects=models.get_all_objects_of_type(object_type),
+                           dependencies=models.get_dependencies(object_type))
 
 
 @views.route('/create', methods=['GET', 'POST'])

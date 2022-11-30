@@ -77,3 +77,27 @@ class Models:
         :return: None
         """
         self.mongo.delete({'object_id': object_id})
+
+    def get_all_objects_of_type(self, object_type):
+        """
+        get_dependencies returns list of all object of given type
+        :param object_type: object type in bug, project, requirement, testcase
+        :return: list of objects
+        """
+        all_objects = list(self.mongo.find(({"$and": [{'object_id': {'$exists': 'true'}},
+                                                      {'object_type': object_type},
+                                                      {'parent_project': self.get_current_project_id()['title']}]})))
+        return all_objects
+
+    def get_dependencies(self, object_type):
+        """
+        get_dependencies returns dictionary of object of given type with list of all dependencies of it
+        :param object_type: object type in bug, project, requirement, testcase
+        :return: dict of objects ids and list of dependencies
+        """
+        dependencies = {}
+
+        for obj in self.get_all_objects_of_type(object_type):
+            new_key = f"{obj['object_id']}: {obj['title']}"
+            dependencies[new_key] = list(self.mongo.find({'parent': {'$regex': obj['object_id']}}))
+        return dependencies
