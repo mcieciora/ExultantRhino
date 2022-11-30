@@ -162,8 +162,8 @@ def test__get_dependencies():
         for _ in range(0, value['amount']):
             test_models.create({'title': f'new_{key}', 'description': f'this is {key}', 'object_type': key,
                                 'parent': value['pointer'], 'parent_project': 'Template'})
-    for element in expected_data.keys():
-        test_dict = expected_data[element]
+    for element, value in expected_data.items():
+        test_dict = value
         assert len(test_models.get_dependencies(element)[test_dict['pointer']]) == test_dict['amount'], \
             'Number of dependencies is incorrect'
 
