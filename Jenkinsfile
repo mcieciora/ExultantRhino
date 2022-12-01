@@ -69,19 +69,6 @@ pipeline {
                 }
             }
         }
-        post {
-            always {
-                script {
-                    sh 'docker compose down'
-                    sh 'docker rmi exultant_rhino_app:latest -f'
-                }
-            }
-            failure {
-                script {
-                    sh 'docker logs exultant_rhino_app'
-                }
-            }
-        }
         stage ('Selenium tests') {
             parallel {
                 stage ('Mozilla tests') {
