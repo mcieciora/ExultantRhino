@@ -48,23 +48,11 @@ pipeline {
                 }
             }
         stage ('Regular tests') {
-            parallel {
-                stage ('Unittests') {
-                    steps {
-                        script {
-                            dir('automated_tests/') {
-                                sh 'tox -e unittests'
-                            }
-                        }
-                    }
-                }
-                stage ('Upload tests') {
-                    steps {
-                        script {
-                            dir('automated_tests/') {
-                                sh 'tox -e upload'
-                            }
-                        }
+            steps {
+                script {
+                    dir('automated_tests/') {
+                        sh 'tox -e unittests'
+                        sh 'tox -e upload'
                     }
                 }
             }

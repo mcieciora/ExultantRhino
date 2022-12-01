@@ -168,7 +168,7 @@ def test__get_dependencies():
                test_dict['amount'], 'Number of dependencies is incorrect'
 
 
-@mark.unitests
+@mark.unittests
 def test__get_dependencies_extended_key():
     """
     Verifies: REQ-MOD6
@@ -196,7 +196,7 @@ def test__get_all_objects_of_type():
         assert len(test_models.get_all_objects_of_type(key)) == value, 'Number of objects is incorrect'
 
 
-@mark.unitests
+@mark.unittests
 def test__get_test_case_requirements_dependencies():
     """
     Verifies: REQ-MOD6
