@@ -3,6 +3,12 @@ from requests import post
 from json import dumps
 from src.models import Models
 
+# regular call
+# non existing reqs in database
+# non existing reqs in post request
+# non existing tcs in database
+# non existing tcs in post request
+
 
 def send_request(data):
     url = "http://localhost:8000/upload"
@@ -11,12 +17,11 @@ def send_request(data):
 
 
 @mark.upload
-def test__empty_upload_data(test_upload_db, flask_app):
+def test__empty_upload_data(test_upload_db):
     """
     Verifies: REQ-UP1
     Verifies: REQ-UP2
     :param test_upload_db: session fixture to create test data in database
-    :param flask_app: create subprocess for flask app availability
     :return: None
     """
     test_models = Models()

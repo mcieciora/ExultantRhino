@@ -22,38 +22,48 @@ pipeline {
                 stage ('Code linting') {
                     steps {
                         script {
-                            dir('automated_tests/') {
+                            dir("automated_tests/") {
                                 sh 'tox -e lint src'
                                 sh 'tox -e lint automated_tests'
                             }
                         }
                     }
                 }
-                stage ('Setup docker image') {
+                stage ('Stop and remove docker instances') {
                     steps {
                         script {
-                            dir('automated_tests/') {
+                            dir("automated_tests/") {
                                 sh 'docker compose down'
                             }
                             def all_images = sh(script: 'docker images', returnStdout: true)
                             if (all_images.contains('exultant_rhino_app')) {
                                 sh "docker rmi exultant_rhino_app -f"
                             }
-                            sh "sed -i 's/mongodb/localhost/1' src/pymongo_db.py"
-                            sh "sed -i 's/latest/4.4.6/1' docker-compose.yml"
-                            sh 'docker compose up -d db'
-                            }
                         }
                     }
                 }
             }
-        stage ('Regular tests') {
+        }
+        stage ('Unit and upload tests') {
             steps {
                 script {
-                    dir('automated_tests/') {
-                        sh 'tox -e unittests'
-                        sh 'tox -e upload'
+                    sh "sed -i 's/mongodb/localhost/1' src/pymongo_db.py"
+                    sh "sed -i 's/latest/4.4.6/1' docker-compose.yml"
+                    dir("automated_tests/") {
+                        sh "docker compose up -d db"
+                        sh "tox -e unittests"
+                        sh "docker stop db"
                     }
+                    sh "sed -i 's/localhost/mongodb/1' src/pymongo_db.py"
+                    dir("automated_tests/") {
+                        sh "docker compose up -d"
+                    }
+                    sh "sed -i 's/mongodb/localhost/1' src/pymongo_db.py"
+                    dir("automated_tests/") {
+                        sh "tox -e upload"
+                        sh "docker compose down"
+                    }
+
                 }
             }
         }
@@ -63,7 +73,7 @@ pipeline {
                     steps {
                         script {
                             sh "sed -i 's/localhost/mongodb/1' src/pymongo_db.py"
-                            dir('automated_tests/') {
+                            dir("automated_tests/") {
                                 sh 'docker compose up -d'
                                 sh 'tox -e selenium'
                             }
