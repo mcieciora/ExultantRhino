@@ -10,7 +10,7 @@ services:
     ports:
       - "27017:27017"
   api:
-    container_name: app
+    container_name: exultant_rhino_app
     build: .
     image: exultant_rhino_app
     ports:

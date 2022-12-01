@@ -7,7 +7,7 @@ class Models:
     """
 
     def __init__(self):
-        self.mongo = MongoDb('test_db', 'test_col')
+        self.mongo = MongoDb('exultant_rhino', 'main_collection')
         all_projects = self.get_all_projects()
         if all_projects:
             self.project_pointer = all_projects[0]['object_id']
@@ -80,7 +80,7 @@ class Models:
 
     def get_all_objects_of_type(self, object_type):
         """
-        get_dependencies returns list of all object of given type
+        get_all_objects_of_type returns list of all object of given type
         :param object_type: object type in bug, project, requirement, testcase
         :return: list of objects
         """
@@ -89,15 +89,30 @@ class Models:
                                                       {'parent_project': self.get_current_project_id()['title']}]})))
         return all_objects
 
-    def get_dependencies(self, object_type):
+    def get_dependencies(self, object_type, extended_key=False):
         """
-        get_dependencies returns dictionary of object of given type with list of all dependencies of it
+        get_dependencies returns requirements dict with list of all dependent objects
         :param object_type: object type in bug, project, requirement, testcase
-        :return: dict of objects ids and list of dependencies
+        :param extended_key: if true key is extended with requirement title
+        :return: dict of requirements id and lists of dependent objects
         """
         dependencies = {}
 
         for obj in self.get_all_objects_of_type(object_type):
-            new_key = f"{obj['object_id']}: {obj['title']}"
-            dependencies[new_key] = list(self.mongo.find({'parent': {'$regex': obj['object_id']}}))
+            key = obj['object_id']
+            if extended_key:
+                key = f"{obj['object_id']}: {obj['title']}"
+            dependencies[key] = list(self.mongo.find({'parent': {'$regex': obj['object_id']}}))
+        return dependencies
+
+    def get_test_case_requirements_dependencies(self):
+        """
+        get_test_case_requirements_dependencies returns dict of requirements ids with dict of dependent test cases with
+        not_run value set on default
+        :return: dict of dicts
+        """
+        dependencies = {}
+        for obj in self.get_all_objects_of_type('requirement'):
+            dependencies[obj['object_id']] = {test_case['object_id']: 'not_run' for test_case in
+                                              list(self.mongo.find({'parent': {'$regex': obj['object_id']}}))}
         return dependencies

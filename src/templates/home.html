@@ -28,7 +28,7 @@
           {% if not_covered_requirements|length > 0 %}
               <h4>There are {{ not_covered_requirements|length }} requirements without assigned test cases:</h4>
               {% for req in not_covered_requirements %}
-                 <button type="button" class="collapsible" onclick="window.location.href='/edit/{{ req }}'">{{ req }}</button>
+                 <button type="button" class="collapsible" onclick="window.location.href='/edit/{{ req.split(':')[0] }}'">{{ req }}</button>
               {% endfor %}
           {% else %}
             <h4>All requirements are covered with test cases</h4>

@@ -47,26 +47,38 @@ pipeline {
                     }
                 }
             }
-
-        stage ('Unittests') {
-            steps {
-                script {
-                    dir('automated_tests/') {
-                        sh 'tox -e unittests'
+        stage ('Regular tests') {
+            parallel {
+                stage ('Unittests') {
+                    steps {
+                        script {
+                            dir('automated_tests/') {
+                                sh 'tox -e unittests'
+                            }
+                        }
+                    }
+                }
+                stage ('Upload tests') {
+                    steps {
+                        script {
+                            dir('automated_tests/') {
+                                sh 'tox -e upload'
+                            }
+                        }
                     }
                 }
             }
-            post {
-                always {
-                    script {
-                        sh 'docker compose down'
-                        sh 'docker rmi exultant_rhino_app:latest -f'
-                    }
+        }
+        post {
+            always {
+                script {
+                    sh 'docker compose down'
+                    sh 'docker rmi exultant_rhino_app:latest -f'
                 }
-                failure {
-                    script {
-                        sh 'docker logs exultant_rhino_app'
-                    }
+            }
+            failure {
+                script {
+                    sh 'docker logs exultant_rhino_app'
                 }
             }
         }
