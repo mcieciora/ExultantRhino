@@ -75,7 +75,6 @@ def test__non_existing_req_in_post_request(test_upload_db):
 @mark.upload
 def test__check_number_of_results(test_upload_db):
     """
-    Verifies: REQ-UP1
     Verifies: REQ-UP2
     Verifies: REQ-UP3
     :param test_upload_db: session fixture to create test data in database
