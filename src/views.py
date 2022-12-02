@@ -21,7 +21,9 @@ def index():
     number_of_requirements = len(list(models.mongo.find((
         {'$and': [{'object_type': 'requirement'},
                   {'parent_project': models.get_current_project_id()['title']}]}))))
-    total_release_coverage = None
+    total_release_coverage = list(models.mongo.find(
+        {'$and': [{'object_type': 'release'},
+                  {'parent_project': models.get_current_project_id()['title']}]}))
     return render_template('home.html',
                            current_project=models.get_current_project_id(),
                            projects=models.get_all_projects(),

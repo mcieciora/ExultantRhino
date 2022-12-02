@@ -153,18 +153,18 @@ def test__get_dependencies():
     :return: None
     """
     test_models = Models()
-    test_data = {'requirement': {'amount': 1, 'pointer': 'OBJ-0'},
-                 'testcase': {'amount': 2, 'pointer': 'OBJ-2'},
-                 'bug': {'amount': 1, 'pointer': 'OBJ-3'}}
-    expected_data = {'requirement': {'amount': 2, 'pointer': 'OBJ-2'},
-                     'testcase': {'amount': 1, 'pointer': 'OBJ-3'}}
+    test_data = {'requirement': {'amount': 1, 'pointer': 'OBJ-0: Template'},
+                 'testcase': {'amount': 2, 'pointer': 'OBJ-2: new_requirement'},
+                 'bug': {'amount': 1, 'pointer': 'OBJ-3: new_testcase'}}
+    expected_data = {'requirement': {'amount': 2, 'pointer': 'OBJ-2: new_requirement'},
+                     'testcase': {'amount': 1, 'pointer': 'OBJ-3: new_testcase'}}
     for key, value in test_data.items():
         for _ in range(0, value['amount']):
             test_models.create({'title': f'new_{key}', 'description': f'this is {key}', 'object_type': key,
                                 'parent': value['pointer'], 'parent_project': 'Template'})
     for element, value in expected_data.items():
         test_dict = value
-        assert len(test_models.get_dependencies(element)[test_dict['pointer']]) == \
+        assert len(test_models.get_dependencies(element)[test_dict['pointer'].split(':')[0]]) == \
                test_dict['amount'], 'Number of dependencies is incorrect'
 
 
@@ -204,5 +204,6 @@ def test__get_test_case_requirements_dependencies():
     """
     test_models = Models()
     expected_data = {'OBJ-2': {'OBJ-3': 'not_run', 'OBJ-4': 'not_run'}}
+    a = test_models.get_test_case_requirements_dependencies()
     assert test_models.get_test_case_requirements_dependencies() == expected_data, \
         'Requirements dependency dicts are not the same'

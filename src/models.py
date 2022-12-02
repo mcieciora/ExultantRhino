@@ -84,7 +84,7 @@ class Models:
         :param object_type: object type in bug, project, requirement, testcase
         :return: list of objects
         """
-        all_objects = list(self.mongo.find(({"$and": [{'object_id': {'$exists': 'true'}},
+        all_objects = list(self.mongo.find(({"$and": [
                                                       {'object_type': object_type},
                                                       {'parent_project': self.get_current_project_id()['title']}]})))
         return all_objects
@@ -102,7 +102,7 @@ class Models:
             key = obj['object_id']
             if extended_key:
                 key = f"{obj['object_id']}: {obj['title']}"
-            dependencies[key] = list(self.mongo.find({'parent': {'$regex': obj['object_id']}}))
+            dependencies[key] = list(self.mongo.find({'parent': {'$regex': fr'{obj["object_id"]}:.*'}}))
         return dependencies
 
     def get_test_case_requirements_dependencies(self):
@@ -114,5 +114,5 @@ class Models:
         dependencies = {}
         for obj in self.get_all_objects_of_type('requirement'):
             dependencies[obj['object_id']] = {test_case['object_id']: 'not_run' for test_case in
-                                              list(self.mongo.find({'parent': {'$regex': obj['object_id']}}))}
+                                              list(self.mongo.find({'parent': {'$regex': fr'{obj["object_id"]}:.*'}}))}
         return dependencies

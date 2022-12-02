@@ -19,6 +19,11 @@ body {
     padding: 2.5%;
 }
 
+.central_text {
+    width: 100%;
+    text-align: center;
+}
+
 a {
     padding-right: 10px;
     color: blue;
