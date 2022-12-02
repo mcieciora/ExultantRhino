@@ -55,4 +55,4 @@ def test_upload_db():
     for data in insert_data:
         return_database.insert(data)
     yield return_database
-    return_database.client['exultant_rhino'].drop_collection('main_collection')
+    # return_database.client['exultant_rhino'].drop_collection('main_collection')

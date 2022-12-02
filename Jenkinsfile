@@ -63,7 +63,6 @@ pipeline {
                         sh "tox -e upload"
                         sh "docker compose down"
                     }
-
                 }
             }
         }

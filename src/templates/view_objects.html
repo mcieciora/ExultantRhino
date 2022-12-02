@@ -4,13 +4,21 @@
     <button type="button" id="collapsible" class="collapsible">{{ object.object_id }}: {{ object.title }}</button>
     <div class="content">
         <p>{{ object.description }}</p>
-        <p>Depends on: <a href="/edit/{{ object.parent.split(':')[0] }}" target="_blank" rel="noopener noreferrer">{{ object.parent }}</a></p>
-        <p>Dependencies:
-            {% for dependency in dependencies[object.object_id] %}
-                <a href="/edit/{{ dependency['object_id'] }}" target="_blank" rel="noopener noreferrer">{{ dependency.title }}</a>
+        {% if object.object_type != 'release' %}
+            <p>Depends on: <a href="/edit/{{ object.parent.split(':')[0] }}" target="_blank" rel="noopener noreferrer">{{ object.parent }}</a></p>
+            <p>Dependencies:
+                {% for dependency in dependencies[object.object_id] %}
+                    <a href="/edit/{{ dependency['object_id'] }}" target="_blank" rel="noopener noreferrer">{{ dependency.title }}</a>
+                {% endfor %}
+            </p>
+            <a class="edit" href="/edit/{{ object.object_id }}">Edit</a>
+        {% else %}
+            {% for req, results_dict in object.requirements.items() %}
+                    {% for test_case, result in results_dict.items() %}
+                        <p>{{ req }} {{ test_case }} {{ result }}</p>
+                    {% endfor %}
             {% endfor %}
-        </p>
-        <a class="edit" href="/edit/{{ object.object_id }}">Edit</a>
+        {% endif %}
         <a class="delete" href="/delete/{{ object.object_id }}">Delete</a>
     </div>
 {% endfor %}

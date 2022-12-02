@@ -50,7 +50,8 @@ def view_objects(object_type):
     :return: view_objects template
     """
     if object_type == 'releases':
-        all_releases = list(models.mongo.find({'object_type': 'release'}))
+        all_releases = list(models.mongo.find({'$and': [{'object_type': 'release'},
+                                                        {'parent_project': models.get_current_project_id()['title']}]}))
         return render_template('view_objects.html',
                                current_project=models.get_current_project_id(),
                                projects=models.get_all_projects(),
@@ -125,6 +126,7 @@ def upload():
     """
     all_requirements = models.get_test_case_requirements_dependencies()
     content = request.json
+    results = {'fail': 0, 'pass': 0, 'not_run': 0}
     try:
         release_name = content['release_name']
         project_name = content['project_name']
@@ -135,8 +137,9 @@ def upload():
         try:
             for test_case, result in test_cases.items():
                 all_requirements[req_id][test_case] = result
+                results[result] += 1
         except KeyError:
             continue
     models.mongo.insert({'object_type': 'release', 'title': release_name, 'parent_project': project_name,
-                         'object_id': models.get_next_id(), 'results': all_requirements})
+                         'object_id': models.get_next_id(), 'requirements': all_requirements, 'results': results})
     return 'success', 200
