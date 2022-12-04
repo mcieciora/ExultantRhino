@@ -1,3 +1,47 @@
 {% extends "base.html" %} {% block content%}
+  <div class="column">
+    <div class="inner_column">
+    	<h1>{{ active_bugs|length }}</h1>
+        <h2>Bugs</h2>
+    </div>
+  	<div class="inner_column">
+    	<h1>{{ number_of_test_cases }}</h1>
+        <h2>Test cases</h2>
+    </div>
+    <div class="inner_column">
+    	<h1>{{ number_of_requirements }}</h1>
+        <h2>Requirements</h2>
+    </div>
+    <br />
 
+    <div class="inner_text">
+          {% if active_bugs|length > 0 %}
+              <h4>There are {{ active_bugs|length }} active bugs:</h4>
+              {% for bug in active_bugs %}
+                 <button type="button" class="collapsible" onclick="window.location.href='/edit/{{ bug.object_id }}'">{{ bug.object_id }}: {{ bug.title }}</button>
+              {% endfor %}
+          {% else %}
+            <h4>There are no active bugs.</h4>
+          {% endif %}
+
+
+          {% if not_covered_requirements|length > 0 %}
+              <h4>There are {{ not_covered_requirements|length }} requirements without assigned test cases:</h4>
+              {% for req in not_covered_requirements %}
+                 <button type="button" class="collapsible" onclick="window.location.href='/edit/{{ req.split(':')[0] }}'">{{ req }}</button>
+              {% endfor %}
+          {% else %}
+            <h4>All requirements are covered with test cases</h4>
+          {% endif %}
+      </div>
+  </div>
+
+    <div class="column">
+        <div class="central_text">
+         {% if total_release_coverage|length > 0 %}
+            <h2>{{ total_release_coverage[-1]['title']}}</h2>
+            <p>{{ total_release_coverage[-1]['results'] }}</p>
+         {% endif %}
+            </div>
+    </div>
 {% endblock %}

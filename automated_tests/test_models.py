@@ -144,3 +144,66 @@ def test__delete_object():
     test_models = Models()
     test_models.delete('OBJ-2')
     assert not list(test_models.mongo.find({'object_id': 'OBJ-2'})), 'Object was not deleted.'
+
+
+@mark.unittests
+def test__get_dependencies():
+    """
+    Verifies: REQ-MOD6
+    :return: None
+    """
+    test_models = Models()
+    test_data = {'requirement': {'amount': 1, 'pointer': 'OBJ-0: Template'},
+                 'testcase': {'amount': 2, 'pointer': 'OBJ-2: new_requirement'},
+                 'bug': {'amount': 1, 'pointer': 'OBJ-3: new_testcase'}}
+    expected_data = {'requirement': {'amount': 2, 'pointer': 'OBJ-2: new_requirement'},
+                     'testcase': {'amount': 1, 'pointer': 'OBJ-3: new_testcase'}}
+    for key, value in test_data.items():
+        for _ in range(0, value['amount']):
+            test_models.create({'title': f'new_{key}', 'description': f'this is {key}', 'object_type': key,
+                                'parent': value['pointer'], 'parent_project': 'Template'})
+    for element, value in expected_data.items():
+        test_dict = value
+        assert len(test_models.get_dependencies(element)[test_dict['pointer'].split(':')[0]]) == \
+               test_dict['amount'], 'Number of dependencies is incorrect'
+
+
+@mark.unittests
+def test__get_dependencies_extended_key():
+    """
+    Verifies: REQ-MOD6
+    :return: None
+    """
+    test_models = Models()
+    expected_data = {
+        True: ['OBJ-3: new_testcase', 'OBJ-4: new_testcase'],
+        False: ['OBJ-3', 'OBJ-4']
+    }
+    for bool_value, test_data in expected_data.items():
+        assert test_data == list(test_models.get_dependencies('testcase', extended_key=bool_value).keys()), \
+            'get_dependencies returned wrong keys'
+
+
+@mark.unittests
+def test__get_all_objects_of_type():
+    """
+    Verifies: REQ-MOD6
+    :return: None
+    """
+    test_models = Models()
+    test_data = {'bug': 1, 'project': 0, 'requirement': 1, 'testcase': 2}
+    for key, value in test_data.items():
+        assert len(test_models.get_all_objects_of_type(key)) == value, 'Number of objects is incorrect'
+
+
+@mark.unittests
+def test__get_test_case_requirements_dependencies():
+    """
+    Verifies: REQ-MOD6
+    :return: None
+    """
+    test_models = Models()
+    expected_data = {'OBJ-2': {'OBJ-3': 'not_run', 'OBJ-4': 'not_run'}}
+    a = test_models.get_test_case_requirements_dependencies()
+    assert test_models.get_test_case_requirements_dependencies() == expected_data, \
+        'Requirements dependency dicts are not the same'

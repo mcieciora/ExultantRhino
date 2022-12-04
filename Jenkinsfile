@@ -22,50 +22,39 @@ pipeline {
                 stage ('Code linting') {
                     steps {
                         script {
-                            dir('automated_tests/') {
+                            dir("automated_tests/") {
                                 sh 'tox -e lint src'
                                 sh 'tox -e lint automated_tests'
                             }
                         }
                     }
                 }
-                stage ('Setup docker image') {
+                stage ('Setup docker images') {
                     steps {
                         script {
-                            dir('automated_tests/') {
+                            dir("automated_tests/") {
                                 sh 'docker compose down'
                             }
                             def all_images = sh(script: 'docker images', returnStdout: true)
                             if (all_images.contains('exultant_rhino_app')) {
                                 sh "docker rmi exultant_rhino_app -f"
                             }
-                            sh "sed -i 's/mongodb/localhost/1' src/pymongo_db.py"
                             sh "sed -i 's/latest/4.4.6/1' docker-compose.yml"
-                            sh 'docker compose up -d db'
+                            dir("automated_tests/") {
+                                sh "docker compose up -d"
                             }
                         }
                     }
                 }
             }
-
-        stage ('Unittests') {
+        }
+        stage ('Unit and upload tests') {
             steps {
                 script {
-                    dir('automated_tests/') {
-                        sh 'tox -e unittests'
-                    }
-                }
-            }
-            post {
-                always {
-                    script {
-                        sh 'docker compose down'
-                        sh 'docker rmi exultant_rhino_app:latest -f'
-                    }
-                }
-                failure {
-                    script {
-                        sh 'docker logs exultant_rhino_app'
+                    sh "sed -i 's/mongodb/localhost/1' src/pymongo_db.py"
+                    dir("automated_tests/") {
+                        sh "tox -e unittests"
+                        sh "tox -e upload"
                     }
                 }
             }
@@ -76,8 +65,7 @@ pipeline {
                     steps {
                         script {
                             sh "sed -i 's/localhost/mongodb/1' src/pymongo_db.py"
-                            dir('automated_tests/') {
-                                sh 'docker compose up -d'
+                            dir("automated_tests/") {
                                 sh 'tox -e selenium'
                             }
                         }

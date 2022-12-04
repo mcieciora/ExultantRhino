@@ -3,6 +3,27 @@ body {
   background-color: #f2f2f2;
 }
 
+.column {
+  float: left;
+  width: 50%;
+  padding-top: 2.5%
+}
+
+.inner_column {
+	width: 25%;
+    display: inline-block;
+    text-align: center;
+}
+
+.inner_text {
+    padding: 2.5%;
+}
+
+.central_text {
+    width: 100%;
+    text-align: center;
+}
+
 a {
     padding-right: 10px;
     color: blue;
