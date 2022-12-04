@@ -66,7 +66,6 @@ pipeline {
                         script {
                             sh "sed -i 's/localhost/mongodb/1' src/pymongo_db.py"
                             dir("automated_tests/") {
-                                sh 'docker compose up -d'
                                 sh 'tox -e selenium'
                             }
                         }
