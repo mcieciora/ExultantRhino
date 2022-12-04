@@ -331,7 +331,6 @@ def test__requirements_tab_content(firefox_driver):
 @mark.selenium
 def test__add_requirement_and_check_release_dashboard(firefox_driver):
     """
-    Verifies: REQ-SEL9
     Verifies: REQ-SEL10
     :param firefox_driver: Firefox webdriver; taken from fixture
     :return: None
