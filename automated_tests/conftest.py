@@ -24,7 +24,7 @@ def firefox_driver():
     """
     with Popen(["tools/geckodriver"], stdout=PIPE, shell=True):
         options = Options()
-        # options.headless = True
+        options.headless = True
         test_driver = Firefox(options=options)
         test_driver.get('http://localhost:8000')
         yield test_driver
