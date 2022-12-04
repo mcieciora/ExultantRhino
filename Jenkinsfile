@@ -29,7 +29,7 @@ pipeline {
                         }
                     }
                 }
-                stage ('Stop and remove docker instances') {
+                stage ('Setup docker images') {
                     steps {
                         script {
                             dir("automated_tests/") {
@@ -39,6 +39,8 @@ pipeline {
                             if (all_images.contains('exultant_rhino_app')) {
                                 sh "docker rmi exultant_rhino_app -f"
                             }
+                            sh "sed -i 's/latest/4.4.6/1' docker-compose.yml"
+                            sh "sed -i 's/mongodb/localhost/1' src/pymongo_db.py"
                         }
                     }
                 }
@@ -47,19 +49,9 @@ pipeline {
         stage ('Unit and upload tests') {
             steps {
                 script {
-                    sh "sed -i 's/mongodb/localhost/1' src/pymongo_db.py"
-                    sh "sed -i 's/latest/4.4.6/1' docker-compose.yml"
-                    dir("automated_tests/") {
-                        sh "docker compose up -d db"
-                        sh "tox -e unittests"
-                        sh "docker stop db"
-                    }
-                    sh "sed -i 's/localhost/mongodb/1' src/pymongo_db.py"
                     dir("automated_tests/") {
                         sh "docker compose up -d"
-                    }
-                    sh "sed -i 's/mongodb/localhost/1' src/pymongo_db.py"
-                    dir("automated_tests/") {
+                        sh "tox -e unittests"
                         sh "tox -e upload"
                         sh "docker compose down"
                     }
@@ -75,6 +67,7 @@ pipeline {
                             dir("automated_tests/") {
                                 sh 'docker compose up -d'
                                 sh 'tox -e selenium'
+                                sh "docker compose down"
                             }
                         }
                     }

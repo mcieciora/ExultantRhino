@@ -39,8 +39,8 @@
     <div class="column">
         <div class="central_text">
          {% if total_release_coverage|length > 0 %}
-            <h2>{{ total_release_coverage[0]['title']}}</h2>
-            <p>{{ total_release_coverage[0]['results'] }}</p>
+            <h2>{{ total_release_coverage[-1]['title']}}</h2>
+            <p>{{ total_release_coverage[-1]['results'] }}</p>
          {% endif %}
             </div>
     </div>

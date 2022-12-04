@@ -24,7 +24,7 @@ def firefox_driver():
     """
     with Popen(["tools/geckodriver"], stdout=PIPE, shell=True):
         options = Options()
-        options.headless = True
+        # options.headless = True
         test_driver = Firefox(options=options)
         test_driver.get('http://localhost:8000')
         yield test_driver
@@ -55,4 +55,3 @@ def test_upload_db():
     for data in insert_data:
         return_database.insert(data)
     yield return_database
-    # return_database.client['exultant_rhino'].drop_collection('main_collection')
