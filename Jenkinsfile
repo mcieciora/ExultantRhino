@@ -40,7 +40,9 @@ pipeline {
                                 sh "docker rmi exultant_rhino_app -f"
                             }
                             sh "sed -i 's/latest/4.4.6/1' docker-compose.yml"
-                            sh "sed -i 's/mongodb/localhost/1' src/pymongo_db.py"
+                            dir("automated_tests/") {
+                                sh "docker compose up -d"
+                            }
                         }
                     }
                 }
@@ -49,11 +51,10 @@ pipeline {
         stage ('Unit and upload tests') {
             steps {
                 script {
+                    sh "sed -i 's/mongodb/localhost/1' src/pymongo_db.py"
                     dir("automated_tests/") {
-                        sh "docker compose up -d"
                         sh "tox -e unittests"
                         sh "tox -e upload"
-                        sh "docker compose down"
                     }
                 }
             }
@@ -67,7 +68,6 @@ pipeline {
                             dir("automated_tests/") {
                                 sh 'docker compose up -d'
                                 sh 'tox -e selenium'
-                                sh "docker compose down"
                             }
                         }
                     }
