@@ -1,6 +1,7 @@
 from pytest import mark
 from requests import post
 from json import dumps
+from time import sleep
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
@@ -347,3 +348,13 @@ def test__add_requirement_and_check_release_dashboard(firefox_driver):
     expected_data = ['test_name_4', "{'fail': 0, 'pass': 2, 'not_run': 0}"]
     for content in expected_data:
         assert content in expected_data, f'Expected: {content} Actual: {firefox_driver.page_source}'
+
+
+@mark.selenium
+def test__release_dashboard_screenshot(firefox_driver):
+    """
+    :param firefox_driver: Firefox webdriver; taken from fixture
+    :return: None
+    """
+    sleep(1)
+    firefox_driver.save_screenshot('test__release_dashboard_screenshot.png')

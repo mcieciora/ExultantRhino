@@ -97,7 +97,7 @@ pipeline {
                 sh 'docker compose down'
                 sh "docker rmi exultant_rhino_app -f"
             }
-            archiveArtifacts artifacts: 'automated_tests/*results.xml', fingerprint: true
+            archiveArtifacts artifacts: 'automated_tests/*results.xml, automated_tests/*.png', fingerprint: true
             junit 'automated_tests/*results.xml'
             cleanWs()
         }

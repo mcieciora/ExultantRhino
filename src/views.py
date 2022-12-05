@@ -8,10 +8,12 @@ models = Models()
 
 @views.route('/', methods=['GET', 'POST'])
 def index():
+    # TODO I cannot look at this endpoint code...
     """
     Default endpoint
     :return: home template
     """
+    chart_data = {}
     active_bugs = list(models.mongo.find({'$and': [{'object_type': 'bug'},
                                                    {'parent_project': models.get_current_project_id()['title']}]}))
     number_of_test_cases = len(list(models.mongo.find({'$and': [{'object_type': 'testcase'},
@@ -24,12 +26,16 @@ def index():
     total_release_coverage = list(models.mongo.find(
         {'$and': [{'object_type': 'release'},
                   {'parent_project': models.get_current_project_id()['title']}]}))
+    if total_release_coverage:
+        chart_data['title'] = total_release_coverage[-1]['title']
+        chart_data['values'] = [value for value in total_release_coverage[-1]['results'].values()]
+        chart_data['keys'] = [key for key in total_release_coverage[-1]['results'].keys()]
     return render_template('home.html',
                            current_project=models.get_current_project_id(),
                            projects=models.get_all_projects(),
                            active_bugs=active_bugs,
                            not_covered_requirements=not_covered_requirements,
-                           total_release_coverage=total_release_coverage,
+                           chart_data=chart_data,
                            number_of_test_cases=number_of_test_cases,
                            number_of_requirements=number_of_requirements)
 
