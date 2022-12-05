@@ -343,7 +343,7 @@ def test__add_requirement_and_check_release_dashboard(firefox_driver):
             'OBJ-51': {'OBJ-55': 'pass'},
             'OBJ-62': {'OBJ-65': 'pass'},
         }
-    }), headers=headers)
+    }), headers=headers, timeout=5)
     firefox_driver.get('http://localhost:8000/proj/OBJ-1')
     expected_data = ['test_name_4', "{'fail': 0, 'pass': 2, 'not_run': 0}"]
     for content in expected_data:

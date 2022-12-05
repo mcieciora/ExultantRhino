@@ -204,6 +204,5 @@ def test__get_test_case_requirements_dependencies():
     """
     test_models = Models()
     expected_data = {'OBJ-2': {'OBJ-3': 'not_run', 'OBJ-4': 'not_run'}}
-    a = test_models.get_test_case_requirements_dependencies()
     assert test_models.get_test_case_requirements_dependencies() == expected_data, \
         'Requirements dependency dicts are not the same'

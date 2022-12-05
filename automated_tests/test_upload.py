@@ -7,7 +7,7 @@ from src.models import Models
 def send_request(data):
     url = "http://localhost:8000/upload"
     headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-    return post(url, data=dumps(data), headers=headers)
+    return post(url, data=dumps(data), headers=headers, timeout=5)
 
 
 @mark.upload
