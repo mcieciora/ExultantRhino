@@ -1,7 +1,6 @@
 from json import dumps
 from pytest import mark
 from requests import post, get
-from src.models import Models
 
 
 def send_request(data):
