@@ -383,6 +383,7 @@ def test__test_case_has_bug_badge(firefox_driver):
 def test__validate_corresponding_object_types(firefox_driver):
     """
     Verifies: REQ-SEL12
+    Verifies: REQ-SEL13
     :param firefox_driver: Firefox webdriver; taken from fixture
     :return: None
     """
