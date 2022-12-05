@@ -28,14 +28,14 @@ class Models:
         get_current_project_id look for project object in database with current project pointer as a key
         :return: current project object
         """
-        return list(self.mongo.find({'object_id': self.project_pointer}))[0]
+        return self.mongo.find({'object_id': self.project_pointer})[0]
 
     def get_all_projects(self):
         """
         get_all_projects lists all projects in database
         :return: list of all projects in database
         """
-        return list(self.mongo.find({'object_type': 'project'}))
+        return self.mongo.find({'object_type': 'project'})
 
     def get_next_id(self):
         """
@@ -43,7 +43,7 @@ class Models:
         id string
         :return: full id string in format: {prefix}-{id_number}
         """
-        all_objects_with_type = list(self.mongo.find({}))
+        all_objects_with_type = self.mongo.find({})
         if all_objects_with_type:
             id_number = all_objects_with_type[-1]['object_id'].split('-')[1]
             next_id_number = int(id_number) + 1
@@ -84,9 +84,8 @@ class Models:
         :param object_type: object type in bug, project, requirement, testcase
         :return: list of objects
         """
-        all_objects = list(self.mongo.find(({"$and": [
-                                                      {'object_type': object_type},
-                                                      {'parent_project': self.get_current_project_id()['title']}]})))
+        all_objects = self.mongo.find(({"$and": [{'object_type': object_type},
+                                                 {'parent_project': self.get_current_project_id()['title']}]}))
         return all_objects
 
     def get_dependencies(self, object_type, extended_key=False):
@@ -102,7 +101,7 @@ class Models:
             key = obj['object_id']
             if extended_key:
                 key = f"{obj['object_id']}: {obj['title']}"
-            dependencies[key] = list(self.mongo.find({'parent': {'$regex': fr'{obj["object_id"]}:.*'}}))
+            dependencies[key] = self.mongo.find({'parent': {'$regex': fr'{obj["object_id"]}:.*'}})
         return dependencies
 
     def get_test_case_requirements_dependencies(self):
@@ -114,5 +113,5 @@ class Models:
         dependencies = {}
         for obj in self.get_all_objects_of_type('requirement'):
             dependencies[obj['object_id']] = {test_case['object_id']: 'not_run' for test_case in
-                                              list(self.mongo.find({'parent': {'$regex': fr'{obj["object_id"]}:.*'}}))}
+                                              self.mongo.find({'parent': {'$regex': fr'{obj["object_id"]}:.*'}})}
         return dependencies

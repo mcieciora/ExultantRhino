@@ -13,18 +13,18 @@ def index():
     :return: home template
     """
     chart_data = {}
-    active_bugs = list(models.mongo.find({'$and': [{'object_type': 'bug'},
+    active_bugs = models.mongo.find({'$and': [{'object_type': 'bug'},
+                                                   {'parent_project': models.get_current_project_id()['title']}]})
+    number_of_test_cases = list(models.mongo.find({'$and': [{'object_type': 'testcase'},
                                                    {'parent_project': models.get_current_project_id()['title']}]}))
-    number_of_test_cases = len(list(models.mongo.find({'$and': [{'object_type': 'testcase'},
-                                                   {'parent_project': models.get_current_project_id()['title']}]})))
     not_covered_requirements = [key for key, value in models.get_dependencies('requirement', extended_key=True).items()
                                 if len(value) == 0]
-    number_of_requirements = len(list(models.mongo.find((
+    number_of_requirements = len(models.mongo.find((
         {'$and': [{'object_type': 'requirement'},
-                  {'parent_project': models.get_current_project_id()['title']}]}))))
-    total_release_coverage = list(models.mongo.find(
+                  {'parent_project': models.get_current_project_id()['title']}]})))
+    total_release_coverage = models.mongo.find(
         {'$and': [{'object_type': 'release'},
-                  {'parent_project': models.get_current_project_id()['title']}]}))
+                  {'parent_project': models.get_current_project_id()['title']}]})
     if total_release_coverage:
         chart_data['title'] = total_release_coverage[-1]['title']
         chart_data['values'] = list(total_release_coverage[-1]['results'].values())
@@ -57,8 +57,8 @@ def view_objects(object_type):
     :return: view_objects template
     """
     if object_type == 'releases':
-        all_releases = list(models.mongo.find({'$and': [{'object_type': 'release'},
-                                                        {'parent_project': models.get_current_project_id()['title']}]}))
+        all_releases = models.mongo.find({'$and': [{'object_type': 'release'},
+                                                   {'parent_project': models.get_current_project_id()['title']}]})
         return render_template('view_objects.html',
                                current_project=models.get_current_project_id(),
                                projects=models.get_all_projects(),
@@ -98,7 +98,7 @@ def edit(object_id):
     :param object_id: object id in format OBJ-{object_number}
     :return: view template
     """
-    found_object = list(models.mongo.find({"object_id": object_id}))
+    found_object = models.mongo.find({"object_id": object_id})
     if request.method == 'POST':
         post_form = dict(request.form)
         models.edit(object_id, post_form)
