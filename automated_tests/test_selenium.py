@@ -121,7 +121,7 @@ def test__bug_page_content(firefox_driver):
     :return: None
     """
     expected_content = ['value="test_title" required="">', 'name="description">test_description</textarea>',
-                        'value="OBJ-0: Template">', '<option value="bug" selected="selected">Bug</option>',
+                        'value="OBJ-60: test_title">', '<option value="bug" selected="selected">Bug</option>',
                         '<option value="new_proj" selected="selected">new_proj</option>']
     firefox_driver.get('http://localhost:8000/edit/OBJ-61')
     for content in expected_content:
@@ -326,7 +326,7 @@ def test__requirements_tab_content(firefox_driver):
     firefox_driver.find_element(by=By.LINK_TEXT, value='Delete').click()
     firefox_driver.find_element(by=By.LINK_TEXT, value='Requirements').click()
     assert 'OBJ-56: test_name_1' not in firefox_driver.page_source, f'Expected: OBJ-56: test_name_1 ' \
-                                                       f'Actual: {firefox_driver.page_source}'
+                                                                    f'Actual: {firefox_driver.page_source}'
 
 
 @mark.selenium
@@ -360,6 +360,7 @@ def test__release_dashboard_screenshot(firefox_driver):
     firefox_driver.save_screenshot('test__release_dashboard_screenshot.png')
 
 
+@mark.selenium
 def test__test_case_has_bug_badge(firefox_driver):
     """
     Verifies: REQ-SEL11
@@ -385,19 +386,41 @@ def test__validate_corresponding_object_types(firefox_driver):
     :param firefox_driver: Firefox webdriver; taken from fixture
     :return: None
     """
-    corresponding_parent_types = {'bug': 'TestCase',
-                                  'testcase': 'Requirement',
-                                  'requirement': 'Project',
-                                  'project': 'Project'}
-    test_data = ['Bug', 'TestCase', 'Requirement', 'release', 'Project']
+    corresponding_parent_types = {'Bug': 'TestCase',
+                                  'TestCase': 'Requirement',
+                                  'Requirement': 'Project',
+                                  'Project': 'Project'}
+    test_data = ['Project', 'Bug', 'TestCase', 'Requirement']
 
-    for object_type, parent_type in corresponding_parent_types.items():
-        success_response = f'<strong>Info</strong> {object_type}-{parent_type} was successfully created.'
+    for element in test_data:
         firefox_driver.find_element(by=By.LINK_TEXT, value='Create').click()
-        firefox_driver.find_element(By.NAME, 'title').send_keys(f'{object_type}-{parent_type}')
+        firefox_driver.find_element(By.NAME, 'title').send_keys(f'test_{element}')
         firefox_driver.find_element(By.NAME, 'description').send_keys('test_description')
         select = Select(firefox_driver.find_element(by=By.ID, value='object_type'))
-        select.select_by_visible_text(parent_type)
+        select.select_by_visible_text(element)
         firefox_driver.find_element(by=By.ID, value='submit').click()
+        success_response = f'<strong>Info</strong> test_{element} was successfully created.'
         assert success_response in firefox_driver.page_source, f'Expected: {success_response} Actual: ' \
                                                                f'{firefox_driver.page_source}'
+
+    for object_type, parent_type in corresponding_parent_types.items():
+        for element in test_data:
+            firefox_driver.find_element(by=By.LINK_TEXT, value='Create').click()
+            firefox_driver.find_element(By.NAME, 'title').send_keys(f'{object_type}-{element}')
+            firefox_driver.find_element(By.NAME, 'description').send_keys('test_description')
+            select = Select(firefox_driver.find_element(by=By.ID, value='object_type'))
+            select.select_by_visible_text(object_type)
+            autocomplete_object = firefox_driver.find_element(By.NAME, 'parent')
+            autocomplete_object.send_keys(f'test_{element}')
+            autocomplete_object.send_keys(Keys.ARROW_DOWN)
+            autocomplete_object.send_keys(Keys.RETURN)
+            firefox_driver.find_element(by=By.ID, value='submit').click()
+            if element == parent_type:
+                success_response = f'<strong>Info</strong> {object_type}-{element} was successfully created.'
+                assert success_response in firefox_driver.page_source, f'Expected: {success_response} Actual: ' \
+                                                                       f'{firefox_driver.page_source}'
+            else:
+                failure_response = f'<strong>Info</strong> {object_type.lower()} shall be assigned to ' \
+                                   f'{parent_type.lower()}'
+                assert failure_response in firefox_driver.page_source, f'Expected: {failure_response} Actual: ' \
+                                                                       f'{firefox_driver.page_source}'
