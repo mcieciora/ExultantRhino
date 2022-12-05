@@ -4,6 +4,11 @@ from requests import post, get
 
 
 def send_request(data):
+    """
+    function to send post request
+    :param data: dict containing keys: project_name, release_name, reqs
+    :return: post response
+    """
     url = "http://localhost:8000/upload"
     headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
     return post(url, data=dumps(data), headers=headers, timeout=5)
