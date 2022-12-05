@@ -27,8 +27,8 @@ def index():
                   {'parent_project': models.get_current_project_id()['title']}]}))
     if total_release_coverage:
         chart_data['title'] = total_release_coverage[-1]['title']
-        chart_data['values'] = [value for value in total_release_coverage[-1]['results'].values()]
-        chart_data['keys'] = [key for key in total_release_coverage[-1]['results'].keys()]
+        chart_data['values'] = list(total_release_coverage[-1]['results'].values())
+        chart_data['keys'] = list(total_release_coverage[-1]['results'].keys())
     return render_template('home.html',
                            current_project=models.get_current_project_id(),
                            projects=models.get_all_projects(),
@@ -63,12 +63,11 @@ def view_objects(object_type):
                                current_project=models.get_current_project_id(),
                                projects=models.get_all_projects(),
                                all_objects=all_releases)
-    else:
-        return render_template('view_objects.html',
-                               current_project=models.get_current_project_id(),
-                               projects=models.get_all_projects(),
-                               all_objects=models.get_all_objects_of_type(object_type),
-                               dependencies=models.get_dependencies(object_type))
+    return render_template('view_objects.html',
+                           current_project=models.get_current_project_id(),
+                           projects=models.get_all_projects(),
+                           all_objects=models.get_all_objects_of_type(object_type),
+                           dependencies=models.get_dependencies(object_type))
 
 
 @views.route('/create', methods=['GET', 'POST'])

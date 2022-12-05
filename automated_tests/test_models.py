@@ -164,7 +164,7 @@ def test__get_dependencies():
                                 'parent': value['pointer'], 'parent_project': 'Template'})
     for element, value in expected_data.items():
         test_dict = value
-        assert len(test_models.get_dependencies(element)[test_dict['pointer'].split(':')[0]]) == \
+        assert len(test_models.get_dependencies(element)[test_dict['pointer'].split(':', maxsplit=1)[0]]) == \
                test_dict['amount'], 'Number of dependencies is incorrect'
 
 
