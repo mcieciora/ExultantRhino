@@ -25,7 +25,8 @@ class MongoDb:
         :param query: dict type object that consists of searched value
         :return: list of found database objects
         """
-        return self.client[self.db_name][self.collection_name].find(query, projection={'_id': False})
+        query_search = self.client[self.db_name][self.collection_name].find(query, projection={'_id': False})
+        return list(query_search)
 
     def delete(self, query):
         """
