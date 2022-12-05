@@ -164,7 +164,7 @@ def test__get_dependencies():
                                 'parent': value['pointer'], 'parent_project': 'Template'})
     for element, value in expected_data.items():
         test_dict = value
-        assert len(test_models.get_dependencies(element)[test_dict['pointer'].split(':')[0]]) == \
+        assert len(test_models.get_dependencies(element)[test_dict['pointer'].split(':', maxsplit=1)[0]]) == \
                test_dict['amount'], 'Number of dependencies is incorrect'
 
 
@@ -204,6 +204,5 @@ def test__get_test_case_requirements_dependencies():
     """
     test_models = Models()
     expected_data = {'OBJ-2': {'OBJ-3': 'not_run', 'OBJ-4': 'not_run'}}
-    a = test_models.get_test_case_requirements_dependencies()
     assert test_models.get_test_case_requirements_dependencies() == expected_data, \
         'Requirements dependency dicts are not the same'

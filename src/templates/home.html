@@ -1,4 +1,5 @@
 {% extends "base.html" %} {% block content%}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
   <div class="column">
     <div class="inner_column">
     	<h1>{{ active_bugs|length }}</h1>
@@ -38,9 +39,33 @@
 
     <div class="column">
         <div class="central_text">
-         {% if total_release_coverage|length > 0 %}
-            <h2>{{ total_release_coverage[-1]['title']}}</h2>
-            <p>{{ total_release_coverage[-1]['results'] }}</p>
+         {% if chart_data|length > 0 %}
+            <h2>{{ chart_data['title']}}</h2>
+            <canvas id="release_chart" width="400" height="400"></canvas>
+            <script>
+                var ctx = document.getElementById("release_chart").getContext("2d");
+                var chart = new Chart(ctx, {
+                    type: "doughnut",
+                    data: {
+                        labels: {{ chart_data['keys'] | safe }},
+                        datasets: [
+                            {
+                            label: "Test Results",
+                            data: {{ chart_data['values'] | safe }},
+                            fill: false,
+                            backgroundColor: [
+                              'rgb(200, 10, 30)',
+                              'rgb(30, 200, 10)',
+                              'rgb(12, 233, 235)'
+                            ]
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: false
+                    },
+                });
+            </script>
          {% endif %}
             </div>
     </div>

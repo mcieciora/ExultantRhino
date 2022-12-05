@@ -1,13 +1,13 @@
+from json import dumps
 from pytest import mark
 from requests import post, get
-from json import dumps
 from src.models import Models
 
 
 def send_request(data):
     url = "http://localhost:8000/upload"
     headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-    return post(url, data=dumps(data), headers=headers)
+    return post(url, data=dumps(data), headers=headers, timeout=5)
 
 
 @mark.upload
@@ -34,7 +34,7 @@ def test__regular_upload_data(test_upload_db):
     :return: None
     """
     test_models = Models()
-    get(f'http://localhost:8000/proj/OBJ-1')
+    get('http://localhost:8000/proj/OBJ-1', timeout=5)
     response = send_request({
         'project_name': 'new_proj', 'release_name': 'test_name_1', 'reqs': {
             'OBJ-50': {'OBJ-53': 'pass', 'OBJ-54': 'fail'}
@@ -58,7 +58,7 @@ def test__non_existing_req_in_post_request(test_upload_db):
     :return: None
     """
     test_models = Models()
-    get(f'http://localhost:8000/proj/OBJ-1')
+    get('http://localhost:8000/proj/OBJ-1', timeout=5)
     response = send_request({
         'project_name': 'new_proj', 'release_name': 'test_name_2', 'reqs': {
             'OBJ-X': {'OBJ-53': 'pass', 'OBJ-54': 'fail'}
@@ -81,7 +81,7 @@ def test__check_number_of_results(test_upload_db):
     :return: None
     """
     test_models = Models()
-    get(f'http://localhost:8000/proj/OBJ-1')
+    get('http://localhost:8000/proj/OBJ-1', timeout=5)
     response = send_request({
         'project_name': 'new_proj', 'release_name': 'test_name_3', 'reqs': {
             'OBJ-50': {'OBJ-53': 'pass', 'OBJ-54': 'fail'},
