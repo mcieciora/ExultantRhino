@@ -8,7 +8,6 @@ models = Models()
 
 @views.route('/', methods=['GET', 'POST'])
 def index():
-    # TODO I cannot look at this endpoint code...
     """
     Default endpoint
     :return: home template
