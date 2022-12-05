@@ -14,8 +14,8 @@ def index():
     """
     chart_data = {}
     active_bugs = models.mongo.find({'$and': [{'object_type': 'bug'},
-                                                   {'parent_project': models.get_current_project_id()['title']}]})
-    number_of_test_cases = list(models.mongo.find({'$and': [{'object_type': 'testcase'},
+                                              {'parent_project': models.get_current_project_id()['title']}]})
+    number_of_test_cases = len(models.mongo.find({'$and': [{'object_type': 'testcase'},
                                                    {'parent_project': models.get_current_project_id()['title']}]}))
     not_covered_requirements = [key for key, value in models.get_dependencies('requirement', extended_key=True).items()
                                 if len(value) == 0]
