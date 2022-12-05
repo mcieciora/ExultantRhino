@@ -416,12 +416,9 @@ def test__validate_corresponding_object_types(firefox_driver):
             autocomplete_object.send_keys(Keys.ARROW_DOWN)
             autocomplete_object.send_keys(Keys.RETURN)
             firefox_driver.find_element(by=By.ID, value='submit').click()
+            response = f'<strong>Info</strong> {object_type.lower()} shall be assigned to ' \
+                       f'{parent_type.lower()}'
             if element == parent_type:
-                success_response = f'<strong>Info</strong> {object_type}-{element} was successfully created.'
-                assert success_response in firefox_driver.page_source, f'Expected: {success_response} Actual: ' \
-                                                                       f'{firefox_driver.page_source}'
-            else:
-                failure_response = f'<strong>Info</strong> {object_type.lower()} shall be assigned to ' \
-                                   f'{parent_type.lower()}'
-                assert failure_response in firefox_driver.page_source, f'Expected: {failure_response} Actual: ' \
-                                                                       f'{firefox_driver.page_source}'
+                response = f'<strong>Info</strong> {object_type}-{element} was successfully created.'
+            assert response in firefox_driver.page_source, f'Expected: {response} Actual: ' \
+                                                           f'{firefox_driver.page_source}'
