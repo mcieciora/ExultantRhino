@@ -60,42 +60,6 @@ def test__create_project(firefox_driver):
 
 
 @mark.selenium
-def test__create_bug(firefox_driver):
-    """
-    Verifies: REQ-SEL3
-    :param firefox_driver: Firefox webdriver; taken from fixture
-    :return: None
-    """
-    firefox_driver.find_element(by=By.LINK_TEXT, value='Create').click()
-    select = Select(firefox_driver.find_element(by=By.ID, value='object_type'))
-    select.select_by_visible_text('Bug')
-    firefox_driver.find_element(By.NAME, 'title').send_keys('test_title')
-    firefox_driver.find_element(By.NAME, 'description').send_keys('test_description')
-    autocomplete_object = firefox_driver.find_element(By.NAME, 'parent')
-    autocomplete_object.send_keys('oBj-')
-    autocomplete_object.send_keys(Keys.ARROW_DOWN)
-    autocomplete_object.send_keys(Keys.RETURN)
-    firefox_driver.find_element(by=By.ID, value='submit').click()
-    assert '<strong>Info</strong> test_title was successfully created.' in firefox_driver.page_source, \
-        f'Expected: <strong>Info</strong> test_title was successfully created. Actual: {firefox_driver.page_source}'
-
-
-@mark.selenium
-def test__bug_page_content(firefox_driver):
-    """
-    Verifies: REQ-SEL4
-    :param firefox_driver: Firefox webdriver; taken from fixture
-    :return: None
-    """
-    expected_content = ['value="test_title" required="">', 'name="description">test_description</textarea>',
-                        'value="OBJ-0: Template">', '<option value="bug" selected="selected">Bug</option>',
-                        '<option value="new_proj" selected="selected">new_proj</option>']
-    firefox_driver.get('http://localhost:8000/edit/OBJ-60')
-    for content in expected_content:
-        assert content in firefox_driver.page_source, f'Expected: {content} Actual: {firefox_driver.page_source}'
-
-
-@mark.selenium
 def test__create_test_case(firefox_driver):
     """
     Verifies: REQ-SEL3
@@ -121,6 +85,42 @@ def test__tc_page_content(firefox_driver):
     """
     expected_content = ['value="test_title" required="">', 'name="description">test_description</textarea>',
                         '<option value="testcase" selected="selected">TestCase</option>',
+                        '<option value="new_proj" selected="selected">new_proj</option>']
+    firefox_driver.get('http://localhost:8000/edit/OBJ-60')
+    for content in expected_content:
+        assert content in firefox_driver.page_source, f'Expected: {content} Actual: {firefox_driver.page_source}'
+
+
+@mark.selenium
+def test__create_bug(firefox_driver):
+    """
+    Verifies: REQ-SEL3
+    :param firefox_driver: Firefox webdriver; taken from fixture
+    :return: None
+    """
+    firefox_driver.find_element(by=By.LINK_TEXT, value='Create').click()
+    select = Select(firefox_driver.find_element(by=By.ID, value='object_type'))
+    select.select_by_visible_text('Bug')
+    firefox_driver.find_element(By.NAME, 'title').send_keys('test_title')
+    firefox_driver.find_element(By.NAME, 'description').send_keys('test_description')
+    autocomplete_object = firefox_driver.find_element(By.NAME, 'parent')
+    autocomplete_object.send_keys('oBj-60')
+    autocomplete_object.send_keys(Keys.ARROW_DOWN)
+    autocomplete_object.send_keys(Keys.RETURN)
+    firefox_driver.find_element(by=By.ID, value='submit').click()
+    assert '<strong>Info</strong> test_title was successfully created.' in firefox_driver.page_source, \
+        f'Expected: <strong>Info</strong> test_title was successfully created. Actual: {firefox_driver.page_source}'
+
+
+@mark.selenium
+def test__bug_page_content(firefox_driver):
+    """
+    Verifies: REQ-SEL4
+    :param firefox_driver: Firefox webdriver; taken from fixture
+    :return: None
+    """
+    expected_content = ['value="test_title" required="">', 'name="description">test_description</textarea>',
+                        'value="OBJ-0: Template">', '<option value="bug" selected="selected">Bug</option>',
                         '<option value="new_proj" selected="selected">new_proj</option>']
     firefox_driver.get('http://localhost:8000/edit/OBJ-61')
     for content in expected_content:
@@ -347,3 +347,47 @@ def test__add_requirement_and_check_release_dashboard(firefox_driver):
     expected_data = ['test_name_4', "{'fail': 0, 'pass': 2, 'not_run': 0}"]
     for content in expected_data:
         assert content in expected_data, f'Expected: {content} Actual: {firefox_driver.page_source}'
+
+
+@mark.selenium
+def test__test_case_has_bug_badge(firefox_driver):
+    """
+    Verifies: REQ-SEL11
+    :param firefox_driver: Firefox webdriver; taken from fixture
+    :return: None
+    """
+    firefox_driver.get('http://127.0.0.1:8000/edit/OBJ-61')
+    firefox_driver.find_element(by=By.NAME, value='parent').clear()
+    autocomplete_object = firefox_driver.find_element(By.NAME, 'parent')
+    autocomplete_object.send_keys('OBJ-65')
+    autocomplete_object.send_keys(Keys.ARROW_DOWN)
+    autocomplete_object.send_keys(Keys.RETURN)
+    firefox_driver.find_element(by=By.ID, value='submit').click()
+    firefox_driver.find_element(by=By.LINK_TEXT, value='Test cases').click()
+    assert 'OBJ-65: test_title<span class="badge">Bug</span>' in firefox_driver.page_source, \
+        f'Expected: OBJ-65: test_title<span class="badge">Bug</span> Actual: {firefox_driver.page_source}'
+
+
+@mark.selenium
+def test__validate_corresponding_object_types(firefox_driver):
+    """
+    Verifies: REQ-SEL12
+    :param firefox_driver: Firefox webdriver; taken from fixture
+    :return: None
+    """
+    corresponding_parent_types = {'bug': 'TestCase',
+                                  'testcase': 'Requirement',
+                                  'requirement': 'Project',
+                                  'project': 'Project'}
+    test_data = ['Bug', 'TestCase', 'Requirement', 'release', 'Project']
+
+    for object_type, parent_type in corresponding_parent_types.items():
+        success_response = f'<strong>Info</strong> {object_type}-{parent_type} was successfully created.'
+        firefox_driver.find_element(by=By.LINK_TEXT, value='Create').click()
+        firefox_driver.find_element(By.NAME, 'title').send_keys(f'{object_type}-{parent_type}')
+        firefox_driver.find_element(By.NAME, 'description').send_keys('test_description')
+        select = Select(firefox_driver.find_element(by=By.ID, value='object_type'))
+        select.select_by_visible_text(parent_type)
+        firefox_driver.find_element(by=By.ID, value='submit').click()
+        assert success_response in firefox_driver.page_source, f'Expected: {success_response} Actual: ' \
+                                                               f'{firefox_driver.page_source}'

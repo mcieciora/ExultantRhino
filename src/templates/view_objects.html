@@ -1,7 +1,11 @@
 {% extends "base.html" %} {% block content%}
 <div class="list_row">
 {% for object in all_objects %}
-    <button type="button" id="collapsible" class="collapsible">{{ object.object_id }}: {{ object.title }}</button>
+    {% if object.object_type == 'testcase' and dependencies[object.object_id]|length > 0 %}
+        <button type="button" id="collapsible_bug" class="collapsible">{{ object.object_id }}: {{ object.title }}<span class="badge">Bug</span></button>
+    {% else %}
+        <button type="button" id="collapsible" class="collapsible">{{ object.object_id }}: {{ object.title }}</button>
+    {% endif %}
     <div class="content">
         <p>{{ object.description }}</p>
         {% if object.object_type != 'release' %}
