@@ -207,28 +207,6 @@ input[type=submit]:hover {
   color: #ffffff;
 }
 
-.tooltip {
-  position: relative;
-  display: inline-block;
-  border-bottom: 1px dotted black;
-}
-
-.tooltip .tooltiptext {
-  visibility: hidden;
-  width: 250%;
-  background-color: black;
-  color: #fff;
-  text-align: center;
-  border-radius: 6px;
-  padding: 5px 0;
-  position: absolute;
-  z-index: 1;
-}
-
-.tooltip:hover .tooltiptext {
-  visibility: visible;
-}
-
 .failure {
   padding: 20px;
   background-color: #ca3535;
@@ -254,4 +232,13 @@ input[type=submit]:hover {
 
 .closebtn:hover {
   color: black;
+}
+
+.badge {
+  background-color: red;
+  color: white;
+  padding: 4px 8px;
+  margin-left: 10px;
+  text-align: center;
+  border-radius: 5px;
 }

@@ -77,14 +77,28 @@ def create():
     :return: create template
     """
     if request.method == 'POST':
+        create_flag = True
         post_form = dict(request.form)
-        if post_form['object_type'] == 'project':
-            post_form['parent_project'] = 'Template'
-        else:
-            post_form['parent_project'] = models.get_current_project_id()['title']
+        post_form['parent_project'] = models.get_current_project_id()['title']
 
-        models.create(post_form)
-        flash(f"{post_form['title']} was successfully created.", category='success')
+        corresponding_parent_types = {'bug': 'testcase',
+                                      'testcase': 'requirement',
+                                      'requirement': 'project',
+                                      'release': 'project',
+                                      'project': 'project'}
+
+        if post_form['parent']:
+            corresponding_parent_type = corresponding_parent_types[post_form['object_type']]
+            query = {'object_id': post_form['parent'].split(':')[0]}
+            if models.mongo.find(query)[0]['object_type'] != corresponding_parent_type:
+                create_flag = False
+                flash(f"{post_form['object_type']} shall be assigned to "
+                      f"{corresponding_parent_types[post_form['object_type']]}", category='failure')
+
+        if create_flag:
+            models.create(post_form)
+            flash(f"{post_form['title']} was successfully created.", category='success')
+
     return render_template('create.html',
                            current_project=models.get_current_project_id(),
                            projects=models.get_all_projects(),
