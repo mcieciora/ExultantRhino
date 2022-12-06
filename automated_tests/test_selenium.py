@@ -422,3 +422,58 @@ def test__validate_corresponding_object_types(firefox_driver):
                 response = f'<strong>Info</strong> {object_type}-{element} was successfully created.'
             assert response in firefox_driver.page_source, f'Expected: {response} Actual: ' \
                                                            f'{firefox_driver.page_source}'
+
+
+@mark.selenium
+def test__delete_template_project(firefox_driver):
+    """
+    Verifies: REQ-SEL14
+    :param firefox_driver: Firefox webdriver; taken from fixture
+    :return: None
+    """
+    expected_message = 'Base project: Template cannot be deleted.'
+    firefox_driver.find_element(By.NAME, 'project_name').send_keys('Template')
+    firefox_driver.find_element(by=By.ID, value='submit').click()
+    assert expected_message in firefox_driver.page_source, f'Expected: {expected_message} Actual: ' \
+                                                           f'{firefox_driver.page_source}'
+
+
+@mark.selenium
+def test__delete_non_existing_project(firefox_driver):
+    """
+    Verifies: REQ-SEL14
+    :param firefox_driver: Firefox webdriver; taken from fixture
+    :return: None
+    """
+    expected_message = 'No such project name.'
+    firefox_driver.find_element(By.NAME, 'project_name').send_keys('non_existing_project')
+    firefox_driver.find_element(by=By.ID, value='submit').click()
+    assert expected_message in firefox_driver.page_source, f'Expected: {expected_message} Actual: ' \
+                                                           f'{firefox_driver.page_source}'
+
+
+@mark.selenium
+def test__delete_project(firefox_driver):
+    """
+    Verifies: REQ-SEL14
+    :param firefox_driver: Firefox webdriver; taken from fixture
+    :return: None
+    """
+    firefox_driver.find_element(By.NAME, 'project_name').send_keys('new_proj')
+    firefox_driver.find_element(by=By.ID, value='submit').click()
+    assert '>new_proj</a>' not in firefox_driver.page_source, f'Expected: >new_proj</a> Actual: ' \
+                                                              f'{firefox_driver.page_source}'
+
+
+@mark.selenium
+def test__delete_current_project(firefox_driver):
+    """
+    Verifies: REQ-SEL14
+    :param firefox_driver: Firefox webdriver; taken from fixture
+    :return: None
+    """
+    firefox_driver.get('http://localhost:8000/proj/OBJ-59')
+    firefox_driver.find_element(By.NAME, 'project_name').send_keys('test_title')
+    firefox_driver.find_element(by=By.ID, value='submit').click()
+    number_or_occurrences = firefox_driver.page_source.count('>Template')
+    assert number_or_occurrences == 2, f'Expected: 2 Actual: {number_or_occurrences}'

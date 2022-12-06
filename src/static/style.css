@@ -24,6 +24,10 @@ body {
     text-align: center;
 }
 
+canvas{
+    margin: 0 auto;
+}
+
 a {
     padding-right: 10px;
     color: blue;

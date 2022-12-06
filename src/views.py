@@ -12,6 +12,21 @@ def index():
     Default endpoint
     :return: home template
     """
+
+    if request.method == 'POST':
+        if request.form['project_name'] != 'Template':
+            project = models.mongo.find({'$and': [{'title': request.form['project_name']},
+                                                  {'object_type': 'project'}]})
+            if project:
+                project_id = project[0]['object_id']
+                current_project_id = models.get_current_project_id()['object_id']
+                models.update_current_project_id('OBJ-0') if project_id == current_project_id else None
+                models.delete(project_id)
+            else:
+                flash("No such project name.", category='failure')
+        else:
+            flash("Base project: Template cannot be deleted.", category='failure')
+
     chart_data = {}
     active_bugs = models.mongo.find({'$and': [{'object_type': 'bug'},
                                               {'parent_project': models.get_current_project_id()['title']}]})
@@ -29,6 +44,10 @@ def index():
         chart_data['title'] = total_release_coverage[-1]['title']
         chart_data['values'] = list(total_release_coverage[-1]['results'].values())
         chart_data['keys'] = list(total_release_coverage[-1]['results'].keys())
+        # chart_data['title'] = 'develop-25.1.b'
+        # chart_data['values'] = [3, 61, 8]
+        # chart_data['keys'] = ['fail', 'pass', 'not_run']
+
     return render_template('home.html',
                            current_project=models.get_current_project_id(),
                            projects=models.get_all_projects(),
