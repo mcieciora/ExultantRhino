@@ -1,0 +1,248 @@
+body {
+  margin:0;
+  background-color: #f2f2f2;
+}
+
+.column {
+  float: left;
+  width: 50%;
+  padding-top: 2.5%
+}
+
+.inner_column {
+	width: 25%;
+    display: inline-block;
+    text-align: center;
+}
+
+.inner_text {
+    padding: 2.5%;
+}
+
+.central_text {
+    width: 100%;
+    text-align: center;
+}
+
+canvas{
+    margin: 0 auto;
+}
+
+a {
+    padding-right: 10px;
+    color: blue;
+}
+
+a.edit {
+    color: green;
+}
+
+a.delete {
+    color: red;
+}
+
+.navbar {
+  overflow: hidden;
+  background-color: #333;
+}
+
+.navbar a {
+  float: left;
+  font-size: 16px;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+.navbar a:hover, .dropdown:hover {
+  background-color: #cf4a4a;
+}
+
+.create_button a {
+  float: right;
+  font-size: 16px;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  background-color: #0066ff;
+}
+
+.create_button a:hover {
+  background-color: #1a75ff;
+}
+
+.dropdown {
+  float: left;
+  overflow: hidden;
+}
+
+.dropdown .dropbtn {
+  font-size: 16px;
+  border: none;
+  outline: none;
+  color: white;
+  padding: 14px 16px;
+  width: auto;
+  background-color: inherit;
+  font-family: inherit;
+  background-color: #ca3535;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  float: none;
+  color: black;
+  display: block;
+  text-align: left;
+}
+
+.dropdown-content a:hover {
+  background-color: #eee;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.show {
+  display: block;
+}
+
+.collapsible {
+  margin-top: 10px;
+  background-color: #eee;
+  color: #444;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+}
+
+.active, .collapsible:hover {
+  background-color: #ccc;
+}
+
+.content {
+  display: none;
+  overflow: hidden;
+  background-color: #f1f1f1;
+}
+
+input[type=text], select, textarea {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+input[type=submit] {
+  width: 100%;
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+input[type=submit]:hover {
+  background-color: #45a049;
+}
+
+.form {
+  border-radius: 5px;
+  background-color: #f2f2f2;
+  padding: 20px;
+  width: 50%;
+  margin: auto;
+  margin-top: 25px;
+}
+
+.list_row {
+    margin-top: 30px;
+    position: fixed;
+    left: 25%;
+    width: 50%;
+}
+
+.autocomplete {
+  position: relative;
+}
+
+.autocomplete-items {
+  position: relative;
+  border: 1px solid #d4d4d4;
+  border-bottom: none;
+  border-top: none;
+  z-index: 99;
+  top: 100%;
+}
+
+.autocomplete-items div {
+  padding: 10px;
+  cursor: pointer;
+  background-color: #fff;
+  border-bottom: 1px solid #d4d4d4;
+}
+
+.autocomplete-items div:hover {
+  background-color: #e9e9e9;
+}
+
+.autocomplete-active {
+  background-color: DodgerBlue !important;
+  color: #ffffff;
+}
+
+.failure {
+  padding: 20px;
+  background-color: #ca3535;
+  color: white;
+}
+
+.success {
+   padding: 20px;
+   background-color: #4CAF50;
+   color: white;
+}
+
+.closebtn {
+  margin-left: 15px;
+  color: white;
+  font-weight: bold;
+  float: right;
+  font-size: 22px;
+  line-height: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.closebtn:hover {
+  color: black;
+}
+
+.badge {
+  background-color: red;
+  color: white;
+  padding: 4px 8px;
+  margin-left: 10px;
+  text-align: center;
+  border-radius: 5px;
+}

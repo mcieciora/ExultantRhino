@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Exultant Rhino</title>
+</head>
+<body>
+<script>
+    function myFunction() {
+        document.getElementById("myDropdown").classList.toggle("show")l
+    }
+
+    window.onclick = function(e) {
+      if (!e.target.matches('.dropbtn')) {
+      var myDropdown = document.getElementById("myDropdown");
+        if (myDropdown.classList.contains('show')) {
+          myDropdown.classList.remove('show');
+        }
+      }
+    }
+</script>
+      <div class="navbar">
+          <div class="dropdown">
+              <button class="dropbtn" onclick="myFunction()">{{ current_project.title }}
+                <i class="fa fa-caret-down"></i>
+              </button>
+              <div class="dropdown-content" id="myDropdown">
+                  {% for project in projects %}
+                  <a href="/proj/{{project.object_id}}">{{ project.title }}</a>
+                  {% endfor %}
+              </div>
+          </div>
+          <a href="/view_objects/releases">Releases</a>
+          <a href="/view_objects/requirement">Requirements</a>
+          <a href="/view_objects/testcase">Test cases</a>
+          <a href="/view_objects/bug">Bugs</a>
+          <div class="create_button">
+              <a href="/create">Create</a>
+          </div>
+      </div>
+      {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+                {% for category, message in messages %}
+                    <div class="{{ category }}">
+                        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                        <strong>Info</strong> {{ message }}
+                    </div>
+     {% endfor %} {% endif %} {% endwith %}
+
+    <div>
+        {% block content %} {% endblock %}
+    </div>
+  </body>
+</html>

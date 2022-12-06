@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  db:
+    container_name: exultant_rhino_db
+    image: mongo:latest
+    hostname: mongodb
+    volumes:
+      - './data:/data/db'
+    ports:
+      - "27017:27017"
+  app:
+    container_name: exultant_rhino_app
+    build: .
+    image: exultant_rhino_app
+    ports:
+      - "8000:8000"
+    links:
+      - db

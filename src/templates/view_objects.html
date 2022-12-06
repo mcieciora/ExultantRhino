@@ -1,0 +1,47 @@
+{% extends "base.html" %} {% block content%}
+<div class="list_row">
+{% for object in all_objects %}
+    {% if object.object_type == 'testcase' and dependencies[object.object_id]|length > 0 %}
+        <button type="button" id="collapsible_bug" class="collapsible">{{ object.object_id }}: {{ object.title }}<span class="badge">Bug</span></button>
+    {% else %}
+        <button type="button" id="collapsible" class="collapsible">{{ object.object_id }}: {{ object.title }}</button>
+    {% endif %}
+    <div class="content">
+        <p>{{ object.description }}</p>
+        {% if object.object_type != 'release' %}
+            <p>Depends on: <a href="/edit/{{ object.parent.split(':')[0] }}" target="_blank" rel="noopener noreferrer">{{ object.parent }}</a></p>
+            <p>Dependencies:
+                {% for dependency in dependencies[object.object_id] %}
+                    <a href="/edit/{{ dependency['object_id'] }}" target="_blank" rel="noopener noreferrer">{{ dependency.object_id }}: {{ dependency.title }}</a>
+                {% endfor %}
+            </p>
+            <a class="edit" href="/edit/{{ object.object_id }}">Edit</a>
+        {% else %}
+            {% for req, results_dict in object.requirements.items() %}
+                    {% for test_case, result in results_dict.items() %}
+                        <p>{{ req }} {{ test_case }} {{ result }}</p>
+                    {% endfor %}
+            {% endfor %}
+        {% endif %}
+        <a class="delete" href="/delete/{{ object.object_id }}">Delete</a>
+    </div>
+{% endfor %}
+    </div>
+<script>
+    var coll = document.getElementsByClassName("collapsible");
+    var i;
+
+    for (i = 0; i < coll.length; i++) {
+      coll[i].addEventListener("click", function() {
+        this.classList.toggle("active");
+        var content = this.nextElementSibling;
+        if (content.style.display === "block") {
+          content.style.display = "none";
+        } else {
+          content.style.display = "block";
+        }
+      });
+    }
+</script>
+
+{% endblock %}
