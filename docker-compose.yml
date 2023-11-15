@@ -1,0 +1,22 @@
+version: "3.8"
+
+services:
+  app:
+    container_name: app
+    build: .
+    image: app
+    ports:
+      - "8000:8000"
+    links:
+      - mongodb
+  mongodb:
+    container_name: mongodb
+    image: mongo:4.2
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
+      - MONGO_INITDB_DATABASE=newdb
+    ports:
+      - '27017:27017'
+    volumes:
+      - ./data:/data/db
