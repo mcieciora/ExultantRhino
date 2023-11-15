@@ -1,0 +1,30 @@
+def customImage
+
+pipeline {
+    agent any
+    stages {
+        stage ("Prepare docker test image") {
+            steps {
+                script {
+                    customImage = docker.build("test_image:${env.BUILD_ID}", "-f automated_tests/Dockerfile .")
+                }
+            }
+        }
+        stage("Run tests") {
+            steps {
+                script {
+                    customImage.inside("-v $WORKSPACE:/app") {
+                        sh "python3 -m pytest -m ${env.FLAG} -k ${env.TEST_GROUP} -v --junitxml=results/${TEST_GROUP}_results.xml"
+                    }
+                }
+            }
+        }
+    }
+    post {
+        always {
+            archiveArtifacts artifacts: "**/*.xml"
+            junit "**/*.xml"
+            cleanWs()
+        }
+    }
+}

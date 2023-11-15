@@ -1,0 +1,59 @@
+version: '3.8'
+services:
+  database:
+    image: postgres:latest
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    env_file:
+      - postgres.env
+    volumes:
+      - postgres-volume:/var/lib/postgresql/data
+  jira:
+    image: atlassian/jira-software:latest
+    container_name: jira
+    ports:
+      - "8081:8080"
+    links:
+      - database
+    volumes:
+      - jira-volume:/var/atlassian/application-data/jira
+  bitbucket:
+    image: atlassian/bitbucket
+    container_name: bitbucket
+    ports:
+      - "7990:7990"
+      - "7999:7999"
+    links:
+      - database
+    volumes:
+      - bitbucket-volume:/var/atlassian/application-data/bitbucket
+  jenkins:
+    image: jenkins
+    container_name: jenkins
+    build:
+      context: .
+      dockerfile: jenkins.Dockerfile
+    ports:
+      - "8080:8080"
+    env_file:
+      - jenkins.env
+    volumes:
+      - jenkins-volume:/var/jenkins_home
+      - ./casc.yml:/var/jenkins_conf/casc.yml
+      # Mount host docker.sock so that jenkins container can run containerized agents
+      # For better experience with running dockerized agents it is advised to set up jenkins as dind
+      - //var/run/docker.sock:/var/run/docker.sock
+  registry:
+    image: registry:2
+    container_name: registry
+    ports:
+      - "5000:5000"
+    volumes:
+      - registry-volume:/var/lib/registry:rw
+volumes:
+  bitbucket-volume:
+  jira-volume:
+  jenkins-volume:
+  postgres-volume:
+  registry-volume:

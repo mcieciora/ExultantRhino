@@ -1,0 +1,5 @@
+# Postgres database step-by-step setup needed for proper atlassian products (bitbucket, jira) usage
+create database atlassian_jira;
+create database atlassian_bitbucket;
+grant all privileges on database atlassian_jira to postgres;
+grant all privileges on database atlassian_bitbucket to postgres;
