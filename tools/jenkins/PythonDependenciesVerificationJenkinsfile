@@ -6,7 +6,7 @@ pipeline {
         string(name: 'BRANCH', defaultValue: 'develop', description: "Execution branch")
     }
     environment {
-        REPO_URL = "git@github.com:mcieciora/CarelessVaquita.git"
+        REPO_URL = "git@github.com:mcieciora/ExultantRhino.git"
     }
     options {
         skipDefaultCheckout()
@@ -40,7 +40,7 @@ pipeline {
             steps {
                 script {
                     customImage.inside("-v $WORKSPACE:/app") {
-                        return_value = sh(script: "python3 tools/python/python_dependencies_up_to_date_verification.py", returnStdout: true).trim()
+                        return_value = sh(script: "python tools/python/python_dependencies_up_to_date_verification.py", returnStdout: true).trim()
                         if (return_value.contains("Consider upgrading")) {
                             unstable(return_value)
                         }

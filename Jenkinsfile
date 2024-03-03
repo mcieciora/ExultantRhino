@@ -7,7 +7,7 @@ pipeline {
         TEST_GROUPS = getValue("TEST_GROUP", "all")
         REGULAR_BUILD = getValue("REGULAR_BUILD", true)
         BRANCH_TO_USE = getValue("BRANCH", env.BRANCH_NAME)
-        REPO_URL = "git@github.com:mcieciora/CarelessVaquita.git"
+        REPO_URL = "git@github.com:mcieciora/ExultantRhino.git"
     }
     options {
         skipDefaultCheckout()
@@ -42,9 +42,9 @@ pipeline {
                     steps {
                         script {
                             testImage.inside("-v $WORKSPACE:/app") {
-                                sh "python3 -m pylint src --max-line-length=120 --disable=C0114 --fail-under=9.5"
-                                sh "python3 -m pylint --load-plugins pylint_pytest automated_tests --max-line-length=120 --disable=C0114,C0116 --fail-under=9.5"
-                                sh "python3 -m pylint tools/python --max-line-length=120 --disable=C0114 --fail-under=9.5"
+                                sh "python -m pylint src --max-line-length=120 --disable=C0114 --fail-under=9.5"
+                                sh "python -m pylint --load-plugins pylint_pytest automated_tests --max-line-length=120 --disable=C0114,C0116 --fail-under=9.5"
+                                sh "python -m pylint tools/python --max-line-length=120 --disable=C0114 --fail-under=9.5"
                             }
                         }
                     }
@@ -53,7 +53,7 @@ pipeline {
                     steps {
                         script {
                             testImage.inside("-v $WORKSPACE:/app") {
-                                sh "python3 -m flake8 --max-line-length 120 --max-complexity 10 src"
+                                sh "python -m flake8 --max-line-length 120 --max-complexity 10 src"
                             }
                         }
                     }
@@ -62,8 +62,8 @@ pipeline {
                     steps {
                         script {
                             testImage.inside("-v $WORKSPACE:/app") {
-                                sh "python3 -m ruff format ."
-                                sh "python3 -m ruff check ."
+                                sh "python -m ruff format ."
+                                sh "python -m ruff check ."
                             }
                         }
                     }
@@ -72,7 +72,7 @@ pipeline {
                     steps {
                         script {
                             testImage.inside("-v $WORKSPACE:/app") {
-                                sh "python3 -m black ."
+                                sh "python -m black ."
                             }
                         }
                     }
@@ -81,7 +81,7 @@ pipeline {
                     steps {
                         script {
                             testImage.inside("-v $WORKSPACE:/app") {
-                                sh "python3 -m pytest --cov=src automated_tests/ --cov-fail-under=95 --cov-report=html"
+                                sh "python -m pytest --cov=src automated_tests/ --cov-fail-under=95 --cov-report=html"
                             }
                             publishHTML target: [
                                 allowMissing: false,
@@ -103,7 +103,7 @@ pipeline {
                     steps {
                         script {
                             testImage.inside("-v $WORKSPACE:/app") {
-                                sh "python3 tools/python/scan_for_skipped_tests.py"
+                                sh "python tools/python/scan_for_skipped_tests.py"
                             }
                         }
                     }
@@ -114,7 +114,7 @@ pipeline {
             steps {
                 script {
                     testImage.inside("-v $WORKSPACE:/app") {
-                        sh "python3 -m pytest -m unittest -v --junitxml=results/unittests_results.xml"
+                        sh "python -m pytest -m unittest -v --junitxml=results/unittests_results.xml"
                     }
                 }
             }
@@ -124,7 +124,7 @@ pipeline {
                 axes {
                     axis {
                         name "TEST_GROUP"
-                        values "google"
+                        values "api", "app"
                     }
                 }
                 stages {
@@ -134,7 +134,7 @@ pipeline {
                                 if (env.TEST_GROUPS == "all" || env.TEST_GROUPS.contains(TEST_GROUP)) {
                                     echo "Running ${TEST_GROUP}"
                                     testImage.inside("-v $WORKSPACE:/app") {
-                                        sh "python3 -m pytest -m ${FLAG} -k ${TEST_GROUP} -v --junitxml=results/${TEST_GROUP}_results.xml"
+                                        sh "python -m pytest -m ${FLAG} -k ${TEST_GROUP} -v --junitxml=results/${TEST_GROUP}_results.xml"
                                     }
                                 }
                                 else {
@@ -182,10 +182,10 @@ pipeline {
                     steps {
                         script {
                             def registryPath = ""
-                            def containerName = "mcieciora/careless_vaquita:${env.BRANCH_NAME}_${env.BUILD_ID}"
+                            def containerName = "mcieciora/exultant_rhino:${env.BRANCH_NAME}_${env.BUILD_ID}"
                             if (env.BRANCH_NAME == "develop") {
                                 registryPath = "http://localhost:5000"
-                                containerName = "careless_vaquita:${env.BRANCH_NAME}_${env.BUILD_ID}"
+                                containerName = "exultant_rhino:${env.BRANCH_NAME}_${env.BUILD_ID}"
                             }
                             docker.withRegistry("${registryPath}", "dockerhub_id") {
                                 def customImage = docker.build("${containerName}")
