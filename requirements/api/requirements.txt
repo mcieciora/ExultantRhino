@@ -1,0 +1,4 @@
+bottle==0.12.25
+SQLAlchemy==2.0.27
+requests==2.31.0
+psycopg2==2.9.9

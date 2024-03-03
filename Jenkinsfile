@@ -9,8 +9,8 @@ pipeline {
         TEST_GROUPS = getValue("TEST_GROUP", "all")
         REGULAR_BUILD = getValue("REGULAR_BUILD", true)
         BRANCH_TO_USE = getValue("BRANCH", env.BRANCH_NAME)
-        REPO_URL = "git@github.com:mcieciora/CarelessVaquita.git"
-        DOCKERHUB_REPO = "mcieciora/careless_vaquita"
+        REPO_URL = "git@github.com:mcieciora/ExultantRhino.git"
+        DOCKERHUB_REPO = "mcieciora/exultant_rhino"
         FORCE_DOCKER_IMAGE_BUILD = getValue("FORCE_BUILD", false)
     }
     options {
@@ -216,7 +216,7 @@ pipeline {
                 axes {
                     axis {
                         name "TEST_GROUP"
-                        values "google"
+                        values "api", "app"
                     }
                 }
                 stages {

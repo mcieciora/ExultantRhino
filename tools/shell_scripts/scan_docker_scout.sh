@@ -1,7 +1,7 @@
 #!/bin/bash
 
 RETURN_VALUE=0
-DOCKERHUB_REPO="mcieciora/careless_vaquita"
+DOCKERHUB_REPO="mcieciora/exultant_rhino"
 
 TAGS="latest test_image"
 for TAG in $TAGS; do
