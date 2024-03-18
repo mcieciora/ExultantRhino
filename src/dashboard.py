@@ -7,7 +7,7 @@ def find_projects():
     Get all available projects in list format.
     :return: List of Project database objects.
     """
-    all_projects = get("http://api:8101/get_objects/project")
+    all_projects = get("http://api:8101/get_objects/project", timeout=5)
     return [f"{db_object['shortname']}: {db_object['title']}" for db_object in all_projects.json()]
 
 

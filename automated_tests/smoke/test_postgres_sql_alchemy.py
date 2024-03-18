@@ -24,11 +24,11 @@ def test__smoke__postgres__get_next_shortname(one_object_of_type_database_fixtur
 
 @mark.smoke
 def test__smoke__postgres__get_database_object(one_object_of_type_database_fixture):
-    test_data = {Project: "proj-0", Release: "rls-0", Requirement: "req-0", TestCase: "tc-1", Bug: "bug-0"}
+    test_data = {Project: "proj-0", Release: "rls-0", Requirement: "req-0", TestCase: "tc-0", Bug: "bug-0"}
     for object_type, shortname in test_data.items():
         expected_value = f"new {object_type.__name__.lower()}"
         actual_value = get_database_object(object_type, shortname)
-        assert actual_value == expected_value, f"Expected: {expected_value}, actual: {actual_value}"
+        assert actual_value["title"] == expected_value, f"Expected: {expected_value}, actual: {actual_value['title']}"
 
 
 @mark.smoke
@@ -42,15 +42,6 @@ def test__smoke__postgres__get_all_objects_by_type(two_objects_of_type_database_
             actual_result = database_object["description"]
             expected_result = expected_values[index]
             assert actual_result == expected_result, f"Expected: {expected_result}, actual: {actual_result}"
-
-
-@mark.smoke
-def test__smoke__postgres__get_database_object(one_object_of_type_database_fixture):
-    test_data = {Project: "proj-0", Release: "rls-0", Requirement: "req-0", TestCase: "tc-0", Bug: "bug-0"}
-    for object_type, shortname in test_data.items():
-        expected_value = f"new {object_type.__name__.lower()}"
-        actual_value = get_database_object(object_type, shortname)
-        assert actual_value["title"] == expected_value, f"Expected: {expected_value}, actual: {actual_value['title']}"
 
 
 @mark.smoke
