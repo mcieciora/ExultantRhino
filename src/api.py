@@ -1,5 +1,5 @@
-from bottle import FormsDict, response, request, route, run
 from json import dumps
+from bottle import FormsDict, response, request, route, run
 from src.postgres_sql_alchemy import Bug, create_database_object, get_all_objects_by_type, \
     get_database_object, get_objects_by_filters, init_db, Project, Release, Requirement, TestCase
 
