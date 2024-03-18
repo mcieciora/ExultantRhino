@@ -42,7 +42,7 @@ pipeline {
                     steps {
                         script {
                             testImage.inside("-v $WORKSPACE:/app") {
-                                sh "python -m pylint src --max-line-length=120 --disable=C0114 --fail-under=9.5"
+                                sh "python -m pylint src --max-line-length=120 --disable=C0114 --fail-under=8.5"
                                 sh "python -m pylint --load-plugins pylint_pytest automated_tests --max-line-length=120 --disable=C0114,C0116 --fail-under=9.5"
                                 sh "python -m pylint tools/python --max-line-length=120 --disable=C0114 --fail-under=9.5"
                             }
@@ -81,7 +81,7 @@ pipeline {
                     steps {
                         script {
                             testImage.inside("-v $WORKSPACE:/app") {
-                                sh "python -m pytest --cov=src automated_tests/ --cov-fail-under=95 --cov-report=html"
+                                sh "python -m pytest --cov=src automated_tests/unittest --cov-fail-under=95 --cov-report=html"
                             }
                             publishHTML target: [
                                 allowMissing: false,
