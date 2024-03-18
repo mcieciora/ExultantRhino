@@ -29,7 +29,7 @@ def find_parent(search_term):
 
 
 def find_projects(search_term):
-    all_projects = get(f"http://api:8101/get_objects/project")
+    all_projects = get("http://api:8101/get_objects/project")
     print(all_projects)
     return [f"{db_object['shortname']}: {db_object['title']}" for db_object in all_projects.json()
             if search_term in db_object["shortname"] or search_term in db_object["title"]]
