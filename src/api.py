@@ -105,7 +105,7 @@ def get_objects(object_type):
     See: request_map dictionary values or call /get_help/get_objects
     :return: JSON formatted string.
     """
-    if type(params := request.params) is FormsDict:
+    if isinstance(params := request.params, FormsDict):
         filters = {x: y for x, y in params.items()}
         return_value = get_objects_by_filters(object_type_map[object_type], filters)
     else:

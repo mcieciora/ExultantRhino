@@ -3,10 +3,6 @@ from src.postgres_sql_alchemy import Bug, create_database_object, drop_rows_by_t
     Release, Requirement, TestCase
 
 
-from dotenv import load_dotenv
-load_dotenv("../../.env")
-
-
 def _insert_dummy_project():
     """
     Insert dummy project into database for testing purposes.
