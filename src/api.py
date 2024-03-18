@@ -1,7 +1,7 @@
 from bottle import FormsDict, response, request, route, run
 from json import dumps
 from src.postgres_sql_alchemy import Bug, create_database_object, get_all_objects_by_type, \
-    get_database_object, get_objects_by_filters, Project, Release, Requirement, TestCase
+    get_database_object, get_objects_by_filters, init_db, Project, Release, Requirement, TestCase
 
 
 requests_map = {
@@ -51,8 +51,7 @@ object_type_map = {
 
 def return_response(return_table):
     """
-    Serialize database objects list to JSON formatted string
-    :param return_table: database objects list.
+    Serialize database objects list to JSON formatted string.
     :return: JSON formatted string.
     """
     response.content_type = 'application/json'
@@ -62,7 +61,7 @@ def return_response(return_table):
 @route("/status")
 def status():
     """
-    Get current Streamlit application, API daemon and database statuses
+    Get current Streamlit application, API daemon and database statuses.
     :return: JSON formatted string.
     """
     # TODO implement app, api and db statuses check
@@ -72,7 +71,7 @@ def status():
 @route("/get_help")
 def get_help():
     """
-    Get list of all endpoints with description, format and additional pieces of information
+    Get list of all endpoints with description, format and additional pieces of information.
     :return: JSON formatted string.
     """
     return return_response(requests_map)
@@ -81,7 +80,7 @@ def get_help():
 @route("/get_help/<request_name>")
 def get_help_by_request(request_name):
     """
-    Get description, format and additional pieces of information of endpoint by its name
+    Get description, format and additional pieces of information of endpoint by its name.
     :return: JSON formatted string.
     """
     return return_response(requests_map[request_name])
@@ -94,7 +93,6 @@ def get_object(object_type, shortname):
     in (proj/rls/req/tc/bug)-xxx format.
     :return: JSON formatted string.
     """
-    # TODO write smoke tests
     return_value = get_database_object(object_type_map[object_type], shortname)
     return return_response(return_value)
 
@@ -102,12 +100,11 @@ def get_object(object_type, shortname):
 @route("/get_objects/<object_type>")
 def get_objects(object_type):
     """
-    Get list of database objects by their type (Project, Release, Requirement, TestCase, Bug)
+    Get list of database objects by their type (Project, Release, Requirement, TestCase, Bug).
     Additional filters may be added as query parameters in API call.
     See: request_map dictionary values or call /get_help/get_objects
     :return: JSON formatted string.
     """
-    # TODO write smoke tests
     if type(params := request.params) is FormsDict:
         filters = {x: y for x, y in params.items()}
         return_value = get_objects_by_filters(object_type_map[object_type], filters)
@@ -122,7 +119,6 @@ def insert_object(object_type):
     Insert object into database with given parameters values passed as query.
     :return: Committed object shortname value.
     """
-    # TODO write smoke tests
     model_object = object_type_map[object_type]
     new_object = model_object()
     model_columns = [column.name for column in model_object.__table__.columns]
@@ -133,4 +129,5 @@ def insert_object(object_type):
 
 
 if __name__ == '__main__':
+    init_db()
     run(host="0.0.0.0", port=8101)

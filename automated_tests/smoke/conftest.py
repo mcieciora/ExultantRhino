@@ -1,6 +1,10 @@
 from pytest import fixture
 from src.postgres_sql_alchemy import Bug, create_database_object, drop_rows_by_table, Project, \
-    Release, Requirement, TestCase, get_all_objects_by_type
+    Release, Requirement, TestCase
+
+
+from dotenv import load_dotenv
+load_dotenv("../../.env")
 
 
 def _insert_dummy_project():
@@ -30,7 +34,7 @@ def empty_database_fixture():
 
 
 @fixture(scope="function")
-def one_object_database_fixture():
+def one_object_of_type_database_fixture():
     """
     Fixture creates Release, Requirement, TestCase and Bug objects in database parenting them to proj-0 created by
     insert_dummy_project().
@@ -44,5 +48,25 @@ def one_object_database_fixture():
                                 "description": f"{object_type.__name__.lower()} description", "parent": parent_object}
         new_db_object = object_type(**template_object_dict)
         parent_object = create_database_object(new_db_object)
+    yield
+    _drop_all_rows()
+
+
+@fixture(scope="function")
+def two_objects_of_type_database_fixture():
+    """
+    Fixture creates Release, Requirement, TestCase and Bug objects in database parenting them to proj-0 created by
+    insert_dummy_project().
+    :return: Yielding dummy database prepared for postgres and api testing.
+    """
+    project_shortname = _insert_dummy_project()
+    parent_object = project_shortname
+    object_types_list = [Release, Requirement, TestCase, Bug]
+    for object_type in object_types_list:
+        for description in [f"{object_type.__name__.lower()} description", "test_description"]:
+            template_object_dict = {"title": f"new {object_type.__name__.lower()}", "project_id": project_shortname,
+                                    "description": f"{description}", "parent": parent_object}
+            new_db_object = object_type(**template_object_dict)
+            parent_object = create_database_object(new_db_object)
     yield
     _drop_all_rows()

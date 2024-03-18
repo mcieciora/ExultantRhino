@@ -10,3 +10,10 @@ services:
       - "8101:8101"
     env_file:
       - .env
+  app:
+    container_name: app
+    build:
+      context: .
+      dockerfile: app.Dockerfile
+    ports:
+      - "8501:8501"

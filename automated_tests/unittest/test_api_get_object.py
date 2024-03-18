@@ -19,7 +19,7 @@ def test__unittest__api__get_object(mocker):
 def test__unittest__api__get_objects(mocker):
     mocker.patch("bottle.BaseRequest.params",
                  return_value={"shortname": "bug-1", "parent": "tc-2"})
-    mocker.patch("src.api.get_objects_by_filters",
+    mocker.patch("src.api.get_all_objects_by_type",
                  return_value=[{"id": "None", "title": "bug one", "shortname": "bug-1",
                                 "description": "description of bug one", "parent": "tc-2"}])
     expected_value = '[{"id": "None", "title": "bug one", "shortname": "bug-1", ' \

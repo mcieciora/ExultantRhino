@@ -225,7 +225,7 @@ pipeline {
                             script {
                                 if (env.TEST_GROUPS == "all" || env.TEST_GROUPS.contains(TEST_GROUP)) {
                                     echo "Running ${TEST_GROUP}"
-                                    testImage.inside("-v $WORKSPACE:/app") {
+                                    testImage.inside("--network host --env-file .env -v $WORKSPACE:/app") {
                                         sh "python -m pytest -m ${FLAG} -k ${TEST_GROUP} automated_tests -v --junitxml=results/${TEST_GROUP}_results.xml"
                                     }
                                 }
