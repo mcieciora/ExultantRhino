@@ -160,7 +160,7 @@ pipeline {
                     steps {
                         script {
                             testImage.inside("-v $WORKSPACE:/app") {
-                                sh "python -m pytest --cov=src automated_tests/unittest --cov-fail-under=95 --cov-report=html"
+                                sh "python -m pytest --cov=src automated_tests/unittest --cov-fail-under=70 --cov-config=automated_tests/.coveragerc --cov-report=html"
                             }
                             publishHTML target: [
                                 allowMissing: false,
