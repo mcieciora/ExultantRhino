@@ -8,10 +8,8 @@ services:
       - "5432:5432"
     env_file:
       - .env
-#    volumes:
-#      - postgres-volume:/var/lib/postgresql/data
     volumes:
-      - ./postgres_data:/var/lib/postgresql/data
+      - postgres-volume:/var/lib/postgresql/data
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin4
