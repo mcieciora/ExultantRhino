@@ -29,7 +29,7 @@ pipeline {
                         sh 'cp $env_file .env'
                     }
                     withCredentials([file(credentialsId: 'dot_env_test', variable: 'test_env_file')]) {
-                        sh 'cp test_env_file .env_test'
+                        sh 'cp $test_env_file .env_test'
                     }
                     currentBuild.description = "Branch: ${env.BRANCH_TO_USE}\nFlag: ${env.FLAG}\nGroups: ${env.TEST_GROUPS}"
                     build_test_image = sh(script: "git diff --name-only \$(git rev-parse HEAD) \$(git rev-parse ${BRANCH_REV}) | grep -e automated_tests -e src -e requirements",
