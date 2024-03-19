@@ -20,14 +20,28 @@ pipeline {
                         sh 'GIT_SSH_COMMAND="ssh -i $key"'
                         git branch: env.BRANCH_TO_USE, url: env.REPO_URL
                     }
+                    withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
+                        sh "cp ${env_file} .env"
+                    }
                     currentBuild.description = "Branch: ${env.BRANCH_TO_USE}\nFlag: ${env.FLAG}\nGroups: ${env.TEST_GROUPS}"
                 }
             }
         }
-        stage ("Prepare docker test image") {
-            steps {
-                script {
-                    testImage = docker.build("test_image:${env.BUILD_ID}", "-f automated_tests/Dockerfile .")
+        stage ("Prepare docker images") {
+            stages {
+                stage ("Build test image") {
+                     steps {
+                        script {
+                            testImage = docker.build("test_image:${env.BUILD_ID}", "-f automated_tests/Dockerfile .")
+                        }
+                    }
+                }
+                stage ("Build docker compose") {
+                    steps {
+                        script {
+                            sh "docker compose build --no-cache"
+                        }
+                    }
                 }
             }
         }
@@ -119,6 +133,14 @@ pipeline {
                 }
             }
         }
+        stage ("Run app & health check") {
+            steps {
+                script {
+                    sh "chmod +x tools/shell_scripts/app_health_check.sh"
+                    sh "tools/shell_scripts/app_health_check.sh 30 2"
+                }
+            }
+        }
         stage("Run tests") {
             matrix {
                 axes {
@@ -128,21 +150,6 @@ pipeline {
                     }
                 }
                 stages {
-                    stage ("Build docker compose") {
-                        steps {
-                            script {
-                                sh "docker compose build --no-cache"
-                            }
-                        }
-                    }
-                    stage ("Run app & health check") {
-                        steps {
-                            script {
-                                sh "chmod +x tools/shell_scripts/app_health_check.sh"
-                                sh "tools/shell_scripts/app_health_check.sh 30 2"
-                            }
-                        }
-                    }
                     stage("Test stage") {
                         steps {
                             script {
