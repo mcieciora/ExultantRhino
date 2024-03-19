@@ -5,7 +5,7 @@ RUN apt install libpq-dev gcc -y
 
 WORKDIR /app
 COPY pytest.ini ./
-COPY .env ./
+COPY .env_test ./
 COPY requirements/api/requirements.txt ./requirements-api.txt
 COPY requirements/app/requirements.txt ./requirements-app.txt
 COPY requirements/testing/requirements.txt ./requirements-testing.txt
