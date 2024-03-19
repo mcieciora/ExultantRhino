@@ -128,6 +128,21 @@ pipeline {
                     }
                 }
                 stages {
+                    stage ("Build docker compose") {
+                        steps {
+                            script {
+                                sh "docker compose build --no-cache"
+                            }
+                        }
+                    }
+                    stage ("Run app & health check") {
+                        steps {
+                            script {
+                                sh "chmod +x tools/shell_scripts/app_health_check.sh"
+                                sh "tools/shell_scripts/app_health_check.sh 30 2"
+                            }
+                        }
+                    }
                     stage("Test stage") {
                         steps {
                             script {
@@ -142,6 +157,11 @@ pipeline {
                                 }
                             }
                         }
+                        post {
+                            always {
+                                sh "docker compose down --rmi all -v"
+                            }
+                        }
                     }
                 }
             }
@@ -153,26 +173,6 @@ pipeline {
                 }
             }
             stages {
-                stage ("Build docker compose") {
-                    steps {
-                        script {
-                            sh "docker compose build --no-cache"
-                        }
-                    }
-                }
-                stage ("Run app & health check") {
-                    steps {
-                        script {
-                            sh "chmod +x tools/shell_scripts/app_health_check.sh"
-                            sh "tools/shell_scripts/app_health_check.sh 30 1"
-                        }
-                    }
-                    post {
-                        always {
-                            sh "docker compose down --rmi all -v"
-                        }
-                    }
-                }
                 stage ("Push docker image") {
                     when {
                         expression {
