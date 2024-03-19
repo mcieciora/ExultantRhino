@@ -271,7 +271,31 @@ pipeline {
                     return env.REGULAR_BUILD == "true"
                 }
             }
+<<<<<<< HEAD
             parallel {
+=======
+            stages {
+                stage ("Build docker compose") {
+                    steps {
+                        script {
+                            sh "docker compose build --no-cache"
+                        }
+                    }
+                }
+                stage ("Run app & health check") {
+                    steps {
+                        script {
+                            sh "chmod +x tools/shell_scripts/app_health_check.sh"
+                            sh "tools/shell_scripts/app_health_check.sh 30 2"
+                        }
+                    }
+                    post {
+                        always {
+                            sh "docker compose down --rmi all -v"
+                        }
+                    }
+                }
+>>>>>>> b7a8935 (19032024-1213)
                 stage ("Push docker image") {
                     when {
                         expression {

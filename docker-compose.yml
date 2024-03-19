@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   api:
-    container_name: api
+    container_name: er_api
     build:
       context: .
       dockerfile: api.Dockerfile
@@ -11,7 +11,7 @@ services:
     env_file:
       - .env
   app:
-    container_name: app
+    container_name: er_app
     build:
       context: .
       dockerfile: app.Dockerfile
