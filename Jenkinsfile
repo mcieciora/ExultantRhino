@@ -25,6 +25,9 @@ pipeline {
                         sh 'GIT_SSH_COMMAND="ssh -i $key"'
                         checkout scmGit(branches: [[name: "*/${BRANCH_TO_USE}"]], extensions: [], userRemoteConfigs: [[url: "${env.REPO_URL}"]])
                     }
+                    withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
+                        sh "cp ${env_file} .env"
+                    }
                     currentBuild.description = "Branch: ${env.BRANCH_TO_USE}\nFlag: ${env.FLAG}\nGroups: ${env.TEST_GROUPS}"
                     build_test_image = sh(script: "git diff --name-only \$(git rev-parse HEAD) \$(git rev-parse ${BRANCH_REV}) | grep -e automated_tests -e src -e requirements",
                                           returnStatus: true)
@@ -202,7 +205,7 @@ pipeline {
             steps {
                 script {
                     sh "chmod +x tools/shell_scripts/app_health_check.sh"
-                    sh "tools/shell_scripts/app_health_check.sh 30 1"
+                    sh "tools/shell_scripts/app_health_check.sh 30 2"
                 }
             }
             post {
@@ -220,21 +223,6 @@ pipeline {
                     }
                 }
                 stages {
-                    stage ("Build docker compose") {
-                        steps {
-                            script {
-                                sh "docker compose build --no-cache"
-                            }
-                        }
-                    }
-                    stage ("Run app & health check") {
-                        steps {
-                            script {
-                                sh "chmod +x tools/shell_scripts/app_health_check.sh"
-                                sh "tools/shell_scripts/app_health_check.sh 30 2"
-                            }
-                        }
-                    }
                     stage("Test stage") {
                         steps {
                             script {
