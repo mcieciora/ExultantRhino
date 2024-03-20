@@ -33,6 +33,7 @@ def convert_to_dict(database_object):
     except AttributeError:
         return {}
 
+
 def get_next_shortname(object_type):
     """
     Get next object shortname value based on given object type.
