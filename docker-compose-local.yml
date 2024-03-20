@@ -10,6 +10,8 @@ services:
       - .env
     volumes:
       - postgres-volume:/var/lib/postgresql/data
+    networks:
+        - proxy_net
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin4
@@ -19,7 +21,9 @@ services:
       - .env
     volumes:
       - pgadmin-volume:/var/lib/pgadmin
-
+networks:
+  proxy_net:
+    name: general_network
 volumes:
   postgres-volume:
   pgadmin-volume:

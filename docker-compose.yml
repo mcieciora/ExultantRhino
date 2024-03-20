@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   api:
-    container_name: er_api
+    container_name: exultant_rhino_api
     build:
       context: .
       dockerfile: api.Dockerfile
@@ -10,10 +10,16 @@ services:
       - "8101:8101"
     env_file:
       - .env
+    networks:
+      - api_network
   app:
-    container_name: er_app
+    container_name: exultant_rhino_app
     build:
       context: .
       dockerfile: app.Dockerfile
     ports:
       - "8501:8501"
+networks:
+  api_network:
+    external:
+      name: general_network

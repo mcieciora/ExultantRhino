@@ -4,7 +4,7 @@ from pytest import mark
 
 @mark.smoke
 def test__smoke__insert_object(empty_database_fixture):
-    api_call_url = "http://localhost:8101/insert_object/project?title=new+proj"
+    api_call_url = "http://exultant_rhino_api:8101/insert_object/project?title=new+proj"
     api_call = get(api_call_url)
     assert api_call.status_code == 200, "Status code is not 200."
     database_object = api_call.json()
