@@ -160,10 +160,8 @@ pipeline {
                             script {
                                 if (env.TEST_GROUPS == "all" || env.TEST_GROUPS.contains(TEST_GROUP)) {
                                     echo "Running ${TEST_GROUP}"
-                                    withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
-                                        testImage.inside("--network=general_network -e ${env_file} -v ${env_file}:${env_file}:ro -v $WORKSPACE:/app") {
+                                        testImage.inside("--network=general_network -e .env -v $WORKSPACE:/app") {
                                             sh "python -m pytest -m ${FLAG} -k ${TEST_GROUP} -v --junitxml=results/${TEST_GROUP}_results.xml"
-                                        }
                                     }
                                 }
                                 else {
@@ -233,7 +231,7 @@ pipeline {
             sh "docker rmi test_image:${env.BUILD_ID}"
             archiveArtifacts artifacts: "**/*_results.xml"
             junit "**/*_results.xml"
-            dir("$WORKSPACE") {
+            dir("${WORKSPACE}") {
                 deleteDir()
             }
         }
