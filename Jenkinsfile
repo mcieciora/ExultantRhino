@@ -25,9 +25,6 @@ pipeline {
                         sh 'GIT_SSH_COMMAND="ssh -i $key"'
                         checkout scmGit(branches: [[name: "*/${BRANCH_TO_USE}"]], extensions: [], userRemoteConfigs: [[url: "${env.REPO_URL}"]])
                     }
-                    withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
-                        sh 'cp $env_file .env'
-                    }
                     currentBuild.description = "Branch: ${env.BRANCH_TO_USE}\nFlag: ${env.FLAG}\nGroups: ${env.TEST_GROUPS}"
                     build_test_image = sh(script: "git diff --name-only \$(git rev-parse HEAD) \$(git rev-parse ${BRANCH_REV}) | grep -e automated_tests -e src -e requirements",
                                           returnStatus: true)
@@ -228,8 +225,10 @@ pipeline {
                             script {
                                 if (env.TEST_GROUPS == "all" || env.TEST_GROUPS.contains(TEST_GROUP)) {
                                     echo "Running ${TEST_GROUP}"
-                                    testImage.inside("--network=general_network --env-file .env -v $WORKSPACE:/app") {
-                                        sh "python -m pytest -m ${FLAG} -k ${TEST_GROUP} automated_tests -v --junitxml=results/${TEST_GROUP}_results.xml"
+                                    withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
+                                        testImage.inside("--network=general_network -e ${dot_env} -v ${dot_env}:${dot_env}:ro -v $WORKSPACE:/app") {
+                                            sh "python -m pytest -m ${FLAG} -k ${TEST_GROUP} automated_tests -v --junitxml=results/${TEST_GROUP}_results.xml"
+                                        }
                                     }
                                 }
                                 else {
