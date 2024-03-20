@@ -23,7 +23,7 @@ def test__smoke__api__get_object__bug(one_object_of_type_database_fixture):
     assert database_object["description"] == "bug description", f"description value equals " \
                                                                 f"{database_object['description']}"
     assert database_object["project_id"] == "proj-0", f"project_id value equals {database_object['project_id']}"
-    assert database_object["parent"] == "tc-1", f"parent value equals {database_object['parent']}"
+    assert database_object["parent"] == "tc-0", f"parent value equals {database_object['parent']}"
 
 
 @mark.smoke
