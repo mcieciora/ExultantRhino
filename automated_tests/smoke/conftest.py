@@ -27,6 +27,7 @@ def empty_database_fixture():
     """
     _drop_all_rows()
     yield
+    _drop_all_rows()
 
 
 @fixture(scope="function")
