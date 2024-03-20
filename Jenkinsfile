@@ -28,9 +28,6 @@ pipeline {
                     withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
                         sh 'cp $env_file .env'
                     }
-                    withCredentials([file(credentialsId: 'dot_env_test', variable: 'test_env_file')]) {
-                        sh 'cp $test_env_file .env_test'
-                    }
                     currentBuild.description = "Branch: ${env.BRANCH_TO_USE}\nFlag: ${env.FLAG}\nGroups: ${env.TEST_GROUPS}"
                     build_test_image = sh(script: "git diff --name-only \$(git rev-parse HEAD) \$(git rev-parse ${BRANCH_REV}) | grep -e automated_tests -e src -e requirements",
                                           returnStatus: true)
@@ -231,7 +228,7 @@ pipeline {
                             script {
                                 if (env.TEST_GROUPS == "all" || env.TEST_GROUPS.contains(TEST_GROUP)) {
                                     echo "Running ${TEST_GROUP}"
-                                    testImage.inside("--network host --env-file .env_test -v $WORKSPACE:/app") {
+                                    testImage.inside("--network=general_network --env-file .env -v $WORKSPACE:/app") {
                                         sh "python -m pytest -m ${FLAG} -k ${TEST_GROUP} automated_tests -v --junitxml=results/${TEST_GROUP}_results.xml"
                                     }
                                 }
