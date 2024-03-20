@@ -28,7 +28,7 @@ pipeline {
             }
         }
         stage ("Prepare docker images") {
-            stages {
+            parallel {
                 stage ("Build test image") {
                      steps {
                         script {
@@ -138,6 +138,11 @@ pipeline {
                 script {
                     sh "chmod +x tools/shell_scripts/app_health_check.sh"
                     sh "tools/shell_scripts/app_health_check.sh 30 2"
+                }
+            }
+            post {
+                always {
+                    sh "docker compose down --rmi all -v"
                 }
             }
         }
