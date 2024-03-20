@@ -229,7 +229,7 @@ pipeline {
                                 if (env.TEST_GROUPS == "all" || env.TEST_GROUPS.contains(TEST_GROUP)) {
                                     echo "Running ${TEST_GROUP}"
                                     withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
-                                        testImage.inside("--network=general_network -e ${dot_env} -v ${dot_env}:${dot_env}:ro -v $WORKSPACE:/app") {
+                                        testImage.inside("--network=general_network -e ${env_file} -v ${env_file}:${env_file}:ro -v $WORKSPACE:/app") {
                                             sh "python -m pytest -m ${FLAG} -k ${TEST_GROUP} automated_tests -v --junitxml=results/${TEST_GROUP}_results.xml"
                                         }
                                     }
