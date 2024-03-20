@@ -21,5 +21,5 @@ services:
       - "8501:8501"
 networks:
   api_network:
-    external:
       name: general_network
+      external: true

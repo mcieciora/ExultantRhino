@@ -20,9 +20,6 @@ pipeline {
                         sh 'GIT_SSH_COMMAND="ssh -i $key"'
                         git branch: env.BRANCH_TO_USE, url: env.REPO_URL
                     }
-                    withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
-                        sh 'cp $env_file .env'
-                    }
                     currentBuild.description = "Branch: ${env.BRANCH_TO_USE}\nFlag: ${env.FLAG}\nGroups: ${env.TEST_GROUPS}"
                 }
             }
@@ -160,8 +157,10 @@ pipeline {
                             script {
                                 if (env.TEST_GROUPS == "all" || env.TEST_GROUPS.contains(TEST_GROUP)) {
                                     echo "Running ${TEST_GROUP}"
-                                    testImage.inside("--network=general_network --env-file .env -v $WORKSPACE:/app") {
-                                        sh "python -m pytest -m ${FLAG} -k ${TEST_GROUP} -v --junitxml=results/${TEST_GROUP}_results.xml"
+                                    withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
+                                        testImage.inside("--network=general_network -e ${dot_env} -v ${dot_env}:${dot_env}:ro -v $WORKSPACE:/app") {
+                                            sh "python -m pytest -m ${FLAG} -k ${TEST_GROUP} -v --junitxml=results/${TEST_GROUP}_results.xml"
+                                        }
                                     }
                                 }
                                 else {
@@ -184,7 +183,7 @@ pipeline {
                     return env.REGULAR_BUILD == "true"
                 }
             }
-            stages {
+            parallel {
                 stage ("Push docker image") {
                     when {
                         expression {

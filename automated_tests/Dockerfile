@@ -5,10 +5,9 @@ RUN apt install libpq-dev gcc -y
 
 WORKDIR /app
 COPY pytest.ini ./
-COPY .env ./
-COPY requirements/api/requirements.txt ./requirements-api.txt
-COPY requirements/app/requirements.txt ./requirements-app.txt
-COPY requirements/testing/requirements.txt ./requirements-testing.txt
+
+WORKDIR /app/requirements
+COPY requirements/ .
 
 WORKDIR /app/automated_tests
 COPY automated_tests .
@@ -17,4 +16,4 @@ WORKDIR /app/src
 COPY src .
 
 WORKDIR /app
-RUN python -m pip install --no-cache-dir -r requirements-app.txt -r requirements-api.txt -r requirements-testing.txt
+RUN python -m pip install --no-cache-dir -r requirements/app/requirements.txt -r requirements/api/requirements.txt -r requirements/testing/requirements.txt
