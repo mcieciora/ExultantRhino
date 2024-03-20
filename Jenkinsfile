@@ -219,7 +219,7 @@ pipeline {
                 axes {
                     axis {
                         name "TEST_GROUP"
-                        values "api", "app"
+                        values "api", "app", "postgres"
                     }
                 }
                 stages {
@@ -237,11 +237,6 @@ pipeline {
                                 else {
                                     echo "Skipping execution."
                                 }
-                            }
-                        }
-                        post {
-                            always {
-                                sh "docker compose down --rmi all -v"
                             }
                         }
                     }
