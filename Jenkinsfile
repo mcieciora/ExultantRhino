@@ -209,7 +209,7 @@ pipeline {
                 }
             }
             post {
-                always {
+                failure {
                     sh "docker compose down --rmi all -v"
                 }
             }
