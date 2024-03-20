@@ -28,8 +28,10 @@ def convert_to_dict(database_object):
     Create dict out of given database object.
     :return: Database object dict.
     """
-    return {column.name: getattr(database_object, column.name) for column in database_object.__table__.columns}
-
+    try:
+        return {column.name: getattr(database_object, column.name) for column in database_object.__table__.columns}
+    except AttributeError:
+        return {}
 
 def get_next_shortname(object_type):
     """

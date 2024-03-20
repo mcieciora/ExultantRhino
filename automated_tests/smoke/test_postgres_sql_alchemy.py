@@ -23,6 +23,13 @@ def test__smoke__postgres__get_next_shortname(one_object_of_type_database_fixtur
 
 
 @mark.smoke
+def test__smoke__postgres__get_database_object__empty_database(empty_database_fixture):
+    expected_value = {}
+    actual_value = get_database_object(Project, "proj-0")
+    assert actual_value == expected_value, f"Expected: {expected_value}, actual: {actual_value['title']}"
+
+
+@mark.smoke
 def test__smoke__postgres__get_database_object(one_object_of_type_database_fixture):
     test_data = {Project: "proj-0", Release: "rls-0", Requirement: "req-0", TestCase: "tc-0", Bug: "bug-0"}
     for object_type, shortname in test_data.items():

@@ -151,7 +151,7 @@ pipeline {
                 axes {
                     axis {
                         name "TEST_GROUP"
-                        values "api", "app"
+                        values "api", "app", "postgres"
                     }
                 }
                 stages {
@@ -160,18 +160,15 @@ pipeline {
                             script {
                                 if (env.TEST_GROUPS == "all" || env.TEST_GROUPS.contains(TEST_GROUP)) {
                                     echo "Running ${TEST_GROUP}"
-                                        testImage.inside("--network=general_network -e .env -v $WORKSPACE:/app") {
-                                            sh "python -m pytest -m ${FLAG} -k ${TEST_GROUP} -v --junitxml=results/${TEST_GROUP}_results.xml"
+                                        withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
+                                            testImage.inside("--network general_network --env-file ${env_file} -v $WORKSPACE:/app") {
+                                                sh "python -m pytest -m ${FLAG} -k ${TEST_GROUP} -v --junitxml=results/${TEST_GROUP}_results.xml"
+                                        }
                                     }
                                 }
                                 else {
                                     echo "Skipping execution."
                                 }
-                            }
-                        }
-                        post {
-                            always {
-                                sh "docker compose down --rmi all -v"
                             }
                         }
                     }
