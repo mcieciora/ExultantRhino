@@ -92,7 +92,7 @@ def create_database_object(object_to_commit):
 
 def edit_database_object(object_type, object_id, new_data):
     """
-    Edit database object by providing new values' dict.
+    Edit database object by providing new values dict.
     :return: None
     """
     session = get_session()
