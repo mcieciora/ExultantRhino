@@ -4,7 +4,7 @@ set -e
 
 echo "Installing latest dependencies..."
 python -m pip install -r requirements/testing/requirements.txt
-python -m pip install -r requirements/example_app/requirements.txt
+python -m pip install -r requirements/app/requirements.txt
 
 echo "Running flake8 in src"
 python -m flake8 --max-line-length 120 --max-complexity 10 src

@@ -300,6 +300,21 @@ pipeline {
 }
 
 
+def executeTestGroup(testImage, testGroup) {
+    if (env.TEST_GROUPS == "all" || env.TEST_GROUPS.contains(testGroup)) {
+        echo "Running ${testGroup}"
+            withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
+                testImage.inside("--network general_network --env-file ${env_file} -v $WORKSPACE:/app") {
+                    sh "python -m pytest -m ${FLAG} -k ${testGroup} -v --junitxml=results/${testGroup}_results.xml"
+            }
+        }
+    }
+    else {
+        echo "Skipping execution."
+    }
+}
+
+
 def getValue(variable, defaultValue) {
     return params.containsKey(variable) ? params.get(variable) : defaultValue
 }

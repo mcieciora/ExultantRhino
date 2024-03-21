@@ -1,7 +1,6 @@
 FROM python:3.12.2-slim
 
-RUN apt update
-RUN apt install libpq-dev gcc -y
+RUN apt-get update && install libpq-dev gcc -y && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 COPY pytest.ini ./
