@@ -9,8 +9,10 @@ def _get_engine():
     Get engine object with connection arguments taken from environment.
     :return: Engine class object.
     """
-    return create_engine(f"postgresql://{environ['POSTGRES_USER']}:{environ['POSTGRES_PASSWORD']}@"
-                         f"{environ['HOST_NAME']}:{environ['DB_PORT']}/{environ['POSTGRES_DB']}")
+    return create_engine(
+        f"postgresql://{environ['POSTGRES_USER']}:{environ['POSTGRES_PASSWORD']}@"
+        f"{environ['HOST_NAME']}:{environ['DB_PORT']}/{environ['POSTGRES_DB']}"
+    )
 
 
 def get_session():
@@ -29,7 +31,10 @@ def convert_to_dict(database_object):
     :return: Database object dict.
     """
     try:
-        return {column.name: getattr(database_object, column.name) for column in database_object.__table__.columns}
+        return {
+            column.name: getattr(database_object, column.name)
+            for column in database_object.__table__.columns
+        }
     except AttributeError:
         return {}
 
@@ -39,7 +44,13 @@ def get_next_shortname(object_type):
     Get next object shortname value based on given object type.
     :return: String value in (proj/rls/req/tc/bug)-xxx format.
     """
-    shortname_prefix = {Project: "proj", Release: "rls", Requirement: "req", TestCase: "tc", Bug: "bug"}
+    shortname_prefix = {
+        Project: "proj",
+        Release: "rls",
+        Requirement: "req",
+        TestCase: "tc",
+        Bug: "bug",
+    }
     try:
         last_object = get_all_objects_by_type(object_type)[-1]
         last_object_id = int(last_object["shortname"].split("-")[1])
@@ -54,7 +65,9 @@ def get_database_object(object_type, shortname):
     in (proj/rls/req/tc/bug)-xxx format.
     :return: Database object.
     """
-    database_object = get_session().query(object_type).filter_by(shortname=shortname).first()
+    database_object = (
+        get_session().query(object_type).filter_by(shortname=shortname).first()
+    )
     return convert_to_dict(database_object)
 
 
@@ -63,7 +76,10 @@ def get_all_objects_by_type(object_type):
     Get list of database objects by their type (Project, Release, Requirement, TestCase, Bug).
     :return: List of database objects.
     """
-    return [convert_to_dict(db_object) for db_object in get_session().query(object_type).all()]
+    return [
+        convert_to_dict(db_object)
+        for db_object in get_session().query(object_type).all()
+    ]
 
 
 def get_objects_by_filters(object_type, filters_dict):

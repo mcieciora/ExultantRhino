@@ -8,6 +8,7 @@ class Project(Base):
     """
     Database Project model.
     """
+
     __tablename__ = "project"
     id = Column(Integer, primary_key=True)
     shortname = Column(String(25))
@@ -19,6 +20,7 @@ class Release(Base):
     """
     Database Release model.
     """
+
     __tablename__ = "release"
     id = Column(Integer, primary_key=True)
     shortname = Column(String(25))
@@ -32,6 +34,7 @@ class Requirement(Base):
     """
     Database Requirement model.
     """
+
     __tablename__ = "requirement"
     id = Column(Integer, primary_key=True)
     shortname = Column(String(25))
@@ -45,6 +48,7 @@ class TestCase(Base):
     """
     Database TestCase model.
     """
+
     __tablename__ = "testcase"
     id = Column(Integer, primary_key=True)
     shortname = Column(String(25))
@@ -58,6 +62,7 @@ class Bug(Base):
     """
     Database Bug model.
     """
+
     __tablename__ = "bug"
     id = Column(Integer, primary_key=True)
     shortname = Column(String(25))
