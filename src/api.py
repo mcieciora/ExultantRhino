@@ -1,43 +1,62 @@
 from json import dumps
 from bottle import FormsDict, response, request, route, run
-from src.postgres_sql_alchemy import Bug, create_database_object, get_all_objects_by_type, \
-    get_database_object, get_objects_by_filters, init_db, Project, Release, Requirement, TestCase
+from src.postgres_sql_alchemy import (
+    Bug,
+    create_database_object,
+    get_all_objects_by_type,
+    get_database_object,
+    get_objects_by_filters,
+    init_db,
+    Project,
+    Release,
+    Requirement,
+    TestCase,
+)
 
 
 requests_map = {
-    "status": {"description": "Get status of Streamlit app, API and database.",
-               "format": "/status"},
-    "get_help": {"description": "Show help page.",
-                 "format": "/get_help or /get_help/<request_name>",
-                 "request_name_value": "Any request name eg. get_object"},
-    "get_object": {"description": "Get object by type and id",
-                   "format": "/get_object/<object_type>/<shortname>",
-                   "object_type_value": "'project', 'release', 'requirement', 'testcase', 'bug'",
-                   "shortname_value": "Object shortname. eg. proj-0"},
-    "get_objects": {"description": "Get object by given filter.",
-                    "format": "/get_objects/<object_type>?<filters> eg. /get_object/release?name=new+release "
-                              "(plus signs are replaced by spaces)",
-                    "object_type_value": "'project', 'release', 'requirement', 'testcase', 'bug'",
-                    "filters_value": {
-                        "id": "Object database id.",
-                        "shortname": "Given database object shortname in (proj/rls/req/tc/bug)-xxx format.",
-                        "title": "Title of the object.",
-                        "description": "Object description.",
-                        "project_id": "Parent project id in proj-xxx format.",
-                        "parent": "Parent object in (proj/rls/req/tc/bug)-xxx format."
-                    }
-                    },
-    "insert_object": {"description": "Insert an object with given parameters.",
-                      "format": "/insert_object/<object_type>?<parameters> eg. "
-                                "/insert_object/release?title=new+release (plus signs are replaced by spaces)",
-                      "object_type_value": "'project', 'release', 'requirement', 'testcase', 'bug'",
-                      "parameters_value": {"title": "(Required) Name of the object",
-                                           "description": "(Required) Description of the object",
-                                           "project_id": "(Required) Set parent project that the object belongs to. "
-                                                         "Not applicable to projects.",
-                                           "parent": "(Required) Set parent of this object. Not applicable to projects."
-                                           }
-                      }
+    "status": {
+        "description": "Get status of Streamlit app, API and database.",
+        "format": "/status",
+    },
+    "get_help": {
+        "description": "Show help page.",
+        "format": "/get_help or /get_help/<request_name>",
+        "request_name_value": "Any request name eg. get_object",
+    },
+    "get_object": {
+        "description": "Get object by type and id",
+        "format": "/get_object/<object_type>/<shortname>",
+        "object_type_value": "'project', 'release', 'requirement', 'testcase', 'bug'",
+        "shortname_value": "Object shortname. eg. proj-0",
+    },
+    "get_objects": {
+        "description": "Get object by given filter.",
+        "format": "/get_objects/<object_type>?<filters> eg. /get_object/release?name=new+release "
+        "(plus signs are replaced by spaces)",
+        "object_type_value": "'project', 'release', 'requirement', 'testcase', 'bug'",
+        "filters_value": {
+            "id": "Object database id.",
+            "shortname": "Given database object shortname in (proj/rls/req/tc/bug)-xxx format.",
+            "title": "Title of the object.",
+            "description": "Object description.",
+            "project_id": "Parent project id in proj-xxx format.",
+            "parent": "Parent object in (proj/rls/req/tc/bug)-xxx format.",
+        },
+    },
+    "insert_object": {
+        "description": "Insert an object with given parameters.",
+        "format": "/insert_object/<object_type>?<parameters> eg. "
+        "/insert_object/release?title=new+release (plus signs are replaced by spaces)",
+        "object_type_value": "'project', 'release', 'requirement', 'testcase', 'bug'",
+        "parameters_value": {
+            "title": "(Required) Name of the object",
+            "description": "(Required) Description of the object",
+            "project_id": "(Required) Set parent project that the object belongs to. "
+            "Not applicable to projects.",
+            "parent": "(Required) Set parent of this object. Not applicable to projects.",
+        },
+    },
 }
 
 object_type_map = {
@@ -45,7 +64,7 @@ object_type_map = {
     "release": Release,
     "requirement": Requirement,
     "testcase": TestCase,
-    "bug": Bug
+    "bug": Bug,
 }
 
 
@@ -54,7 +73,7 @@ def return_response(return_table):
     Serialize database objects list to JSON formatted string.
     :return: JSON formatted string.
     """
-    response.content_type = 'application/json'
+    response.content_type = "application/json"
     return dumps(return_table)
 
 
@@ -128,6 +147,6 @@ def insert_object(object_type):
     return return_response({"committed_shortname": create_database_object(new_object)})
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     init_db()
     run(host="0.0.0.0", port=8101)

@@ -3,6 +3,8 @@
 set -e
 
 echo "Installing latest dependencies..."
+python -m pip install -r requirements/api/requirements.txt
+python -m pip install -r requirements/app/requirements.txt
 python -m pip install -r requirements/testing/requirements.txt
 python -m pip install -r requirements/app/requirements.txt
 
