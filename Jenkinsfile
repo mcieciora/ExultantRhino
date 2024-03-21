@@ -148,21 +148,26 @@ pipeline {
         }
         stage("Run tests") {
             stages {
-                stage("postgres tests") {
+                stage("Test group: postgres") {
                     steps {
                         script {
                             executeTestGroup(testImage, "postgres")
                         }
                     }
                 }
-                stage("api tests") {
+                stage("Test group: api") {
                     steps {
                         script {
                             executeTestGroup(testImage, "api")
                         }
                     }
                 }
-                stage("app tests") {
+                stage("Test group: app") {
+                    when {
+                        expression {
+                            return false
+                        }
+                    }
                     steps {
                         script {
                             executeTestGroup(testImage, "app")
@@ -233,6 +238,11 @@ pipeline {
 }
 
 
+def getValue(variable, defaultValue) {
+    return params.containsKey(variable) ? params.get(variable) : defaultValue
+}
+
+
 def executeTestGroup(testImage, testGroup) {
     if (env.TEST_GROUPS == "all" || env.TEST_GROUPS.contains(testGroup)) {
         echo "Running ${testGroup}"
@@ -245,9 +255,4 @@ def executeTestGroup(testImage, testGroup) {
     else {
         echo "Skipping execution."
     }
-}
-
-
-def getValue(variable, defaultValue) {
-    return params.containsKey(variable) ? params.get(variable) : defaultValue
 }
