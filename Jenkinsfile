@@ -147,29 +147,25 @@ pipeline {
             }
         }
         stage("Run tests") {
-            matrix {
-                axes {
-                    axis {
-                        name "TEST_GROUP"
-                        values "api", "app", "postgres"
+            stages {
+                stage("postgres tests") {
+                    steps {
+                        script {
+                            executeTestGroup(testImage, "postgres")
+                        }
                     }
                 }
-                stages {
-                    stage("Test stage") {
-                        steps {
-                            script {
-                                if (env.TEST_GROUPS == "all" || env.TEST_GROUPS.contains(TEST_GROUP)) {
-                                    echo "Running ${TEST_GROUP}"
-                                        withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
-                                            testImage.inside("--network general_network --env-file ${env_file} -v $WORKSPACE:/app") {
-                                                sh "python -m pytest -m ${FLAG} -k ${TEST_GROUP} -v --junitxml=results/${TEST_GROUP}_results.xml"
-                                        }
-                                    }
-                                }
-                                else {
-                                    echo "Skipping execution."
-                                }
-                            }
+                stage("api tests") {
+                    steps {
+                        script {
+                            executeTestGroup(testImage, "api")
+                        }
+                    }
+                }
+                stage("app tests") {
+                    steps {
+                        script {
+                            executeTestGroup(testImage, "app")
                         }
                     }
                 }
@@ -226,12 +222,28 @@ pipeline {
     post {
         always {
             sh "docker rmi test_image:${env.BUILD_ID}"
+            sh "docker compose down --rmi all -v"
             archiveArtifacts artifacts: "**/*_results.xml"
             junit "**/*_results.xml"
             dir("${WORKSPACE}") {
                 deleteDir()
             }
         }
+    }
+}
+
+
+def executeTestGroup(testImage, testGroup) {
+    if (env.TEST_GROUPS == "all" || env.TEST_GROUPS.contains(testGroup)) {
+        echo "Running ${testGroup}"
+            withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
+                testImage.inside("--network general_network --env-file ${env_file} -v $WORKSPACE:/app") {
+                    sh "python -m pytest -m ${FLAG} -k ${testGroup} -v --junitxml=results/${testGroup}_results.xml"
+            }
+        }
+    }
+    else {
+        echo "Skipping execution."
     }
 }
 

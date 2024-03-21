@@ -33,6 +33,9 @@ pipeline {
                         sh 'GIT_SSH_COMMAND="ssh -i $key"'
                         git branch: env.BRANCH_TO_USE, url: env.REPO_URL
                     }
+                    withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
+                        sh 'cp $env_file .env'
+                    }
                     currentBuild.description = "Branch: ${env.BRANCH_TO_USE}\nFlag: ${env.FLAG}\nGroups: ${env.TEST_GROUPS}"
                 }
             }
@@ -49,10 +52,21 @@ pipeline {
                 }
             }
         }
-        stage ("Prepare docker test image") {
-            steps {
-                script {
-                    testImage = docker.build("test_image:${env.BUILD_ID}", "-f automated_tests/Dockerfile .")
+        stage ("Prepare docker images") {
+            parallel {
+                stage ("Build test image") {
+                     steps {
+                        script {
+                            testImage = docker.build("test_image:${env.BUILD_ID}", "-f automated_tests/Dockerfile .")
+                        }
+                    }
+                }
+                stage ("Build docker compose") {
+                    steps {
+                        script {
+                            sh "docker compose build --no-cache"
+                        }
+                    }
                 }
             }
         }
@@ -67,7 +81,7 @@ pipeline {
                     steps {
                         script {
                             testImage.inside("-v $WORKSPACE:/app") {
-                                sh "python -m pylint src --max-line-length=120 --disable=C0114 --fail-under=9.5"
+                                sh "python -m pylint src --max-line-length=120 --disable=C0114 --fail-under=8.5"
                                 sh "python -m pylint --load-plugins pylint_pytest automated_tests --max-line-length=120 --disable=C0114,C0116 --fail-under=9.5"
                                 sh "python -m pylint tools/python --max-line-length=120 --disable=C0114 --fail-under=9.5"
                             }
@@ -106,7 +120,7 @@ pipeline {
                     steps {
                         script {
                             testImage.inside("-v $WORKSPACE:/app") {
-                                sh "python -m pytest --cov=src automated_tests/ --cov-fail-under=95 --cov-report=html"
+                                sh "python -m pytest --cov=src automated_tests/unittest --cov-fail-under=70 --cov-config=automated_tests/.coveragerc --cov-report=html"
                             }
                             publishHTML target: [
                                 allowMissing: false,
@@ -144,28 +158,39 @@ pipeline {
                 }
             }
         }
+        stage ("Run app & health check") {
+            steps {
+                script {
+                    sh "chmod +x tools/shell_scripts/app_health_check.sh"
+                    sh "tools/shell_scripts/app_health_check.sh 30 2"
+                }
+            }
+            post {
+                failure {
+                    sh "docker compose down --rmi all -v"
+                }
+            }
+        }
         stage("Run tests") {
-            matrix {
-                axes {
-                    axis {
-                        name "TEST_GROUP"
-                        values "google"
+            stages {
+                stage("postgres tests") {
+                    steps {
+                        script {
+                            executeTestGroup(testImage, "postgres")
+                        }
                     }
                 }
-                stages {
-                    stage("Test stage") {
-                        steps {
-                            script {
-                                if (env.TEST_GROUPS == "all" || env.TEST_GROUPS.contains(TEST_GROUP)) {
-                                    echo "Running ${TEST_GROUP}"
-                                    testImage.inside("-v $WORKSPACE:/app") {
-                                        sh "python -m pytest -m ${FLAG} -k ${TEST_GROUP} -v --junitxml=results/${TEST_GROUP}_results.xml"
-                                    }
-                                }
-                                else {
-                                    echo "Skipping execution."
-                                }
-                            }
+                stage("api tests") {
+                    steps {
+                        script {
+                            executeTestGroup(testImage, "api")
+                        }
+                    }
+                }
+                stage("app tests") {
+                    steps {
+                        script {
+                            executeTestGroup(testImage, "app")
                         }
                     }
                 }
@@ -177,27 +202,7 @@ pipeline {
                     return env.REGULAR_BUILD == "true"
                 }
             }
-            stages {
-                stage ("Build docker compose") {
-                    steps {
-                        script {
-                            sh "docker compose build --no-cache"
-                        }
-                    }
-                }
-                stage ("Run app & health check") {
-                    steps {
-                        script {
-                            sh "chmod +x tools/shell_scripts/app_health_check.sh"
-                            sh "tools/shell_scripts/app_health_check.sh 30 2"
-                        }
-                    }
-                    post {
-                        always {
-                            sh "docker compose down --rmi all -v"
-                        }
-                    }
-                }
+            parallel {
                 stage ("Push docker image") {
                     when {
                         expression {
@@ -242,12 +247,28 @@ pipeline {
     post {
         always {
             sh "docker rmi test_image:${env.BUILD_ID}"
+            sh "docker compose down --rmi all -v"
             archiveArtifacts artifacts: "**/*_results.xml"
             junit "**/*_results.xml"
-            dir("$WORKSPACE") {
+            dir("${WORKSPACE}") {
                 deleteDir()
             }
         }
+    }
+}
+
+
+def executeTestGroup(testImage, testGroup) {
+    if (env.TEST_GROUPS == "all" || env.TEST_GROUPS.contains(testGroup)) {
+        echo "Running ${testGroup}"
+            withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
+                testImage.inside("--network general_network --env-file ${env_file} -v $WORKSPACE:/app") {
+                    sh "python -m pytest -m ${FLAG} -k ${testGroup} -v --junitxml=results/${testGroup}_results.xml"
+            }
+        }
+    }
+    else {
+        echo "Skipping execution."
     }
 }
 

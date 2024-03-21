@@ -37,7 +37,7 @@ def generate_test_jenkinsfile():
     with open(join(PROJECT_ROOT_PATH, "Jenkinsfile"), mode="r", encoding="utf-8") as main_jenkinsfile:
         jenkinsfile_content = main_jenkinsfile.readlines()
         jenkinsfile_content.insert(
-            _get_injection_index("Prepare docker test image", jenkinsfile_content),
+            _get_injection_index("Prepare docker images", jenkinsfile_content),
             "".join(_get_template_content("tools/resources/TestPipelineStageTemplate")))
         jenkinsfile_content.insert(
             _get_injection_index("environment {", jenkinsfile_content),
