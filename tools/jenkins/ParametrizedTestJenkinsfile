@@ -241,28 +241,31 @@ pipeline {
                 }
             }
         }
-        stage ("Run tests") {
-            matrix {
-                axes {
-                    axis {
-                        name "TEST_GROUP"
-                        values "google"
+        stage("Run tests") {
+            stages {
+                stage("Test group: postgres") {
+                    steps {
+                        script {
+                            executeTestGroup(testImage, "postgres")
+                        }
                     }
                 }
-                stages {
-                    stage ("Test stage") {
-                        steps {
-                            script {
-                                if (env.TEST_GROUPS == "all" || env.TEST_GROUPS.contains(TEST_GROUP)) {
-                                    echo "Running ${TEST_GROUP}"
-                                    testImage.inside("-v $WORKSPACE:/app") {
-                                        sh "python -m pytest -m ${FLAG} -k ${TEST_GROUP} -v --junitxml=results/${TEST_GROUP}_results.xml"
-                                    }
-                                }
-                                else {
-                                    echo "Skipping execution."
-                                }
-                            }
+                stage("Test group: api") {
+                    steps {
+                        script {
+                            executeTestGroup(testImage, "api")
+                        }
+                    }
+                }
+                stage("Test group: app") {
+                    when {
+                        expression {
+                            return false
+                        }
+                    }
+                    steps {
+                        script {
+                            executeTestGroup(testImage, "app")
                         }
                     }
                 }
@@ -325,6 +328,11 @@ pipeline {
 }
 
 
+def getValue(variable, defaultValue) {
+    return params.containsKey(variable) ? params.get(variable) : defaultValue
+}
+
+
 def executeTestGroup(testImage, testGroup) {
     if (env.TEST_GROUPS == "all" || env.TEST_GROUPS.contains(testGroup)) {
         echo "Running ${testGroup}"
@@ -337,9 +345,4 @@ def executeTestGroup(testImage, testGroup) {
     else {
         echo "Skipping execution."
     }
-}
-
-
-def getValue(variable, defaultValue) {
-    return params.containsKey(variable) ? params.get(variable) : defaultValue
 }

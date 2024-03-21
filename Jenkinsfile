@@ -214,30 +214,31 @@ pipeline {
                 }
             }
         }
-        stage ("Run tests") {
-            matrix {
-                axes {
-                    axis {
-                        name "TEST_GROUP"
-                        values "api", "app", "postgres"
+        stage("Run tests") {
+            stages {
+                stage("Test group: postgres") {
+                    steps {
+                        script {
+                            executeTestGroup(testImage, "postgres")
+                        }
                     }
                 }
-                stages {
-                    stage("Test stage") {
-                        steps {
-                            script {
-                                if (env.TEST_GROUPS == "all" || env.TEST_GROUPS.contains(TEST_GROUP)) {
-                                    echo "Running ${TEST_GROUP}"
-                                    withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
-                                        testImage.inside("--network=general_network -e ${env_file} -v ${env_file}:${env_file}:ro -v $WORKSPACE:/app") {
-                                            sh "python -m pytest -m ${FLAG} -k ${TEST_GROUP} automated_tests -v --junitxml=results/${TEST_GROUP}_results.xml"
-                                        }
-                                    }
-                                }
-                                else {
-                                    echo "Skipping execution."
-                                }
-                            }
+                stage("Test group: api") {
+                    steps {
+                        script {
+                            executeTestGroup(testImage, "api")
+                        }
+                    }
+                }
+                stage("Test group: app") {
+                    when {
+                        expression {
+                            return false
+                        }
+                    }
+                    steps {
+                        script {
+                            executeTestGroup(testImage, "app")
                         }
                     }
                 }
@@ -300,6 +301,11 @@ pipeline {
 }
 
 
+def getValue(variable, defaultValue) {
+    return params.containsKey(variable) ? params.get(variable) : defaultValue
+}
+
+
 def executeTestGroup(testImage, testGroup) {
     if (env.TEST_GROUPS == "all" || env.TEST_GROUPS.contains(testGroup)) {
         echo "Running ${testGroup}"
@@ -312,9 +318,4 @@ def executeTestGroup(testImage, testGroup) {
     else {
         echo "Skipping execution."
     }
-}
-
-
-def getValue(variable, defaultValue) {
-    return params.containsKey(variable) ? params.get(variable) : defaultValue
 }

@@ -43,12 +43,8 @@ def generate_test_jenkinsfile():
         jenkinsfile_content = main_jenkinsfile.readlines()
         jenkinsfile_content.insert(
             _get_injection_index("Prepare docker images", jenkinsfile_content),
-<<<<<<< HEAD
             "".join(_get_template_content("tools/resources/TestPipelineStageTemplate")),
         )
-=======
-            "".join(_get_template_content("tools/resources/TestPipelineStageTemplate")))
->>>>>>> 39765d1 (21032024-1459)
         jenkinsfile_content.insert(
             _get_injection_index("environment {", jenkinsfile_content),
             "".join(
