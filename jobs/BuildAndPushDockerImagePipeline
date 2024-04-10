@@ -1,6 +1,8 @@
-pipelineJob("PythonDependenciesVerification_INPUT.PROJECT_NAME") {
+pipelineJob("BuildAndPushDockerImage_INPUT.PROJECT_NAME") {
     parameters {
         stringParam("BRANCH", "develop", "Execution branch.")
+        stringParam("CUSTOM_TAG", "", "Tag of pushed image.")
+        stringParam("DOCKERFILE_PATH", "", "Path to Dockerfile.")
     }
     definition {
         cpsScm {
@@ -9,10 +11,10 @@ pipelineJob("PythonDependenciesVerification_INPUT.PROJECT_NAME") {
                     remote {
                         url("INPUT.PROJECT_URL")
                     }
-                    branch("*/develop")
+                    branch('*/${BRANCH}')
                 }
             }
-            scriptPath("tools/jenkins/PythonDependenciesVerificationJenkinsfile")
+            scriptPath("tools/jenkins/BuildAndPushDockerImageJenkinsfile")
             lightweight()
         }
     }

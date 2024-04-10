@@ -3,7 +3,7 @@ def customImage
 pipeline {
     agent any
     parameters {
-        string(name: 'BRANCH', defaultValue: 'develop', description: "Execution branch")
+        string(name: "BRANCH", defaultValue: "develop", description: "Execution branch.")
     }
     environment {
         REPO_URL = "git@github.com:mcieciora/ExultantRhino.git"
@@ -22,7 +22,7 @@ pipeline {
         stage ("Checkout branch") {
             steps {
                 script {
-                    withCredentials([sshUserPrivateKey(credentialsId: "github_id", keyFileVariable: 'key')]) {
+                    withCredentials([sshUserPrivateKey(credentialsId: "github_id", keyFileVariable: "key")]) {
                         sh 'GIT_SSH_COMMAND="ssh -i $key"'
                         git branch: params.BRANCH, url: env.REPO_URL
                     }
@@ -53,9 +53,7 @@ pipeline {
     post {
         always {
             sh "docker rmi ${DOCKERHUB_REPO}:test_image"
-            dir("${WORKSPACE}") {
-                deleteDir()
-            }
+            cleanWs()
         }
     }
 }

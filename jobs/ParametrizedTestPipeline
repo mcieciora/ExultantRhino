@@ -14,7 +14,7 @@ pipelineJob("ParametrizedTestPipeline_INPUT.PROJECT_NAME") {
                     remote {
                         url("INPUT.PROJECT_URL")
                     }
-                     branch('*/${BRANCH}')
+                    branch('*/${BRANCH}')
                 }
             }
             scriptPath("tools/jenkins/ParametrizedTestJenkinsfile")

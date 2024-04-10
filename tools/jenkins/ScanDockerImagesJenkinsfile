@@ -20,9 +20,7 @@ pipeline {
         always {
             sh "docker logout"
             archiveArtifacts artifacts: "scan_*", followSymlinks: false
-            dir("${WORKSPACE}") {
-                deleteDir()
-            }
+            cleanWs()
         }
     }
 }

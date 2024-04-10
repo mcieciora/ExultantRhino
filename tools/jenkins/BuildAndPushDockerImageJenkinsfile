@@ -1,0 +1,39 @@
+pipeline {
+    agent any
+    parameters {
+        string(name: "BRANCH", defaultValue: "develop", description: "Execution branch.")
+        string(name: "CUSTOM_TAG", description: "Tag of pushed image.")
+        string(name: "DOCKERFILE_PATH", description: "Path to Dockerfile.")
+    }
+    environment {
+        REPO_URL = "https://github.com/mcieciora/CarelessVaquita.git"
+        DOCKERHUB_REPO = "mcieciora/careless_vaquita"
+    }
+    options {
+        skipDefaultCheckout()
+    }
+    stages {
+        stage ("Checkout branch") {
+            steps {
+                script {
+                    git branch: env.BRANCH, url: env.REPO_URL
+                }
+            }
+        }
+        stage ("Build and push") {
+            steps {
+                script {
+                    customImage = docker.build("${DOCKERHUB_REPO}:${CUSTOM_TAG}", "-f ${DOCKERFILE_PATH} .")
+                    docker.withRegistry("", "dockerhub_id") {
+                        customImage.push()
+                    }
+                }
+            }
+        }
+    }
+    post {
+        always {
+            cleanWs()
+        }
+    }
+}

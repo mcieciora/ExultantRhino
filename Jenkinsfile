@@ -1,4 +1,5 @@
 def testImage
+def curDate = new Date().format("yyMMdd-HHmm", TimeZone.getTimeZone("UTC"))
 Integer build_test_image
 
 pipeline {
@@ -255,13 +256,13 @@ pipeline {
                     steps {
                         script {
                             docker.withRegistry("", "dockerhub_id") {
-                                def customImage = docker.build("${DOCKERHUB_REPO}:${env.BRANCH_NAME}_${env.BUILD_ID}")
+                                def customImage = docker.build("${DOCKERHUB_REPO}:${env.BRANCH_NAME}_${curDate}")
                                 customImage.push()
                                 if (env.BRANCH_NAME == "master") {
                                     customImage.push("latest")
                                 }
                             }
-                            sh "docker rmi ${DOCKERHUB_REPO}:${env.BRANCH_NAME}_${env.BUILD_ID}"
+                            sh "docker rmi ${DOCKERHUB_REPO}:${env.BRANCH_NAME}_${curDate}"
                         }
                     }
                 }
@@ -273,7 +274,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            def TAG_NAME = "${env.BRANCH_NAME}_${env.BUILD_ID}"
+                            def TAG_NAME = "${env.BRANCH_NAME}_${curDate}"
                             withCredentials([sshUserPrivateKey(credentialsId: "github_id", keyFileVariable: 'key')]) {
                                 sh 'GIT_SSH_COMMAND="ssh -i $key"'
                                 sh "git tag -a $TAG_NAME -m $TAG_NAME && git push origin $TAG_NAME"
@@ -290,9 +291,7 @@ pipeline {
             sh "docker compose down --rmi all -v"
             archiveArtifacts artifacts: "**/*_results.xml"
             junit "**/*_results.xml"
-            dir("${WORKSPACE}") {
-                deleteDir()
-            }
+            cleanWs()
         }
     }
 }
