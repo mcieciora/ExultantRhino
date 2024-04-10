@@ -1,0 +1,28 @@
+pipeline {
+    agent any
+    triggers {
+        cron("H 6 * * *")
+    }
+    stages {
+        stage ("Analyze images") {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: "dockerhub_id", usernameVariable: "USERNAME", passwordVariable: "PASSWORD")]) {
+                        sh "docker login --username $USERNAME --password $PASSWORD"
+                    }
+                    sh "chmod +x tools/shell_scripts/scan_docker_images.sh"
+                    sh "tools/shell_scripts/scan_docker_images.sh"
+                }
+            }
+        }
+    }
+    post {
+        always {
+            sh "docker logout"
+            archiveArtifacts artifacts: "scan_*", followSymlinks: false
+            dir("${WORKSPACE}") {
+                deleteDir()
+            }
+        }
+    }
+}

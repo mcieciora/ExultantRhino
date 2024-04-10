@@ -6,7 +6,7 @@
             }
             steps {
                 script {
-                    echo "Dummy code"
+                    sh "cp -r tools/resources/resource_project_files/* ."
                 }
             }
         }

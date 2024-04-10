@@ -7,6 +7,7 @@ pipeline {
     }
     environment {
         REPO_URL = "git@github.com:mcieciora/ExultantRhino.git"
+        DOCKERHUB_REPO = "mcieciora/exultant_rhino"
     }
     options {
         skipDefaultCheckout()
@@ -29,10 +30,10 @@ pipeline {
                 }
             }
         }
-        stage ("Prepare docker test image") {
+        stage ("Pull test image") {
             steps {
                 script {
-                    customImage = docker.build("test_image:${env.BUILD_ID}", "-f automated_tests/Dockerfile .")
+                    customImage = docker.image("${DOCKERHUB_REPO}:test_image")
                 }
             }
         }
@@ -51,8 +52,8 @@ pipeline {
     }
     post {
         always {
-            sh "docker rmi test_image:${env.BUILD_ID}"
-            dir("$WORKSPACE") {
+            sh "docker rmi ${DOCKERHUB_REPO}:test_image"
+            dir("${WORKSPACE}") {
                 deleteDir()
             }
         }

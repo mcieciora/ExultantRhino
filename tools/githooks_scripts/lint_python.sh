@@ -18,3 +18,6 @@ python -m ruff format src
 
 echo "Running black in src"
 python -m black src
+
+echo "Running pydocstyle in src"
+python -m pydocstyle --ignore D100,D104,D107,D212 src
