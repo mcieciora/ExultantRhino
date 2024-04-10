@@ -1,7 +1,7 @@
 from requests import get
 from streamlit import button, error, header, selectbox, success, text_area, text_input
 from streamlit_searchbox import st_searchbox
-from src.postgres_sql_alchemy import Bug, Project, Release, Requirement, TestCase
+from postgres_models import Bug, Project, Release, Requirement, TestCase
 
 
 def get_parent_object_type(input_type):
@@ -23,18 +23,18 @@ def get_parent_object_type(input_type):
 def find_parent(search_term):
     parent_object = get_parent_object_type(object_type)
     api_call_result = get(
-        f"http://api:8101/get_objects/{parent_object.__name__.lower()}"
+        f"http://localhost:8101/get_objects/{parent_object.__name__.lower()}"
     )
     print(api_call_result)
     return [
-        f"{db_object['shortname']}: {db_object['title']}"
+        db_object['shortname']
         for db_object in api_call_result.json()
         if search_term in db_object["shortname"] or search_term in db_object["title"]
     ]
 
 
 def find_projects(search_term):
-    all_projects = get("http://api:8101/get_objects/project")
+    all_projects = get("http://localhost:8101/get_objects/project")
     print(all_projects)
     return [
         f"{db_object['shortname']}: {db_object['title']}"
@@ -92,7 +92,7 @@ if object_type:
         }
         new_object = object_type_db_object_map[object_type](**form_dict)
         return_value = get(
-            f"http://api:8101/insert_object/{object_type.replace(' ', '').lower()}",
+            f"http://localhost:8101/insert_object/{object_type.replace(' ', '').lower()}",
             params=form_dict,
         )
         if return_value.status_code == 200:

@@ -11,7 +11,7 @@ services:
     env_file:
       - .env
     networks:
-      - api_network
+      - app_network
   app:
     container_name: exultant_rhino_app
     build:
@@ -19,7 +19,9 @@ services:
       dockerfile: app.Dockerfile
     ports:
       - "8501:8501"
+    networks:
+      - app_network
 networks:
-  api_network:
+  app_network:
       name: general_network
       external: true

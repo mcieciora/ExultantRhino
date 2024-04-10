@@ -3,12 +3,12 @@ from streamlit import header, sidebar
 
 
 def find_projects():
-    all_projects = get("http://api:8101/get_objects/project")
-    print(all_projects)
-    return [
-        f"{db_object['shortname']}: {db_object['title']}"
-        for db_object in all_projects.json()
-    ]
+    """
+    Get all available projects in list format.
+    :return: List of Project database objects.
+    """
+    all_projects = get("http://localhost:8101/get_objects/project", timeout=5)
+    return [db_object['title'] for db_object in all_projects.json()]
 
 
 current_project = sidebar.selectbox(
@@ -20,4 +20,4 @@ current_project = sidebar.selectbox(
     label_visibility="collapsed",
 )
 
-header("Active release")
+header("Results")
