@@ -1,4 +1,6 @@
 def testImage
+def curDate = new Date().format("yyMMdd-HHmm", TimeZone.getTimeZone("UTC"))
+Integer build_test_image
 
 pipeline {
     agent any
@@ -8,6 +10,8 @@ pipeline {
         REGULAR_BUILD = getValue("REGULAR_BUILD", true)
         BRANCH_TO_USE = getValue("BRANCH", env.BRANCH_NAME)
         REPO_URL = "git@github.com:mcieciora/ExultantRhino.git"
+        DOCKERHUB_REPO = "mcieciora/exultant_rhino"
+        FORCE_DOCKER_IMAGE_BUILD = getValue("FORCE_BUILD", false)
     }
     options {
         skipDefaultCheckout()
@@ -24,15 +28,41 @@ pipeline {
                         sh 'cp $env_file .env'
                     }
                     currentBuild.description = "Branch: ${env.BRANCH_TO_USE}\nFlag: ${env.FLAG}\nGroups: ${env.TEST_GROUPS}"
+                    build_test_image = sh(script: "git diff --name-only \$(git rev-parse HEAD) \$(git rev-parse HEAD^1) | grep -e automated_tests -e src -e requirements",
+                                          returnStatus: true)
                 }
             }
         }
         stage ("Prepare docker images") {
             parallel {
                 stage ("Build test image") {
-                     steps {
+                    when {
+                        anyOf {
+                            expression {build_test_image == 0}
+                            expression {env.FORCE_DOCKER_IMAGE_BUILD.toBoolean() == true}
+                        }
+                    }
+                    steps {
                         script {
-                            testImage = docker.build("test_image:${env.BUILD_ID}", "-f automated_tests/Dockerfile .")
+                            testImage = docker.build("${DOCKERHUB_REPO}:test_image", "-f automated_tests/Dockerfile .")
+                            if (env.BRANCH_NAME == "master" || env.BRANCH_NAME == "develop") {
+                                docker.withRegistry("", "dockerhub_id") {
+                                    testImage.push()
+                                }
+                            }
+                        }
+                    }
+                }
+                stage ("Pull test image") {
+                    when {
+                        allOf {
+                            expression {build_test_image == 1}
+                            expression {env.FORCE_DOCKER_IMAGE_BUILD.toBoolean() == false}
+                        }
+                    }
+                    steps {
+                        script {
+                            testImage = docker.image("${DOCKERHUB_REPO}:test_image")
                         }
                     }
                 }
@@ -45,14 +75,14 @@ pipeline {
                 }
             }
         }
-        stage("Code analysis") {
+        stage ("Code analysis") {
             when {
                 expression {
                     return env.REGULAR_BUILD == "true"
                 }
             }
             parallel {
-                stage ("Pylint") {
+                stage ("pylint") {
                     steps {
                         script {
                             testImage.inside("-v $WORKSPACE:/app") {
@@ -67,7 +97,7 @@ pipeline {
                     steps {
                         script {
                             testImage.inside("-v $WORKSPACE:/app") {
-                                sh "python -m flake8 --max-line-length 120 --max-complexity 10 src"
+                                sh "python -m flake8 --max-line-length 120 --max-complexity 10 src automated_tests tools/python"
                             }
                         }
                     }
@@ -76,8 +106,7 @@ pipeline {
                     steps {
                         script {
                             testImage.inside("-v $WORKSPACE:/app") {
-                                sh "python -m ruff format ."
-                                sh "python -m ruff check ."
+                                sh "python -m ruff check src automated_tests tools/python"
                             }
                         }
                     }
@@ -86,16 +115,54 @@ pipeline {
                     steps {
                         script {
                             testImage.inside("-v $WORKSPACE:/app") {
-                                sh "python -m black ."
+                                sh "python -m black src automated_tests tools/python"
                             }
                         }
                     }
                 }
-                stage("Code coverage") {
+                stage ("bandit") {
                     steps {
                         script {
                             testImage.inside("-v $WORKSPACE:/app") {
-                                sh "python -m pytest --cov=src automated_tests/unittest --cov-fail-under=70 --cov-config=automated_tests/.coveragerc --cov-report=html"
+                                sh "python -m bandit src automated_tests tools/python"
+                            }
+                        }
+                    }
+                }
+                stage ("pydocstyle") {
+                    steps {
+                        script {
+                            testImage.inside("-v $WORKSPACE:/app") {
+                                sh "python -m pydocstyle --ignore D100,D104,D107,D212 ."
+                            }
+                        }
+                    }
+                }
+                stage ("radon") {
+                    steps {
+                        script {
+                            testImage.inside("-v $WORKSPACE:/app") {
+                                sh "python -m radon cc ."
+                                sh "python -m radon mi ."
+                                sh "python -m radon hal ."
+                            }
+                        }
+                    }
+                }
+                stage ("mypy") {
+                    steps {
+                        script {
+                            testImage.inside("-v $WORKSPACE:/app") {
+                                sh "python -m mypy src automated_tests tools/python"
+                            }
+                        }
+                    }
+                }
+                stage ("Code coverage") {
+                    steps {
+                        script {
+                            testImage.inside("-v $WORKSPACE:/app") {
+                                sh "python -m pytest --cov=src automated_tests/ --cov-fail-under=95 --cov-report=html"
                             }
                             publishHTML target: [
                                 allowMissing: false,
@@ -128,7 +195,7 @@ pipeline {
             steps {
                 script {
                     testImage.inside("-v $WORKSPACE:/app") {
-                        sh "python -m pytest -m unittest -v --junitxml=results/unittests_results.xml"
+                        sh "python -m pytest -m unittest automated_tests -v --junitxml=results/unittests_results.xml"
                     }
                 }
             }
@@ -137,40 +204,37 @@ pipeline {
             steps {
                 script {
                     sh "chmod +x tools/shell_scripts/app_health_check.sh"
-                    sh "tools/shell_scripts/app_health_check.sh 30 2"
+                    sh "tools/shell_scripts/app_health_check.sh 30 1"
                 }
             }
             post {
-                failure {
+                always {
                     sh "docker compose down --rmi all -v"
                 }
             }
         }
-        stage("Run tests") {
-            stages {
-                stage("Test group: postgres") {
-                    steps {
-                        script {
-                            executeTestGroup(testImage, "postgres")
-                        }
+        stage ("Run tests") {
+            matrix {
+                axes {
+                    axis {
+                        name "TEST_GROUP"
+                        values "google"
                     }
                 }
-                stage("Test group: api") {
-                    steps {
-                        script {
-                            executeTestGroup(testImage, "api")
-                        }
-                    }
-                }
-                stage("Test group: app") {
-                    when {
-                        expression {
-                            return false
-                        }
-                    }
-                    steps {
-                        script {
-                            executeTestGroup(testImage, "app")
+                stages {
+                    stage ("Test stage") {
+                        steps {
+                            script {
+                                if (env.TEST_GROUPS == "all" || env.TEST_GROUPS.contains(TEST_GROUP)) {
+                                    echo "Running ${TEST_GROUP}"
+                                    testImage.inside("-v $WORKSPACE:/app") {
+                                        sh "python -m pytest -m ${FLAG} -k ${TEST_GROUP} automated_tests -v --junitxml=results/${TEST_GROUP}_results.xml"
+                                    }
+                                }
+                                else {
+                                    echo "Skipping execution."
+                                }
+                            }
                         }
                     }
                 }
@@ -191,17 +255,14 @@ pipeline {
                     }
                     steps {
                         script {
-                            def registryPath = ""
-                            def containerName = "mcieciora/exultant_rhino:${env.BRANCH_NAME}_${env.BUILD_ID}"
-                            if (env.BRANCH_NAME == "develop") {
-                                registryPath = "http://localhost:5000"
-                                containerName = "exultant_rhino:${env.BRANCH_NAME}_${env.BUILD_ID}"
-                            }
-                            docker.withRegistry("${registryPath}", "dockerhub_id") {
-                                def customImage = docker.build("${containerName}")
+                            docker.withRegistry("", "dockerhub_id") {
+                                def customImage = docker.build("${DOCKERHUB_REPO}:${env.BRANCH_NAME}_${curDate}")
                                 customImage.push()
+                                if (env.BRANCH_NAME == "master") {
+                                    customImage.push("latest")
+                                }
                             }
-                            sh "docker rmi ${containerName}"
+                            sh "docker rmi ${DOCKERHUB_REPO}:${env.BRANCH_NAME}_${curDate}"
                         }
                     }
                 }
@@ -213,7 +274,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            def TAG_NAME = "${env.BRANCH_NAME}_${env.BUILD_ID}"
+                            def TAG_NAME = "${env.BRANCH_NAME}_${curDate}"
                             withCredentials([sshUserPrivateKey(credentialsId: "github_id", keyFileVariable: 'key')]) {
                                 sh 'GIT_SSH_COMMAND="ssh -i $key"'
                                 sh "git tag -a $TAG_NAME -m $TAG_NAME && git push origin $TAG_NAME"
@@ -226,13 +287,11 @@ pipeline {
     }
     post {
         always {
-            sh "docker rmi test_image:${env.BUILD_ID}"
+            sh "docker rmi ${DOCKERHUB_REPO}:test_image"
             sh "docker compose down --rmi all -v"
             archiveArtifacts artifacts: "**/*_results.xml"
             junit "**/*_results.xml"
-            dir("${WORKSPACE}") {
-                deleteDir()
-            }
+            cleanWs()
         }
     }
 }
