@@ -19,6 +19,8 @@ services:
       dockerfile: app.Dockerfile
     ports:
       - "8501:8501"
+    env_file:
+      - .env
     networks:
       - app_network
 networks:
