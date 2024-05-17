@@ -1,5 +1,6 @@
-from requests import get
 from streamlit import header, sidebar
+from postgres_items_models import Project
+from postgres_sql_alchemy import get_all_objects_by_type
 
 
 def find_projects():
@@ -7,8 +8,8 @@ def find_projects():
     Get all available projects in list format.
     :return: List of Project database objects.
     """
-    all_projects = get("http://exultant_rhino_api:8101/get_objects/project", timeout=5)
-    return [db_object['title'] for db_object in all_projects.json()]
+    all_projects = get_all_objects_by_type(Project)
+    return [f"{db_object['shortname']}: {db_object['title']}" for db_object in all_projects]
 
 
 current_project = sidebar.selectbox(
@@ -20,4 +21,4 @@ current_project = sidebar.selectbox(
     label_visibility="collapsed",
 )
 
-header("Tasks")
+header("Results")

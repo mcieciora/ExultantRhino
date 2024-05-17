@@ -1,12 +1,12 @@
 from pytest import mark
 from src.postgres_sql_alchemy import create_database_object, delete_database_object, drop_rows_by_table, \
     edit_database_object, get_all_objects_by_type, get_database_object
-from src.postgres_models import Bug
+from src.postgres_items_models import Bug
 
 
 @mark.smoke
 def test__smoke__postgres__create_database_object(one_object_of_type_database_fixture):
-    test_data = Bug(title="new bug", description="description of new bug", project_id="proj-0", parent="proj-0")
+    test_data = Bug(title="new bug", description="description of new bug", project_shortname="proj-0", parent="proj-0")
     actual_value = create_database_object(test_data)
     expected_value = "bug-1"
     assert actual_value == expected_value, f"Expected: {expected_value}, actual: {actual_value}"

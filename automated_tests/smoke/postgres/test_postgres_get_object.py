@@ -1,7 +1,7 @@
 from pytest import mark
 from src.postgres_sql_alchemy import get_all_objects_by_type, get_objects_by_filters, get_database_object, \
     get_next_shortname
-from src.postgres_models import Bug, Project, Release, Requirement, TestCase
+from src.postgres_items_models import Bug, Project, Release, Requirement, TestCase
 
 
 @mark.smoke

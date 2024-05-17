@@ -1,7 +1,10 @@
 from os import environ
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from src.postgres_models import Base, Bug, Project, Release, Requirement, TestCase
+import postgres_tasks_models
+import postgres_items_models
+from postgres_items_models import Bug, Project, Release, Requirement, TestCase
+from postgres_tasks_models import Task
 
 
 def _get_engine():
@@ -11,7 +14,7 @@ def _get_engine():
     """
     return create_engine(
         f"postgresql://{environ['POSTGRES_USER']}:{environ['POSTGRES_PASSWORD']}@"
-        f"{environ['HOST_NAME']}:{environ['DB_PORT']}/{environ['POSTGRES_DB']}"
+        f"{environ['DB_HOST']}:{environ['DB_PORT']}/{environ['POSTGRES_DB']}"
     )
 
 
@@ -50,6 +53,7 @@ def get_next_shortname(object_type):
         Requirement: "req",
         TestCase: "tc",
         Bug: "bug",
+        Task: "task"
     }
     try:
         last_object = get_all_objects_by_type(object_type)[-1]
@@ -71,6 +75,17 @@ def get_database_object(object_type, shortname):
     return convert_to_dict(database_object)
 
 
+def get_all_objects():
+    """
+    Get list of all database objects.
+    :return: List of database objects.
+    """
+    all_objects = []
+    for object_type in [Project, Release, Requirement, TestCase, Bug]:
+        all_objects.extend(get_all_objects_by_type(object_type))
+    return all_objects
+
+
 def get_all_objects_by_type(object_type):
     """
     Get list of database objects by their type (Project, Release, Requirement, TestCase, Bug).
@@ -80,6 +95,17 @@ def get_all_objects_by_type(object_type):
         convert_to_dict(db_object)
         for db_object in get_session().query(object_type).all()
     ]
+
+
+def get_all_objects_with_filters(object_types, filters_dict):
+    """
+    Get list of all database objects.
+    :return: List of database objects.
+    """
+    all_objects = []
+    for object_type in object_types:
+        all_objects.extend(get_objects_by_filters(object_type, filters_dict))
+    return all_objects
 
 
 def get_objects_by_filters(object_type, filters_dict):
@@ -144,4 +170,12 @@ def init_db():
     DB tables initialization.
     :return: None
     """
-    Base.metadata.create_all(_get_engine())
+    postgres_items_models.Base.metadata.create_all(_get_engine())
+    postgres_tasks_models.Base.metadata.create_all(_get_engine())
+    if not get_all_objects_by_type(Project):
+        default_project = Project(**{"title": "DEFAULT", "description": "Default project."})
+        create_database_object(default_project)
+
+
+if __name__ == '__main__':
+    init_db()

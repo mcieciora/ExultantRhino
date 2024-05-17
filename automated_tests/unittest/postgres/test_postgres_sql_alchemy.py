@@ -1,6 +1,6 @@
 from pytest import mark
 from src.postgres_sql_alchemy import convert_to_dict, get_all_objects_by_type, get_next_shortname
-from src.postgres_models import Bug, Project, Release, Requirement, TestCase
+from src.postgres_items_models import Bug, Project, Release, Requirement, TestCase
 
 
 @mark.unittest
@@ -16,9 +16,9 @@ def test__unittest__postgres__convert_to_dict():
                       "shortname": None,
                       "title": "new release",
                       "description": "Release description",
-                      "project_id": "proj-0",
+                      "project_shortname": "proj-0",
                       "parent": "proj-0"}
-    database_object = Release(title="new release", description="Release description", project_id="proj-0",
+    database_object = Release(title="new release", description="Release description", project_shortname="proj-0",
                               parent="proj-0")
     actual_value = convert_to_dict(database_object)
     assert actual_value == expected_value, f"Expected: {expected_value}, actual: {actual_value}"
