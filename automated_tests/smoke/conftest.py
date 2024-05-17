@@ -41,7 +41,7 @@ def one_object_of_type_database_fixture():
     parent_object = project_shortname
     object_types_list = [Release, Requirement, TestCase, Bug]
     for object_type in object_types_list:
-        template_object_dict = {"title": f"new {object_type.__name__.lower()}", "project_id": project_shortname,
+        template_object_dict = {"title": f"new {object_type.__name__.lower()}", "project_shortname": project_shortname,
                                 "description": f"{object_type.__name__.lower()} description", "parent": parent_object}
         new_db_object = object_type(**template_object_dict)
         parent_object = create_database_object(new_db_object)
@@ -61,8 +61,8 @@ def two_objects_of_type_database_fixture():
     object_types_list = [Release, Requirement, TestCase, Bug]
     for object_type in object_types_list:
         for description in [f"{object_type.__name__.lower()} description", "test_description"]:
-            template_object_dict = {"title": f"new {object_type.__name__.lower()}", "project_id": project_shortname,
-                                    "description": f"{description}", "parent": parent_object}
+            template_object_dict = {"title": f"new {object_type.__name__.lower()}", "project_shortname":
+                project_shortname, "description": f"{description}", "parent": parent_object}
             new_db_object = object_type(**template_object_dict)
             parent_object = create_database_object(new_db_object)
     yield

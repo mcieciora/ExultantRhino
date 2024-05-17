@@ -7,7 +7,7 @@ pipeline {
     environment {
         FLAG = getValue("FLAG", "smoke")
         TEST_GROUPS = getValue("TEST_GROUP", "all")
-        REGULAR_BUILD = getValue("REGULAR_BUILD", true)
+        REGULAR_BUILD = getValue("REGULAR_BUILD", false)
         BRANCH_TO_USE = getValue("BRANCH", env.BRANCH_NAME)
         REPO_URL = "git@github.com:mcieciora/ExultantRhino.git"
         DOCKERHUB_REPO = "mcieciora/exultant_rhino"
@@ -66,6 +66,7 @@ pipeline {
                         }
                     }
                 }
+
                 stage ("Build docker compose") {
                     steps {
                         script {
@@ -204,7 +205,7 @@ pipeline {
             steps {
                 script {
                     sh "chmod +x tools/shell_scripts/app_health_check.sh"
-                    sh "tools/shell_scripts/app_health_check.sh 30 1"
+                    sh "tools/shell_scripts/app_health_check.sh 30 2"
                 }
             }
             post {
@@ -218,22 +219,14 @@ pipeline {
                 axes {
                     axis {
                         name "TEST_GROUP"
-                        values "google"
+                        values "api", "app", "db"
                     }
                 }
                 stages {
                     stage ("Test stage") {
                         steps {
                             script {
-                                if (env.TEST_GROUPS == "all" || env.TEST_GROUPS.contains(TEST_GROUP)) {
-                                    echo "Running ${TEST_GROUP}"
-                                    testImage.inside("-v $WORKSPACE:/app") {
-                                        sh "python -m pytest -m ${FLAG} -k ${TEST_GROUP} automated_tests -v --junitxml=results/${TEST_GROUP}_results.xml"
-                                    }
-                                }
-                                else {
-                                    echo "Skipping execution."
-                                }
+                                executeTestGroup("${TEST_GROUP}")
                             }
                         }
                     }
@@ -302,7 +295,7 @@ def getValue(variable, defaultValue) {
 }
 
 
-def executeTestGroup(testImage, testGroup) {
+def executeTestGroup(testGroup) {
     if (env.TEST_GROUPS == "all" || env.TEST_GROUPS.contains(testGroup)) {
         echo "Running ${testGroup}"
             withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
