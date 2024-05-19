@@ -41,7 +41,7 @@ dataframe(all_objects,
               "target_release": "Release",
               "parent": "Parent",
               "children_task": "Task",
-              "url": column_config.LinkColumn("Edit URL", display_text="Edit")
+              "url": column_config.LinkColumn("View URL", display_text="View")
           },
           column_order=("id", "shortname", "title", "description", "status", "project_shortname", "parent",
                         "children_task", "target_release", "url"),
