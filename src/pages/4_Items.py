@@ -32,7 +32,6 @@ df = DataFrame(all_objects)
 
 dataframe(all_objects,
           column_config={
-              "id": "ID",
               "shortname": "Shortname",
               "title": "Title",
               "description": "Description",
@@ -43,7 +42,7 @@ dataframe(all_objects,
               "children_task": "Task",
               "url": column_config.LinkColumn("View URL", display_text="View")
           },
-          column_order=("id", "shortname", "title", "description", "status", "project_shortname", "parent",
+          column_order=("shortname", "title", "description", "status", "project_shortname", "parent",
                         "children_task", "target_release", "url"),
           hide_index=True
           )
