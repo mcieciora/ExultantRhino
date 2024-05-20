@@ -84,15 +84,6 @@ def find_available_parents(search_term):
         ]
 
 
-def find_projects(search_term):
-    all_projects = get_all_objects_by_type(Project)
-    return [
-        f"{db_object['shortname']}: {db_object['title']}"
-        for db_object in all_projects
-        if search_term in db_object["shortname"] or search_term in db_object["title"]
-    ]
-
-
 def update_objects(edit_object_type, pattern, edit_value):
     for edit_item in get_objects_by_filters(edit_object_type, pattern):
         edit_database_object(edit_object_type, edit_item["id"], edit_value)
