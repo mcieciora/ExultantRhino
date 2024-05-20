@@ -24,7 +24,8 @@ current_project = sidebar.selectbox(
 
 header("Items")
 all_objects = [get_database_object(Project, current_project.split(":")[0])]
-all_objects.extend(get_all_objects_with_filters([Release, Requirement, TestCase, Bug], {"project_shortname": current_project.split(":")[0]}))
+all_objects.extend(get_all_objects_with_filters([Release, Requirement, TestCase, Bug],
+                                                {"project_shortname": current_project.split(":")[0]}))
 for item in all_objects:
     item["url"] = f"http://localhost:8501/+Create?item={item['shortname']}"
 
