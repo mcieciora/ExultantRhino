@@ -1,7 +1,7 @@
 from streamlit import column_config, dataframe, header, sidebar
 from pandas import DataFrame
-from postgres_items_models import Project, Release, Requirement, TestCase, Bug
-from postgres_sql_alchemy import get_database_object, get_all_objects_with_filters, get_all_objects_by_type, create_database_object
+from src.postgres_items_models import Project, Release, Requirement, TestCase, Bug
+from src.postgres_sql_alchemy import get_database_object, get_all_objects_with_filters, get_all_objects_by_type, create_database_object
 
 
 def find_projects():

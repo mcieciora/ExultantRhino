@@ -1,10 +1,8 @@
 from os import environ
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-import postgres_tasks_models
-import postgres_items_models
-from postgres_items_models import Bug, Project, Release, Requirement, TestCase
-from postgres_tasks_models import Task
+from src.postgres_items_models import Base, Bug, Project, Release, Requirement, TestCase
+from src.postgres_tasks_models import Base, Task
 
 
 def _get_engine():
@@ -170,8 +168,8 @@ def init_db():
     DB tables initialization.
     :return: None
     """
-    postgres_items_models.Base.metadata.create_all(_get_engine())
-    postgres_tasks_models.Base.metadata.create_all(_get_engine())
+    Base.metadata.create_all(_get_engine())
+    Base.metadata.create_all(_get_engine())
     if not get_all_objects_by_type(Project):
         default_project = Project(**{"title": "DEFAULT", "description": "Default project."})
         create_database_object(default_project)

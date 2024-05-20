@@ -1,6 +1,6 @@
 from streamlit import header, sidebar
-from postgres_items_models import Project
-from postgres_sql_alchemy import get_all_objects_by_type
+from src.postgres_items_models import Project
+from src.postgres_sql_alchemy import get_all_objects_by_type
 
 
 def find_projects():

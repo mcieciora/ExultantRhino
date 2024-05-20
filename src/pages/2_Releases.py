@@ -1,7 +1,7 @@
 from streamlit import button, columns, container, header, metric, sidebar, subheader
-from postgres_items_models import Bug, Project, Release, Status, Requirement, TestCase
-from postgres_tasks_models import Task, TaskStatus
-from postgres_sql_alchemy import create_database_object, edit_database_object, get_all_objects_by_type, \
+from src.postgres_items_models import Bug, Project, Release, Status, Requirement, TestCase
+from src.postgres_tasks_models import Task, TaskStatus
+from src.postgres_sql_alchemy import create_database_object, edit_database_object, get_all_objects_by_type, \
     get_database_object, get_objects_by_filters
 
 
