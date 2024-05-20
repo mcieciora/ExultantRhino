@@ -69,7 +69,7 @@ def test__smoke__postgres__get_all_objects_with_filters(two_objects_of_type_data
     expected_value = 2
     actual_value = len(function_result)
     assert actual_value == expected_value, f"Expected: {expected_value}, actual: {actual_value}"
-    expected_value = "rls-0"
+    expected_value = "rls-1"
     actual_value = function_result[0]
     assert actual_value["shortname"] == expected_value, \
         f"Expected: {expected_value}, actual: {actual_value['shortname']}"

@@ -30,10 +30,15 @@ pipeline {
                 }
             }
         }
-        stage ("Pull test image") {
+        stage ("Prepare test image") {
             steps {
                 script {
-                    customImage = docker.image("${DOCKERHUB_REPO}:test_image")
+                    if (params.BRANCH == "develop" || params.BRANCH == "master") {
+                        customImage = docker.image("${DOCKERHUB_REPO}:test_image")
+                    }
+                    else {
+                        customImage = docker.build("${DOCKERHUB_REPO}:test_image", "-f automated_tests/Dockerfile .")
+                    }
                 }
             }
         }

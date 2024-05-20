@@ -1,4 +1,4 @@
-from sys import executable, exit  # pylint: disable=redefined-builtin
+from sys import executable  # pylint: disable=redefined-builtin
 from glob import glob
 import subprocess
 from json import loads
@@ -15,7 +15,6 @@ def check_for_outdated_packages():
     :return: None
     """
     dependencies_list = []
-    non_zero_status_exit = False
     for req_file in glob("./requirements/**/requirements.txt"):
         with open(req_file, mode="r", encoding="utf-8") as req:
             format_dependency_list = [r.split("=")[0] for r in req.readlines()]
@@ -29,8 +28,6 @@ def check_for_outdated_packages():
                 f"{listed_req['name']} is outdated. Consider upgrading from {listed_req['version']} to "
                 f"{listed_req['latest_version']}"
             )
-    if non_zero_status_exit:
-        exit(1)
 
 
 if __name__ == "__main__":

@@ -17,7 +17,8 @@ def test__unittest__postgres__convert_to_dict():
                       "title": "new release",
                       "description": "Release description",
                       "project_shortname": "proj-0",
-                      "parent": "proj-0"}
+                      "parent": "proj-0",
+                      "status": None}
     database_object = Release(title="new release", description="Release description", project_shortname="proj-0",
                               parent="proj-0")
     actual_value = convert_to_dict(database_object)

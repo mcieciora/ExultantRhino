@@ -14,7 +14,7 @@
     </options>
     <keywords keywords="agent;always;axes;axis;expression;failure;matrix;parallel;script;steps;when;triggers" />
     <keywords2 keywords="catch;finally;parameters;environment;options;pipeline;post;stage;stages;try" />
-    <keywords3 keywords="echo;name;print;sh;values" />
+    <keywords3 keywords="echo;name;print;sh;values;withCredentials" />
     <keywords4 keywords="def;else;if;import;return" />
   </highlighting>
   <extensionMap>

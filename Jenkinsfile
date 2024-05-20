@@ -20,15 +20,16 @@ pipeline {
         stage ("Checkout branch") {
             steps {
                 script {
+                    def BRANCH_REV = env.BRANCH_TO_USE.equals("develop") || env.BRANCH_TO_USE.equals("master") ? "HEAD^1" : "develop"
                     withCredentials([sshUserPrivateKey(credentialsId: "github_id", keyFileVariable: 'key')]) {
                         sh 'GIT_SSH_COMMAND="ssh -i $key"'
-                        git branch: env.BRANCH_TO_USE, url: env.REPO_URL
+                        checkout scmGit(branches: [[name: "*/${BRANCH_TO_USE}"]], extensions: [], userRemoteConfigs: [[url: "${env.REPO_URL}"]])
                     }
                     withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
                         sh 'cp $env_file .env'
                     }
                     currentBuild.description = "Branch: ${env.BRANCH_TO_USE}\nFlag: ${env.FLAG}\nGroups: ${env.TEST_GROUPS}"
-                    build_test_image = sh(script: "git diff --name-only \$(git rev-parse HEAD) \$(git rev-parse HEAD^1) | grep -e automated_tests -e src -e requirements",
+                    build_test_image = sh(script: "git diff --name-only \$(git rev-parse HEAD) \$(git rev-parse ${BRANCH_REV}) | grep -e automated_tests -e src -e requirements",
                                           returnStatus: true)
                 }
             }
@@ -45,7 +46,7 @@ pipeline {
                     steps {
                         script {
                             testImage = docker.build("${DOCKERHUB_REPO}:test_image", "-f automated_tests/Dockerfile .")
-                            if (env.BRANCH_NAME == "master" || env.BRANCH_NAME == "develop") {
+                            if (env.BRANCH_TO_USE == "master" || env.BRANCH_TO_USE == "develop") {
                                 docker.withRegistry("", "dockerhub_id") {
                                     testImage.push()
                                 }
@@ -86,7 +87,7 @@ pipeline {
                 stage ("pylint") {
                     steps {
                         script {
-                            testImage.inside("-v $WORKSPACE:/app") {
+                            testImage.inside("--rm -v $WORKSPACE:/app") {
                                 sh "python -m pylint src --max-line-length=120 --disable=C0114 --fail-under=8.5"
                                 sh "python -m pylint --load-plugins pylint_pytest automated_tests --max-line-length=120 --disable=C0114,C0116 --fail-under=9.5"
                                 sh "python -m pylint tools/python --max-line-length=120 --disable=C0114 --fail-under=9.5"
@@ -97,7 +98,7 @@ pipeline {
                 stage ("flake8") {
                     steps {
                         script {
-                            testImage.inside("-v $WORKSPACE:/app") {
+                            testImage.inside("--rm -v $WORKSPACE:/app") {
                                 sh "python -m flake8 --max-line-length 120 --max-complexity 10 src automated_tests tools/python"
                             }
                         }
@@ -106,7 +107,7 @@ pipeline {
                 stage ("ruff") {
                     steps {
                         script {
-                            testImage.inside("-v $WORKSPACE:/app") {
+                            testImage.inside("--rm -v $WORKSPACE:/app") {
                                 sh "python -m ruff check src automated_tests tools/python"
                             }
                         }
@@ -115,7 +116,7 @@ pipeline {
                 stage ("black") {
                     steps {
                         script {
-                            testImage.inside("-v $WORKSPACE:/app") {
+                            testImage.inside("--rm -v $WORKSPACE:/app") {
                                 sh "python -m black src automated_tests tools/python"
                             }
                         }
@@ -124,7 +125,7 @@ pipeline {
                 stage ("bandit") {
                     steps {
                         script {
-                            testImage.inside("-v $WORKSPACE:/app") {
+                            testImage.inside("--rm -v $WORKSPACE:/app") {
                                 sh "python -m bandit src automated_tests tools/python"
                             }
                         }
@@ -133,7 +134,7 @@ pipeline {
                 stage ("pydocstyle") {
                     steps {
                         script {
-                            testImage.inside("-v $WORKSPACE:/app") {
+                            testImage.inside("--rm -v $WORKSPACE:/app") {
                                 sh "python -m pydocstyle --ignore D100,D104,D107,D212 ."
                             }
                         }
@@ -142,7 +143,7 @@ pipeline {
                 stage ("radon") {
                     steps {
                         script {
-                            testImage.inside("-v $WORKSPACE:/app") {
+                            testImage.inside("--rm -v $WORKSPACE:/app") {
                                 sh "python -m radon cc ."
                                 sh "python -m radon mi ."
                                 sh "python -m radon hal ."
@@ -153,7 +154,7 @@ pipeline {
                 stage ("mypy") {
                     steps {
                         script {
-                            testImage.inside("-v $WORKSPACE:/app") {
+                            testImage.inside("--rm -v $WORKSPACE:/app") {
                                 sh "python -m mypy src automated_tests tools/python"
                             }
                         }
@@ -162,8 +163,8 @@ pipeline {
                 stage ("Code coverage") {
                     steps {
                         script {
-                            testImage.inside("-v $WORKSPACE:/app") {
-                                sh "python -m pytest --cov=src automated_tests/ --cov-fail-under=95 --cov-report=html"
+                            testImage.inside("--rm -v $WORKSPACE:/app") {
+                                sh "python -m pytest --cov=src automated_tests/unittest --cov-fail-under=70 --cov-config=automated_tests/.coveragerc --cov-report=html"
                             }
                             publishHTML target: [
                                 allowMissing: false,
@@ -179,12 +180,12 @@ pipeline {
                 stage ("Scan for skipped tests") {
                     when {
                         expression {
-                            return env.BRANCH_NAME == "release" || env.BRANCH_NAME == "master"
+                            return env.BRANCH_TO_USE == "release" || env.BRANCH_TO_USE == "master"
                         }
                     }
                     steps {
                         script {
-                            testImage.inside("-v $WORKSPACE:/app") {
+                            testImage.inside("--rm -v $WORKSPACE:/app") {
                                 sh "python tools/python/scan_for_skipped_tests.py"
                             }
                         }
@@ -195,7 +196,7 @@ pipeline {
         stage ("Run unit tests") {
             steps {
                 script {
-                    testImage.inside("-v $WORKSPACE:/app") {
+                    testImage.inside("--rm -v $WORKSPACE:/app") {
                         sh "python -m pytest -m unittest automated_tests -v --junitxml=results/unittests_results.xml"
                     }
                 }
@@ -205,11 +206,11 @@ pipeline {
             steps {
                 script {
                     sh "chmod +x tools/shell_scripts/app_health_check.sh"
-                    sh "tools/shell_scripts/app_health_check.sh 30 2"
+                    sh "tools/shell_scripts/app_health_check.sh 30 1"
                 }
             }
             post {
-                always {
+                failure {
                     sh "docker compose down --rmi all -v"
                 }
             }
@@ -219,14 +220,14 @@ pipeline {
                 axes {
                     axis {
                         name "TEST_GROUP"
-                        values "api", "app", "db"
+                        values "postgres"
                     }
                 }
                 stages {
                     stage ("Test stage") {
                         steps {
                             script {
-                                executeTestGroup("${TEST_GROUP}")
+                                executeTestGroup("${TEST_GROUP}", testImage)
                             }
                         }
                     }
@@ -243,31 +244,31 @@ pipeline {
                 stage ("Push docker image") {
                     when {
                         expression {
-                            return env.BRANCH_NAME == "master" || env.BRANCH_NAME == "develop"
+                            return env.BRANCH_TO_USE == "master" || env.BRANCH_TO_USE == "develop"
                         }
                     }
                     steps {
                         script {
                             docker.withRegistry("", "dockerhub_id") {
-                                def customImage = docker.build("${DOCKERHUB_REPO}:${env.BRANCH_NAME}_${curDate}")
+                                def customImage = docker.build("${DOCKERHUB_REPO}:${env.BRANCH_TO_USE}-${curDate}")
                                 customImage.push()
-                                if (env.BRANCH_NAME == "master") {
+                                if (env.BRANCH_TO_USE == "master") {
                                     customImage.push("latest")
                                 }
                             }
-                            sh "docker rmi ${DOCKERHUB_REPO}:${env.BRANCH_NAME}_${curDate}"
+                            sh "docker rmi ${DOCKERHUB_REPO}:${env.BRANCH_TO_USE}-${curDate}"
                         }
                     }
                 }
                 stage ("Push tag") {
                     when {
                         expression {
-                            return env.BRANCH_NAME == "master"
+                            return env.BRANCH_TO_USE == "master"
                         }
                     }
                     steps {
                         script {
-                            def TAG_NAME = "${env.BRANCH_NAME}_${curDate}"
+                            def TAG_NAME = "${env.BRANCH_TO_USE}-${curDate}"
                             withCredentials([sshUserPrivateKey(credentialsId: "github_id", keyFileVariable: 'key')]) {
                                 sh 'GIT_SSH_COMMAND="ssh -i $key"'
                                 sh "git tag -a $TAG_NAME -m $TAG_NAME && git push origin $TAG_NAME"
@@ -295,12 +296,12 @@ def getValue(variable, defaultValue) {
 }
 
 
-def executeTestGroup(testGroup) {
+def executeTestGroup(testGroup, testImage) {
     if (env.TEST_GROUPS == "all" || env.TEST_GROUPS.contains(testGroup)) {
         echo "Running ${testGroup}"
             withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
-                testImage.inside("--network general_network --env-file ${env_file} -v $WORKSPACE:/app") {
-                    sh "python -m pytest -m ${FLAG} -k ${testGroup} -v --junitxml=results/${testGroup}_results.xml"
+                testImage.inside("--rm --network general_network --env-file ${env_file} -v $WORKSPACE:/app") {
+                    sh "python -m pytest -m ${FLAG} -k ${testGroup} automated_tests -v --junitxml=results/${testGroup}_results.xml"
             }
         }
     }

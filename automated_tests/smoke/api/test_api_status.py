@@ -2,6 +2,7 @@ from requests import get
 from pytest import mark
 
 
+@mark.skip
 @mark.smoke
 def test__smoke__api__status():
     api_call_url = "http://exultant_rhino_api:8101/status"

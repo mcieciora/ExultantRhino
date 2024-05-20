@@ -1,8 +1,8 @@
 from pandas import DataFrame
 from streamlit import column_config, dataframe, header, sidebar
-from postgres_items_models import Project
-from postgres_tasks_models import Task
-from postgres_sql_alchemy import get_all_objects_by_type
+from src.postgres_items_models import Project
+from src.postgres_tasks_models import Task
+from src.postgres_sql_alchemy import get_all_objects_by_type
 
 
 def find_projects():

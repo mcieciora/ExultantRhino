@@ -2,6 +2,7 @@ from requests import get
 from pytest import mark
 
 
+@mark.skip
 @mark.smoke
 def test__smoke__api__get_object_by_shortname__project(one_object_of_type_database_fixture):
     api_call_url = "http://exultant_rhino_api:8101/get/project/proj-0"
@@ -13,6 +14,7 @@ def test__smoke__api__get_object_by_shortname__project(one_object_of_type_databa
                                                                            f"{database_object['description']}"
 
 
+@mark.skip
 @mark.smoke
 def test__smoke__api__get_object_by_shortname__bug(one_object_of_type_database_fixture):
     api_call_url = "http://exultant_rhino_api:8101/get/bug/bug-0"
@@ -27,6 +29,7 @@ def test__smoke__api__get_object_by_shortname__bug(one_object_of_type_database_f
     assert database_object["parent"] == "tc-0", f"parent value equals {database_object['parent']}"
 
 
+@mark.skip
 @mark.smoke
 def test__smoke__api__get__all_items(two_objects_of_type_database_fixture):
     api_call_url = "http://exultant_rhino_api:8101/get/bug"
@@ -36,6 +39,7 @@ def test__smoke__api__get__all_items(two_objects_of_type_database_fixture):
     assert len(database_object) == 2, f"Expected: 2, actual: {len(database_object)}"
 
 
+@mark.skip
 @mark.smoke
 def test__smoke__api__get__filtered(two_objects_of_type_database_fixture):
     api_call_url = "http://exultant_rhino_api:8101/get/bug?description=test"

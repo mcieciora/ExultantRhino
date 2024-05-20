@@ -18,4 +18,5 @@ WORKDIR /app/tools/python
 COPY tools/python .
 
 WORKDIR /app
+
 RUN python -m pip install --no-cache-dir -r requirements/app/requirements.txt -r requirements/api/requirements.txt -r requirements/testing/requirements.txt

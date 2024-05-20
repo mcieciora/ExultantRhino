@@ -1,17 +1,6 @@
 version: "3.8"
 
 services:
-  api:
-    container_name: exultant_rhino_api
-    build:
-      context: .
-      dockerfile: api.Dockerfile
-    ports:
-      - "8101:8101"
-    env_file:
-      - .env
-    networks:
-      - app_network
   app:
     container_name: exultant_rhino_app
     build:
