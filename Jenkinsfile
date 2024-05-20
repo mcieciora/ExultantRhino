@@ -7,7 +7,7 @@ pipeline {
     environment {
         FLAG = getValue("FLAG", "smoke")
         TEST_GROUPS = getValue("TEST_GROUP", "all")
-        REGULAR_BUILD = getValue("REGULAR_BUILD", true)
+        REGULAR_BUILD = getValue("REGULAR_BUILD", false)
         BRANCH_TO_USE = getValue("BRANCH", env.BRANCH_NAME)
         REPO_URL = "git@github.com:mcieciora/ExultantRhino.git"
         DOCKERHUB_REPO = "mcieciora/exultant_rhino"
@@ -300,7 +300,7 @@ def executeTestGroup(testGroup) {
     if (env.TEST_GROUPS == "all" || env.TEST_GROUPS.contains(testGroup)) {
         echo "Running ${testGroup}"
             withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
-                testImage.inside("--network general_network --env-file ${env_file} -v $WORKSPACE:/app") {
+                testImage.inside("--rm --network general_network --env-file ${env_file} -v $WORKSPACE:/app") {
                     sh "python -m pytest -m ${FLAG} -k ${testGroup} -v --junitxml=results/${testGroup}_results.xml"
             }
         }
