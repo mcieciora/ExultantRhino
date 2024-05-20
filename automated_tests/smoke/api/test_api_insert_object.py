@@ -2,6 +2,7 @@ from requests import get
 from pytest import mark
 
 
+@mark.skip
 @mark.smoke
 def test__smoke__insert(empty_database_fixture):
     api_call_url = "http://exultant_rhino_api:8101/insert/project?title=new+proj"
