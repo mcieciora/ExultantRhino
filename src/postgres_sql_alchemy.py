@@ -59,7 +59,7 @@ def get_next_shortname(object_type):
         last_object_id = max(
             map(lambda db_object: int(db_object["shortname"].split("-")[1]), get_all_objects_by_type(object_type)))
         return f"{shortname_prefix[object_type]}-{last_object_id + 1}"
-    except IndexError:
+    except ValueError:
         return f"{shortname_prefix[object_type]}-0"
 
 

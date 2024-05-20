@@ -93,6 +93,11 @@ def find_projects(search_term):
     ]
 
 
+def update_objects(edit_object_type, pattern, edit_value):
+    for edit_item in get_objects_by_filters(edit_object_type, pattern):
+        edit_database_object(edit_object_type, edit_item["id"], edit_value)
+
+
 def verify_form():
     for key, value in form_dict.items():
         if value in ["", None]:
@@ -125,7 +130,7 @@ object_type = selectbox(
     label="Select object type",
     key="object_type",
     options=("Project", "Release", "Requirement", "Test case", "Bug"),
-    index=["Project", "Release", "Requirement", "Test case", "Bug"].index(item_object_type.__name__)
+    index=["Project", "Release", "Requirement", "TestCase", "Bug"].index(item_object_type.__name__)
     if parameters else None,
     placeholder="Select card type...",
     disabled=True if parameters else False
@@ -136,7 +141,8 @@ if object_type:
         "title": {
             "applicable": ["Project", "Release", "Requirement", "Test case", "Bug"],
             "streamlit_function": text_input,
-            "default_value_field": "value",
+            "parametrized_value_field": "value",
+            "default_value_field": "placeholder",
             "default_value": f"Insert {object_type.lower()} title",
             "args": {
                 "label": "Title",
@@ -146,7 +152,8 @@ if object_type:
         "description": {
             "applicable": ["Project", "Release", "Requirement", "Test case", "Bug"],
             "streamlit_function": text_area,
-            "default_value_field": "value",
+            "parametrized_value_field": "value",
+            "default_value_field": "placeholder",
             "default_value": f"Insert {object_type.lower()} description",
             "args": {
                 "label": "Description",
@@ -156,6 +163,7 @@ if object_type:
         "project_shortname": {
             "applicable": ["Release", "Requirement", "Test case", "Bug"],
             "streamlit_function": text_input,
+            "parametrized_value_field": "value",
             "default_value_field": "value",
             "default_value": current_project,
             "args": {
@@ -167,6 +175,7 @@ if object_type:
         "parent": {
             "applicable": ["Requirement", "Test case", "Bug"],
             "streamlit_function": st_searchbox,
+            "parametrized_value_field": "default",
             "default_value_field": "placeholder",
             "default_value": "Search ...",
             "args": {
@@ -179,33 +188,35 @@ if object_type:
 
     for form_key, form_item in form_map.items():
         if object_type in form_item["applicable"]:
-            form_item["args"][form_item["default_value_field"]] = item[form_key] if parameters else form_item["default_value"]
+            if parameters:
+                form_item["args"][form_item["parametrized_value_field"]] = item[form_key]
+            else:
+                form_item["args"][form_item["default_value_field"]] = form_item["default_value"]
             form_dict[form_key] = form_item["streamlit_function"](**form_item["args"])
 
     if parameters:
         if button(label="Update"):
             if verify_form() and (item_edited := changes_detected()):
+                items_to_update = []
+                if object_type == "Requirement":
+                    if "parent" in item_edited:
+                        update_objects(TestCase, {"target_release": item["target_release"]},
+                                       {"target_release": form_dict["target_release"]})
+                        update_objects(Bug, {"target_release": item["target_release"]},
+                                       {"target_release": form_dict["target_release"]})
+                elif object_type == "Test case":
+                    if "parent" in item_edited:
+                        parent_item = get_objects_by_filters(Requirement, {"shortname": form_dict["parent"]})[-1]
+                        if parent_item["target_release"] != item["target_release"]:
+                            form_dict["target_release"] = parent_item["target_release"]
+                            update_objects(Bug, {"parent": item["shortname"]},
+                                           {"target_release": form_dict["target_release"]})
+                elif object_type == "Bug":
+                    if "parent" in item_edited:
+                        parent_item = get_objects_by_filters(TestCase, {"shortname": form_dict["parent"]})[-1]
+                        if parent_item["target_release"] != item["target_release"]:
+                            form_dict["target_release"] = parent_item["target_release"]
                 edit_database_object(object_type_db_object_map[object_type], item["id"], item_edited)
-
-                #     if object_type is Release:
-                #         form_dict["parent"] = form_dict["project_shortname"]
-                #         all_child_objects = get_all_objects_with_filters([Requirement, TestCase, Bug],
-                #                                                          {"parent": form_dict["shortname"]})
-                #         for db_object in all_child_objects:
-                #             if "rls" in db_object["shortname"]:
-                #                 edit_database_object(Requirement, db_object["id"], form_dict)
-                #     edit_database_object(object_type, database_object["id"], form_dict)
-
-                # active to edit
-                # project all
-                # release: project as searchbox; remove parent
-                # requirement: release as searchbox; remove parent
-                # tc and bug: parent
-
-                # TODO add tc and bug edition later
-                # project title and desc changes
-                # if edited release column: project then update release parent and all items parent and target_release columns equal to release shortname
-                # if edited req column: release then update parent and all items that equal req parent and all their children to release shortname
                 success(f"{item['shortname']}: {item['title']} was updated.")
         if button(label="Delete"):
             warning("Deletion to be implemented.")
@@ -214,5 +225,3 @@ if object_type:
             new_object = object_type_db_object_map[object_type](**form_dict)
             new_object_id = create_database_object(new_object)
             success(f"Created {new_object_id}")
-        else:
-            warning("All fields are required.")
