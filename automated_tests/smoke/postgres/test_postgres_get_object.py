@@ -1,6 +1,6 @@
 from pytest import mark
-from src.postgres_sql_alchemy import get_all_objects_by_type, get_objects_by_filters, get_database_object, \
-    get_next_shortname
+from src.postgres_sql_alchemy import get_all_objects_by_type, get_objects_by_filters, get_all_objects_with_filters, \
+    get_database_object, get_next_shortname
 from src.postgres_items_models import Bug, Project, Release, Requirement, TestCase
 
 
@@ -58,6 +58,18 @@ def test__smoke__postgres__get_objects_by_filters(two_objects_of_type_database_f
     actual_value = len(function_result)
     assert actual_value == expected_value, f"Expected: {expected_value}, actual: {actual_value}"
     expected_value = "tc-1"
+    actual_value = function_result[0]
+    assert actual_value["shortname"] == expected_value, \
+        f"Expected: {expected_value}, actual: {actual_value['shortname']}"
+
+
+@mark.smoke
+def test__smoke__postgres__get_all_objects_with_filters(two_objects_of_type_database_fixture):
+    function_result = get_all_objects_with_filters([Release, Requirement], {"description": "test_description"})
+    expected_value = 2
+    actual_value = len(function_result)
+    assert actual_value == expected_value, f"Expected: {expected_value}, actual: {actual_value}"
+    expected_value = "rls-0"
     actual_value = function_result[0]
     assert actual_value["shortname"] == expected_value, \
         f"Expected: {expected_value}, actual: {actual_value['shortname']}"

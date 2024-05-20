@@ -24,7 +24,8 @@ current_project = sidebar.selectbox(
 
 header("Items")
 all_objects = [get_database_object(Project, current_project.split(":")[0])]
-all_objects.extend(get_all_objects_with_filters([Release, Requirement, TestCase, Bug], {"project_shortname": current_project.split(":")[0]}))
+all_objects.extend(get_all_objects_with_filters([Release, Requirement, TestCase, Bug],
+                                                {"project_shortname": current_project.split(":")[0]}))
 for item in all_objects:
     item["url"] = f"http://localhost:8501/+Create?item={item['shortname']}"
 
@@ -32,7 +33,6 @@ df = DataFrame(all_objects)
 
 dataframe(all_objects,
           column_config={
-              "id": "ID",
               "shortname": "Shortname",
               "title": "Title",
               "description": "Description",
@@ -41,9 +41,9 @@ dataframe(all_objects,
               "target_release": "Release",
               "parent": "Parent",
               "children_task": "Task",
-              "url": column_config.LinkColumn("Edit URL", display_text="Edit")
+              "url": column_config.LinkColumn("View URL", display_text="View")
           },
-          column_order=("id", "shortname", "title", "description", "status", "project_shortname", "parent",
+          column_order=("shortname", "title", "description", "status", "project_shortname", "parent",
                         "children_task", "target_release", "url"),
           hide_index=True
           )
