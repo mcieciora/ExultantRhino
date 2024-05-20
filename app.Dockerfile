@@ -4,7 +4,6 @@ RUN apt-get update && apt-get install -y libpq-dev gcc
 
 WORKDIR /app
 
-COPY requirements/example_app/requirements.txt /app
 COPY requirements/app/requirements.txt ./
 COPY src ./src
 
