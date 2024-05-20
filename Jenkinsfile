@@ -220,7 +220,7 @@ pipeline {
                 axes {
                     axis {
                         name "TEST_GROUP"
-                        values "api", "app", "db"
+                        values "app", "postgres"
                     }
                 }
                 stages {
