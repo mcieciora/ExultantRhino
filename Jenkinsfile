@@ -227,7 +227,7 @@ pipeline {
                     stage ("Test stage") {
                         steps {
                             script {
-                                executeTestGroup("${TEST_GROUP}")
+                                executeTestGroup("${TEST_GROUP}", testImage)
                             }
                         }
                     }
@@ -296,7 +296,7 @@ def getValue(variable, defaultValue) {
 }
 
 
-def executeTestGroup(testGroup) {
+def executeTestGroup(testGroup, testImage) {
     if (env.TEST_GROUPS == "all" || env.TEST_GROUPS.contains(testGroup)) {
         echo "Running ${testGroup}"
             withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
