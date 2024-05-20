@@ -7,7 +7,7 @@ pipeline {
     environment {
         FLAG = getValue("FLAG", "smoke")
         TEST_GROUPS = getValue("TEST_GROUP", "all")
-        REGULAR_BUILD = getValue("REGULAR_BUILD", false)
+        REGULAR_BUILD = getValue("REGULAR_BUILD", true)
         BRANCH_TO_USE = getValue("BRANCH", env.BRANCH_NAME)
         REPO_URL = "git@github.com:mcieciora/ExultantRhino.git"
         DOCKERHUB_REPO = "mcieciora/exultant_rhino"
@@ -87,7 +87,7 @@ pipeline {
                 stage ("pylint") {
                     steps {
                         script {
-                            testImage.inside("-v $WORKSPACE:/app") {
+                            testImage.inside("--rm -v $WORKSPACE:/app") {
                                 sh "python -m pylint src --max-line-length=120 --disable=C0114 --fail-under=8.5"
                                 sh "python -m pylint --load-plugins pylint_pytest automated_tests --max-line-length=120 --disable=C0114,C0116 --fail-under=9.5"
                                 sh "python -m pylint tools/python --max-line-length=120 --disable=C0114 --fail-under=9.5"
@@ -98,7 +98,7 @@ pipeline {
                 stage ("flake8") {
                     steps {
                         script {
-                            testImage.inside("-v $WORKSPACE:/app") {
+                            testImage.inside("--rm -v $WORKSPACE:/app") {
                                 sh "python -m flake8 --max-line-length 120 --max-complexity 10 src automated_tests tools/python"
                             }
                         }
@@ -107,7 +107,7 @@ pipeline {
                 stage ("ruff") {
                     steps {
                         script {
-                            testImage.inside("-v $WORKSPACE:/app") {
+                            testImage.inside("--rm -v $WORKSPACE:/app") {
                                 sh "python -m ruff check src automated_tests tools/python"
                             }
                         }
@@ -116,7 +116,7 @@ pipeline {
                 stage ("black") {
                     steps {
                         script {
-                            testImage.inside("-v $WORKSPACE:/app") {
+                            testImage.inside("--rm -v $WORKSPACE:/app") {
                                 sh "python -m black src automated_tests tools/python"
                             }
                         }
@@ -125,7 +125,7 @@ pipeline {
                 stage ("bandit") {
                     steps {
                         script {
-                            testImage.inside("-v $WORKSPACE:/app") {
+                            testImage.inside("--rm -v $WORKSPACE:/app") {
                                 sh "python -m bandit src automated_tests tools/python"
                             }
                         }
@@ -134,7 +134,7 @@ pipeline {
                 stage ("pydocstyle") {
                     steps {
                         script {
-                            testImage.inside("-v $WORKSPACE:/app") {
+                            testImage.inside("--rm -v $WORKSPACE:/app") {
                                 sh "python -m pydocstyle --ignore D100,D104,D107,D212 ."
                             }
                         }
@@ -143,7 +143,7 @@ pipeline {
                 stage ("radon") {
                     steps {
                         script {
-                            testImage.inside("-v $WORKSPACE:/app") {
+                            testImage.inside("--rm -v $WORKSPACE:/app") {
                                 sh "python -m radon cc ."
                                 sh "python -m radon mi ."
                                 sh "python -m radon hal ."
@@ -154,7 +154,7 @@ pipeline {
                 stage ("mypy") {
                     steps {
                         script {
-                            testImage.inside("-v $WORKSPACE:/app") {
+                            testImage.inside("--rm -v $WORKSPACE:/app") {
                                 sh "python -m mypy src automated_tests tools/python"
                             }
                         }
@@ -163,7 +163,7 @@ pipeline {
                 stage ("Code coverage") {
                     steps {
                         script {
-                            testImage.inside("-v $WORKSPACE:/app") {
+                            testImage.inside("--rm -v $WORKSPACE:/app") {
                                 sh "python -m pytest --cov=src automated_tests/unittest --cov-fail-under=70 --cov-config=automated_tests/.coveragerc --cov-report=html"
                             }
                             publishHTML target: [
@@ -185,7 +185,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            testImage.inside("-v $WORKSPACE:/app") {
+                            testImage.inside("--rm -v $WORKSPACE:/app") {
                                 sh "python tools/python/scan_for_skipped_tests.py"
                             }
                         }
@@ -196,7 +196,7 @@ pipeline {
         stage ("Run unit tests") {
             steps {
                 script {
-                    testImage.inside("-v $WORKSPACE:/app") {
+                    testImage.inside("--rm -v $WORKSPACE:/app") {
                         sh "python -m pytest -m unittest automated_tests -v --junitxml=results/unittests_results.xml"
                     }
                 }
@@ -206,7 +206,7 @@ pipeline {
             steps {
                 script {
                     sh "chmod +x tools/shell_scripts/app_health_check.sh"
-                    sh "tools/shell_scripts/app_health_check.sh 30 2"
+                    sh "tools/shell_scripts/app_health_check.sh 30 1"
                 }
             }
             post {
