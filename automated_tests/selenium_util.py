@@ -3,7 +3,6 @@ from time import sleep
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.firefox.options import Options
 
 STANDARD_WAIT = 0.5
 LOAD_WAIT = 1
@@ -11,9 +10,7 @@ LOAD_WAIT = 1
 
 class SeleniumUtil:
     def __init__(self):
-        options = Options()
-        options.add_argument("-headless")
-        self.driver = webdriver.Firefox(options=options)
+        self.driver = webdriver.Firefox()
         self.api_url = f"http://{environ['API_HOST']}:8501"
         self.driver.get(self.api_url)
         sleep(LOAD_WAIT)
