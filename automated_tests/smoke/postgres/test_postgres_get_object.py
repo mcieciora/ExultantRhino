@@ -5,7 +5,7 @@ from src.postgres_items_models import Bug, Project, Release, Requirement, TestCa
 
 
 @mark.smoke
-def test__smoke__postgres__get_next_shortname__empty_database(empty_database_fixture):
+def test__smoke__postgres__get_next_shortname__empty_database(empty_database_fixture_function):
     expected_values = ["proj-0", "rls-0", "req-0", "tc-0", "bug-0"]
     for index, database_object in enumerate([Project, Release, Requirement, TestCase, Bug]):
         actual_value = get_next_shortname(database_object)
@@ -23,7 +23,7 @@ def test__smoke__postgres__get_next_shortname(one_object_of_type_database_fixtur
 
 
 @mark.smoke
-def test__smoke__postgres__get_database_object__empty_database(empty_database_fixture):
+def test__smoke__postgres__get_database_object__empty_database(empty_database_fixture_function):
     expected_value = {}
     actual_value = get_database_object(Project, "proj-0")
     assert actual_value == expected_value, f"Expected: {expected_value}, actual: {actual_value['title']}"

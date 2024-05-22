@@ -20,7 +20,18 @@ def _drop_all_rows():
 
 
 @fixture(scope="function")
-def empty_database_fixture():
+def empty_database_fixture_function():
+    """
+    Fixture yields empty database.
+    :return: Yielding empty database prepared for postgres and api testing.
+    """
+    _drop_all_rows()
+    yield
+    _drop_all_rows()
+
+
+@fixture(scope="session")
+def empty_database_fixture_session():
     """
     Fixture yields empty database.
     :return: Yielding empty database prepared for postgres and api testing.
