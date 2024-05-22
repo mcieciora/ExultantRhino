@@ -20,7 +20,7 @@ pipeline {
         stage ("Checkout branch") {
             steps {
                 script {
-                    def BRANCH_REV = env.BRANCH_TO_USE.equals("develop") || env.BRANCH_TO_USE.equals("master") ? "HEAD^1" : "develop"
+                    def BRANCH_REV = env.BRANCH_TO_USE.equals("develop") || env.BRANCH_TO_USE.equals("master") ? "HEAD^1" : "origin/develop"
                     withCredentials([sshUserPrivateKey(credentialsId: "github_id", keyFileVariable: 'key')]) {
                         sh 'GIT_SSH_COMMAND="ssh -i $key"'
                         checkout scmGit(branches: [[name: "*/${BRANCH_TO_USE}"]], extensions: [], userRemoteConfigs: [[url: "${env.REPO_URL}"]])
