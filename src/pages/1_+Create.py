@@ -1,7 +1,7 @@
 from streamlit import button, header, selectbox, sidebar, success, text_area, text_input, query_params, warning, write
 from src.postgres_items_models import Bug, Project, Release, Requirement, TestCase, Status
-from src.postgres_sql_alchemy import create_database_object, edit_database_object, get_all_objects_by_type, \
-    get_database_object, get_downstream_items, get_objects_by_filters
+from src.postgres_sql_alchemy import create_database_object, delete_database_object, edit_database_object, \
+    get_all_objects_by_type, get_database_object, get_downstream_items, get_objects_by_filters
 
 
 def find_projects():
@@ -202,7 +202,12 @@ if object_type:
                 edit_database_object(object_type_db_object_map[object_type], item["id"], form_dict)
                 success(f"{item['shortname']}: {item['title']} was updated.")
         if button(label="Delete"):
-            warning("Deletion to be implemented.")
+            downstream_items = get_downstream_items(object_type_db_object_map[object_type], item["shortname"])
+            for downstream_item in downstream_items:
+                downstream_item_type = shortname_prefix[downstream_item["shortname"].split("-")[0]]
+                delete_database_object(downstream_item_type, downstream_item["id"])
+            delete_database_object(object_type, item["id"])
+            success(f"Deleted {item['title']} and {len(downstream_items)} related items.")
     elif button(label="Submit"):
         if verify_form():
             new_object = object_type_db_object_map[object_type](**form_dict)
