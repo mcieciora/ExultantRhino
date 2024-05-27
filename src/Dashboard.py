@@ -5,6 +5,11 @@ from src.postgres_sql_alchemy import get_all_objects_by_type, get_objects_by_fil
 init_db()
 
 
+from dotenv import load_dotenv
+load_dotenv(".env")
+
+
+
 def find_projects():
     """
     Get all available projects in list format.

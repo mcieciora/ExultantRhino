@@ -116,8 +116,8 @@ def get_objects_by_filters(object_type, filters_dict):
     """
     query = get_session().query(object_type)
     for key, value in filters_dict.items():
-        query = query.filter(getattr(object_type, key).like("%%%s%%" % value)).all()
-    return [convert_to_dict(db_object) for db_object in query]
+        query = query.filter(getattr(object_type, key).like("%%%s%%" % value))
+    return [convert_to_dict(db_object) for db_object in query.all()]
 
 
 def get_downstream_items(parent_item_type, shortname, include_parent=False):
