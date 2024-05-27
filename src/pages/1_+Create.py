@@ -1,8 +1,7 @@
-from streamlit import button, header, selectbox, sidebar, success, text_area, text_input, query_params, warning
-from streamlit_searchbox import st_searchbox
+from streamlit import button, header, selectbox, sidebar, success, text_area, text_input, query_params, warning, write
 from src.postgres_items_models import Bug, Project, Release, Requirement, TestCase, Status
 from src.postgres_sql_alchemy import create_database_object, edit_database_object, get_all_objects_by_type, \
-    get_database_object, get_objects_by_filters
+    get_database_object, get_downstream_items, get_objects_by_filters
 
 
 def find_projects():
@@ -68,25 +67,13 @@ def get_parent_object_type(input_type):
     return parent_objects_map[object_type_db_object_map[input_type]]
 
 
-def find_available_parents(search_term):
+def find_available_parents(return_pretty=False):
     parent_object_type = get_parent_object_type(object_type)
-    available_parents = get_objects_by_filters(parent_object_type, {"project_shortname": current_project.split(":")[0]})
-    if search_term == "":
-        return [
-            f"{db_object['shortname']}: {db_object['title']}"
-            for db_object in available_parents
-        ]
+    query = get_objects_by_filters(parent_object_type, {"project_shortname": current_project.split(":")[0]})
+    if return_pretty:
+        return [f"{db_object['shortname']}: {db_object['title']}" for db_object in query]
     else:
-        return [
-            f"{db_object['shortname']}: {db_object['title']}"
-            for db_object in available_parents
-            if search_term in db_object["shortname"] or search_term in db_object["title"]
-        ]
-
-
-def update_objects(edit_object_type, pattern, edit_value):
-    for edit_item in get_objects_by_filters(edit_object_type, pattern):
-        edit_database_object(edit_object_type, edit_item["id"], edit_value)
+        return [db_object["shortname"] for db_object in query]
 
 
 def verify_form():
@@ -128,6 +115,8 @@ object_type = selectbox(
 )
 
 if object_type:
+    parent_item_options = find_available_parents(return_pretty=True) if object_type in ["Requirement", "Test case", "Bug"] else []
+
     form_map = {
         "title": {
             "applicable": ["Project", "Release", "Requirement", "Test case", "Bug"],
@@ -160,19 +149,20 @@ if object_type:
             "args": {
                 "label": "Parent project",
                 "disabled": True,
-                "key": "parent_project_search_box"
+                "key": "parent_project_text_input"
             }
         },
         "parent": {
             "applicable": ["Requirement", "Test case", "Bug"],
-            "streamlit_function": st_searchbox,
-            "parametrized_value_field": "default",
+            "streamlit_function": selectbox,
+            "parametrized_value_field": "index",
             "default_value_field": "placeholder",
-            "default_value": "Search ...",
+            "default_value": "Search for parent item...",
             "args": {
                 "label": "Parent item",
-                "search_function": find_available_parents,
-                "key": "parent_item_search_box"
+                "options": parent_item_options,
+                "key": "parent_item_select_box",
+                "index": None
             }
         },
     }
@@ -180,34 +170,36 @@ if object_type:
     for form_key, form_item in form_map.items():
         if object_type in form_item["applicable"]:
             if parameters:
-                form_item["args"][form_item["parametrized_value_field"]] = item[form_key]
+                if form_key == "parent":
+                    form_item["args"][form_item["parametrized_value_field"]] = \
+                        [x.split(":")[0] for x in parent_item_options].index(item[form_key])
+                else:
+                    form_item["args"][form_item["parametrized_value_field"]] = item[form_key]
             else:
                 form_item["args"][form_item["default_value_field"]] = form_item["default_value"]
             form_dict[form_key] = form_item["streamlit_function"](**form_item["args"])
 
     if parameters:
         if button(label="Update"):
-            if verify_form() and (item_edited := changes_detected()):
-                items_to_update = []
-                if object_type == "Requirement":
-                    if "parent" in item_edited:
-                        update_objects(TestCase, {"target_release": item["target_release"]},
-                                       {"target_release": form_dict["target_release"]})
-                        update_objects(Bug, {"target_release": item["target_release"]},
-                                       {"target_release": form_dict["target_release"]})
-                elif object_type == "Test case":
-                    if "parent" in item_edited:
-                        parent_item = get_objects_by_filters(Requirement, {"shortname": form_dict["parent"]})[-1]
-                        if parent_item["target_release"] != item["target_release"]:
-                            form_dict["target_release"] = parent_item["target_release"]
-                            update_objects(Bug, {"parent": item["shortname"]},
-                                           {"target_release": form_dict["target_release"]})
-                elif object_type == "Bug":
-                    if "parent" in item_edited:
-                        parent_item = get_objects_by_filters(TestCase, {"shortname": form_dict["parent"]})[-1]
-                        if parent_item["target_release"] != item["target_release"]:
-                            form_dict["target_release"] = parent_item["target_release"]
-                edit_database_object(object_type_db_object_map[object_type], item["id"], item_edited)
+            if verify_form() and (changes_dict := changes_detected()):
+                if "parent" in changes_dict:
+                    parent_item = get_objects_by_filters(get_parent_object_type(object_type),
+                                                         {"shortname": form_dict["parent"]})[-1]
+                    if object_type_db_object_map[object_type] is Requirement and \
+                            parent_item["shortname"] != item["target_release"]:
+                        for downstream_item in get_downstream_items(object_type_db_object_map[object_type],
+                                                                    item["shortname"]):
+                            downstream_item_type = shortname_prefix[downstream_item["shortname"].split("-")[0]]
+                            edit_database_object(downstream_item_type, downstream_item["id"],
+                                                 {"target_release": form_dict["parent"]})
+                    elif object_type_db_object_map[object_type] in [TestCase, Bug] and \
+                            parent_item["target_release"] != item["target_release"]:
+                        for downstream_item in get_downstream_items(object_type_db_object_map[object_type],
+                                                                    item["shortname"]):
+                            downstream_item_type = shortname_prefix[downstream_item["shortname"].split("-")[0]]
+                            edit_database_object(downstream_item_type, downstream_item["id"],
+                                                 {"target_release": parent_item["target_release"]})
+                edit_database_object(object_type_db_object_map[object_type], item["id"], form_dict)
                 success(f"{item['shortname']}: {item['title']} was updated.")
         if button(label="Delete"):
             warning("Deletion to be implemented.")

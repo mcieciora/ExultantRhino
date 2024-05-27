@@ -1,8 +1,10 @@
 from os import environ
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from src.postgres_items_models import Base, Bug, Project, Release, Requirement, TestCase
-from src.postgres_tasks_models import Base, Task
+import src.postgres_items_models as items_models
+import src.postgres_tasks_models as tasks_models
+from src.postgres_items_models import Bug, Project, Release, Requirement, TestCase
+from src.postgres_tasks_models import Task
 
 
 def _get_engine():
@@ -118,6 +120,29 @@ def get_objects_by_filters(object_type, filters_dict):
     return [convert_to_dict(db_object) for db_object in query]
 
 
+def get_downstream_items(parent_item_type, shortname, include_parent=False):
+    """
+    Get list of downstream items of given object.
+    :return: List of downstream items.
+    """
+    all_items_types = [Project, Release, Requirement, TestCase, Bug]
+    parent_item = get_database_object(parent_item_type, shortname)
+    downstream_list = [parent_item]
+    downstream_items = [parent_item]
+
+    starting_index = all_items_types.index(parent_item_type)+1
+
+    for target_type in all_items_types[starting_index::]:
+        _temp_list = []
+        for item in downstream_items:
+            _temp_list.extend(get_objects_by_filters(target_type, {"parent": item["shortname"]}))
+        downstream_items = _temp_list
+        downstream_list.extend(downstream_items)
+    if not include_parent:
+        downstream_list.remove(parent_item)
+    return downstream_list
+
+
 def create_database_object(object_to_commit):
     """
     Create database object from given dictionary.
@@ -168,12 +193,8 @@ def init_db():
     DB tables initialization.
     :return: None
     """
-    Base.metadata.create_all(_get_engine())
-    Base.metadata.create_all(_get_engine())
+    items_models.Base.metadata.create_all(_get_engine())
+    tasks_models.Base.metadata.create_all(_get_engine())
     if not get_all_objects_by_type(Project):
         default_project = Project(**{"title": "DEFAULT", "description": "Default project."})
         create_database_object(default_project)
-
-
-if __name__ == '__main__':
-    init_db()
