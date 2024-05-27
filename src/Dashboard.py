@@ -2,7 +2,6 @@ from streamlit import columns, header, sidebar, metric
 from src.postgres_items_models import Bug, Project, Release, Requirement, TestCase
 from src.postgres_sql_alchemy import get_all_objects_by_type, get_objects_by_filters, init_db
 
-
 init_db()
 
 

@@ -45,7 +45,7 @@ def test__smoke__streamlit_app__create_requirement(empty_database_fixture_sessio
     selenium_util.choose_from_select_box("Select object type", "Requirement")
     selenium_util.write_input("Title", test_data["item_name"])
     selenium_util.write_input("Description", test_data["item_description"])
-    selenium_util.choose_from_search_box("streamlit_searchbox.searchbox", test_data["item_parent_object"])
+    selenium_util.choose_from_select_box("Parent item", test_data["item_parent_object"])
     selenium_util.submit_form()
     assert findall(r"Created req-\d+", selenium_util.driver.page_source), "Release creation message not found."
 
@@ -63,7 +63,7 @@ def test__smoke__streamlit_app__create_test_case(empty_database_fixture_session,
     selenium_util.choose_from_select_box("Select object type", "Test case")
     selenium_util.write_input("Title", test_data["item_name"])
     selenium_util.write_input("Description", test_data["item_description"])
-    selenium_util.choose_from_search_box("streamlit_searchbox.searchbox", test_data["item_parent_object"])
+    selenium_util.choose_from_select_box("Parent item", test_data["item_parent_object"])
     selenium_util.submit_form()
     assert findall(r"Created tc-\d+", selenium_util.driver.page_source), "Release creation message not found."
 
@@ -81,6 +81,6 @@ def test__smoke__streamlit_app__create_bug(empty_database_fixture_session, selen
     selenium_util.choose_from_select_box("Select object type", "Bug")
     selenium_util.write_input("Title", test_data["item_name"])
     selenium_util.write_input("Description", test_data["item_description"])
-    selenium_util.choose_from_search_box("streamlit_searchbox.searchbox", test_data["item_parent_object"])
+    selenium_util.choose_from_select_box("Parent item", test_data["item_parent_object"])
     selenium_util.submit_form()
     assert findall(r"Created bug-\d+", selenium_util.driver.page_source), "Bug creation message not found."

@@ -120,6 +120,29 @@ def get_objects_by_filters(object_type, filters_dict):
     return [convert_to_dict(db_object) for db_object in query]
 
 
+def get_downstream_items(parent_item_type, shortname, include_parent=False):
+    """
+    Get list of downstream items of given object.
+    :return: List of downstream items.
+    """
+    all_items_types = [Project, Release, Requirement, TestCase, Bug]
+    parent_item = get_database_object(parent_item_type, shortname)
+    downstream_list = [parent_item]
+    downstream_items = [parent_item]
+
+    starting_index = all_items_types.index(parent_item_type)+1
+
+    for target_type in all_items_types[starting_index::]:
+        _temp_list = []
+        for item in downstream_items:
+            _temp_list.extend(get_objects_by_filters(target_type, {"parent": item["shortname"]}))
+        downstream_items = _temp_list
+        downstream_list.extend(downstream_items)
+    if not include_parent:
+        downstream_list.remove(parent_item)
+    return downstream_list
+
+
 def create_database_object(object_to_commit):
     """
     Create database object from given dictionary.

@@ -21,6 +21,12 @@ class SeleniumUtil:
     def find_element_by_xpath_accessible_text(self, accessible_text, xpath_element="aria-label"):
         return self.driver.find_element(By.XPATH, f"//*[@{xpath_element}='{accessible_text}']")
 
+    def get_xpath_text_value(self, accessible_text, xpath_element):
+        return self.find_element_by_xpath_accessible_text(accessible_text, xpath_element).text
+
+    def find_column_values_by_xpath_accessible_text(self, col_index):
+        return self.driver.find_elements(By.XPATH, f"//*[@aria-colindex='{col_index}']")
+
     def submit_form(self):
         submit_button = self.driver.find_element(By.XPATH, f"//button[@kind='secondary']")
         submit_button.click()
@@ -40,15 +46,6 @@ class SeleniumUtil:
 
     def choose_from_select_box(self, accessible_text, select_item_text):
         select_box = self.find_element_by_xpath_accessible_text(accessible_text)
-        select_box.send_keys(select_item_text)
-        sleep(STANDARD_WAIT)
-        select_box.send_keys(Keys.ARROW_DOWN, Keys.RETURN)
-        select_box.send_keys()
-        sleep(STANDARD_WAIT)
-
-    def choose_from_search_box(self, accessible_text, select_item_text):
-        select_box = self.find_element_by_xpath_accessible_text(accessible_text, xpath_element="title")
-        select_box.click()
         select_box.send_keys(select_item_text)
         sleep(STANDARD_WAIT)
         select_box.send_keys(Keys.ARROW_DOWN, Keys.RETURN)
