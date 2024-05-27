@@ -35,7 +35,7 @@ object_type_db_object_map = {
     "Release": Release,
     "Requirement": Requirement,
     "Test case": TestCase,
-    "Bug": Bug,
+    "Bug": Bug
 }
 
 form_dict = {}
