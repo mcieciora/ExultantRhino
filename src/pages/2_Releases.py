@@ -1,4 +1,4 @@
-from streamlit import button, columns, container, header, metric, sidebar, subheader
+from streamlit import button, columns, container, header, metric, sidebar, subheader, write
 from src.postgres_items_models import Bug, Project, Release, Status, Requirement, TestCase
 from src.postgres_tasks_models import Task, TaskStatus
 from src.postgres_sql_alchemy import create_database_object, edit_database_object, get_all_objects_by_type, \
@@ -36,11 +36,16 @@ def activate_release(release_shortname):
             form_dict = {
                 "title": f"Cover {item['shortname']}",
                 "description": item["description"],
+                "target_release": release_shortname,
                 "status": TaskStatus.New.name
             }
             new_task = Task(**form_dict)
             item["children_task"] = create_database_object(new_task)
             edit_database_object(object_type, item["id"], item)
+
+
+def update_release(release_shortname):
+    pass
 
 
 current_project = sidebar.selectbox(
@@ -53,9 +58,14 @@ current_project = sidebar.selectbox(
 )
 
 header("Releases")
-all_releases = get_objects_by_filters(Release, {"project_shortname": current_project.split(':')[0]})
+current_release = get_objects_by_filters(Release,
+                                         {"project_shortname": current_project.split(':')[0], "status": "Active"})[-1]
+if current_release:
+    subheader(f"Current release: {current_release['shortname']}")
 
 release_dataframe = []
+
+all_releases = get_objects_by_filters(Release, {"project_shortname": current_project.split(':')[0]})
 
 for release in all_releases:
     correlated_requirements = get_objects_by_filters(Requirement, {"target_release": release["shortname"]})
@@ -74,5 +84,13 @@ for release in all_releases:
         with status_col:
             metric("Status", release["status"])
         with button_col:
-            button(label="Activate", key=f"{release['shortname']}_button", on_click=activate_release,
-                   args=(release["shortname"],))
+            if not current_release:
+                button(label="Activate", key=f"{release['shortname']}_button", on_click=activate_release,
+                       args=(release["shortname"],))
+            if current_release and current_release["shortname"] == release["shortname"]:
+                all_tasks = get_objects_by_filters(Task, {"current_release": current_release["shortname"]})
+                write(all_tasks)
+                percentage_of_done = len([task for task in all_tasks if task["status"] != "New"])/len(all_tasks)
+                write(percentage_of_done)
+                button(label="Update", key=f"{release['shortname']}_button", on_click=update_release,
+                       args=(release["shortname"],))
