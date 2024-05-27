@@ -44,7 +44,11 @@ def activate_release(release_shortname):
             edit_database_object(object_type, item["id"], item)
 
 
-def update_release(release_shortname):
+def refresh_release(release_shortname):
+    pass
+
+
+def finish_release(release_shortname):
     pass
 
 
@@ -59,8 +63,9 @@ current_project = sidebar.selectbox(
 
 header("Releases")
 current_release = get_objects_by_filters(Release,
-                                         {"project_shortname": current_project.split(':')[0], "status": "Active"})[-1]
+                                         {"project_shortname": current_project.split(':')[0], "status": "Active"})
 if current_release:
+    current_release = current_release[-1]
     subheader(f"Current release: {current_release['shortname']}")
 
 release_dataframe = []
@@ -85,12 +90,16 @@ for release in all_releases:
             metric("Status", release["status"])
         with button_col:
             if not current_release:
-                button(label="Activate", key=f"{release['shortname']}_button", on_click=activate_release,
+                button(label="Activate", key=f"{release['shortname']}_activate_button", on_click=activate_release,
                        args=(release["shortname"],))
             if current_release and current_release["shortname"] == release["shortname"]:
-                all_tasks = get_objects_by_filters(Task, {"current_release": current_release["shortname"]})
-                write(all_tasks)
-                percentage_of_done = len([task for task in all_tasks if task["status"] != "New"])/len(all_tasks)
-                write(percentage_of_done)
-                button(label="Update", key=f"{release['shortname']}_button", on_click=update_release,
+                all_tasks = get_objects_by_filters(Task, {"target_release": current_release["shortname"]})
+                percentage_of_done = len([task for task in all_tasks if
+                                          task["status"] == "Implemented"])/len(all_tasks)*100
+                write(f"{percentage_of_done}%")
+                if percentage_of_done == 100:
+                    button(label="Finish", key=f"{release['shortname']}_finish_button", on_click=finish_release,
+                           args=(release["shortname"],))
+                button(label="Refresh", key=f"{release['shortname']}_refresh_button", on_click=refresh_release,
                        args=(release["shortname"],))
+
