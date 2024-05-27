@@ -23,10 +23,11 @@ def find_projects():
     return [f"{db_object['shortname']}: {db_object['title']}" for db_object in all_projects]
 
 
-def activate_release(release_shortname):
-    activated_release = get_database_object(Release, release_shortname)
-    activated_release["status"] = Status.Active.name
-    edit_database_object(Release, activated_release["id"], activated_release)
+def activate_release(release_shortname, refresh=False):
+    if refresh:
+        activated_release = get_database_object(Release, release_shortname)
+        activated_release["status"] = Status.Active.name
+        edit_database_object(Release, activated_release["id"], activated_release)
     all_requirements = get_objects_by_filters(Requirement, {"target_release": release_shortname})
     all_test_cases = get_objects_by_filters(TestCase, {"target_release": release_shortname})
     all_bugs = get_objects_by_filters(Bug, {"target_release": release_shortname})
@@ -42,10 +43,6 @@ def activate_release(release_shortname):
             new_task = Task(**form_dict)
             item["children_task"] = create_database_object(new_task)
             edit_database_object(object_type, item["id"], item)
-
-
-def refresh_release(release_shortname):
-    pass
 
 
 def finish_release(release_shortname):
@@ -96,9 +93,9 @@ for release in all_releases:
                 all_tasks = get_objects_by_filters(Task, {"target_release": current_release["shortname"]})
                 percentage_of_done = len([task for task in all_tasks if
                                           task["status"] == "Implemented"])/len(all_tasks)*100
-                write(f"{percentage_of_done}%")
+                write(f"Tasks: {percentage_of_done}%")
                 if percentage_of_done == 100:
                     button(label="Finish", key=f"{release['shortname']}_finish_button", on_click=finish_release,
                            args=(release["shortname"],))
-                button(label="Refresh", key=f"{release['shortname']}_refresh_button", on_click=refresh_release,
-                       args=(release["shortname"],))
+                button(label="Refresh", key=f"{release['shortname']}_refresh_button", on_click=activate_release,
+                       args=(release["shortname"], True))
