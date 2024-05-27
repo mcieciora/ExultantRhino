@@ -102,4 +102,3 @@ for release in all_releases:
                            args=(release["shortname"],))
                 button(label="Refresh", key=f"{release['shortname']}_refresh_button", on_click=refresh_release,
                        args=(release["shortname"],))
-
