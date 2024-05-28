@@ -66,12 +66,14 @@ def two_objects_of_type_database_fixture():
     _drop_all_rows()
 
 
-@fixture(scope="session")
+@fixture(scope="module")
 def one_fully_set_up_project():
     """
     Fixture creates one full project tree.
     :return: Yielding None
     """
+    _drop_all_rows()
+
     project_shortname = _insert_dummy_project()
     parent_object = project_shortname
 
@@ -111,12 +113,15 @@ def one_fully_set_up_project():
     _drop_all_rows()
 
 
-@fixture(scope="session")
+@fixture(scope="module")
 def two_fully_set_up_projects():
     """
     Fixture creates two full projects tree.
     :return: Yielding None
     """
+    _drop_all_rows()
+
+    create_database_object(Project(title="DEFAULT", description="DEFAULT project"))
     create_database_object(Project(title="new_project", description="new_project description"))
 
     items_to_create = [

@@ -32,6 +32,12 @@ class SeleniumUtil:
         submit_button.click()
         sleep(LOAD_WAIT)
 
+    def submit_form_by_text(self, button_text):
+        submit_buttons = self.driver.find_elements(By.XPATH, f"//button[@kind='secondary']")
+        submit_button = [button for button in submit_buttons if button.text == button_text]
+        submit_button[0].click()
+        sleep(LOAD_WAIT)
+
     def write_input(self, accessible_text, text):
         input_object = self.find_element_by_xpath_accessible_text(accessible_text)
         input_object.send_keys(text)

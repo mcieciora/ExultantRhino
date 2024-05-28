@@ -206,7 +206,7 @@ if object_type:
             for downstream_item in downstream_items:
                 downstream_item_type = shortname_prefix[downstream_item["shortname"].split("-")[0]]
                 delete_database_object(downstream_item_type, downstream_item["id"])
-            delete_database_object(object_type, item["id"])
+            delete_database_object(object_type_db_object_map[object_type], item["id"])
             success(f"Deleted {item['title']} and {len(downstream_items)} related items.")
     elif button(label="Submit"):
         if verify_form():
