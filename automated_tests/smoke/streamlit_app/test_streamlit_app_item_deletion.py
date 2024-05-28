@@ -1,16 +1,16 @@
-from pytest import mark, skip
-from src.postgres_items_models import Bug, Project, Release, Requirement, TestCase
+from pytest import mark
+from src.postgres_items_models import Bug, Release, Requirement, TestCase
 from src.postgres_sql_alchemy import get_all_objects
 from automated_tests.postgres_util import get_item_page_url_by_title
 
 
-@skip("Under requirement verification")
+@mark.skip("Under requirement verification")
 @mark.smoke
 def test__smoke__streamlit_app__delete_project(two_fully_set_up_projects, selenium_util):
     pass
 
 
-@skip("Under requirement verification")
+@mark.skip("Under requirement verification")
 @mark.smoke
 def test__smoke__streamlit_app__delete_protected_default_project(two_fully_set_up_projects, selenium_util):
     pass
