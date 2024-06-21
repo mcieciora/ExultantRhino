@@ -23,5 +23,6 @@ class Task(Base):
     shortname = Column(String(25))
     title = Column(String(100))
     description = Column(String(250))
+    project_shortname = Column(String(25))
     target_release = Column(String(250))
     status = Column(String(15))
