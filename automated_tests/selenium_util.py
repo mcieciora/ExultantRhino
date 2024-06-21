@@ -28,12 +28,12 @@ class SeleniumUtil:
         return self.find_element_by_xpath_accessible_text(accessible_text, xpath_element).text
 
     def submit_form(self):
-        submit_button = self.driver.find_element(By.XPATH, f"//button[@kind='secondary']")
+        submit_button = self.driver.find_element(By.XPATH, "//button[@kind='secondary']")
         submit_button.click()
         sleep(LOAD_WAIT)
 
     def submit_form_by_text(self, button_text):
-        submit_buttons = self.driver.find_elements(By.XPATH, f"//button[@kind='secondary']")
+        submit_buttons = self.driver.find_elements(By.XPATH, "//button[@kind='secondary']")
         submit_button = [button for button in submit_buttons if button.text == button_text]
         submit_button[0].click()
         sleep(LOAD_WAIT)

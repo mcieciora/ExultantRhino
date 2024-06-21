@@ -1,4 +1,4 @@
-from streamlit import button, header, selectbox, sidebar, success, text_area, text_input, query_params, warning, write
+from streamlit import button, header, selectbox, sidebar, success, text_area, text_input, query_params, warning
 from src.postgres_items_models import Bug, Project, Release, Requirement, TestCase, Status
 from src.postgres_sql_alchemy import create_database_object, delete_database_object, edit_database_object, \
     get_all_objects_by_type, get_database_object, get_downstream_items, get_objects_by_filters
@@ -115,7 +115,8 @@ object_type = selectbox(
 )
 
 if object_type:
-    parent_item_options = find_available_parents(return_pretty=True) if object_type in ["Requirement", "Test case", "Bug"] else []
+    parent_item_options = find_available_parents(return_pretty=True) if object_type in \
+                                                                        ["Requirement", "Test case", "Bug"] else []
 
     form_map = {
         "title": {
