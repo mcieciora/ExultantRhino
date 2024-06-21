@@ -7,7 +7,7 @@ pipeline {
     environment {
         FLAG = getValue("FLAG", "smoke")
         TEST_GROUPS = getValue("TEST_GROUP", "all")
-        REGULAR_BUILD = getValue("REGULAR_BUILD", false)
+        REGULAR_BUILD = getValue("REGULAR_BUILD", true)
         BRANCH_TO_USE = getValue("BRANCH", env.BRANCH_NAME)
         REPO_URL = "git@github.com:mcieciora/ExultantRhino.git"
         DOCKERHUB_REPO = "mcieciora/exultant_rhino"
