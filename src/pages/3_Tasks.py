@@ -1,8 +1,9 @@
 from pandas import DataFrame
-from streamlit import column_config, dataframe, header, sidebar
-from src.postgres_items_models import Project
-from src.postgres_tasks_models import Task
-from src.postgres_sql_alchemy import get_all_objects_by_type
+from streamlit import button, column_config, dataframe, header, selectbox, sidebar, success, text_area, text_input, \
+    query_params
+from src.postgres_items_models import Project, Release
+from src.postgres_tasks_models import Task, TaskStatus
+from src.postgres_sql_alchemy import edit_database_object, get_all_objects_by_type, get_objects_by_filters
 
 
 def find_projects():
@@ -23,24 +24,47 @@ current_project = sidebar.selectbox(
     label_visibility="collapsed",
 )
 
-header("Tasks")
-all_objects = get_all_objects_by_type(Task)
 
-df = DataFrame(all_objects)
+def update_task(task_id):
+    edit_database_object(Task, task_id, form_dict)
 
-dataframe(all_objects,
-          column_config={
-              "id": "ID",
-              "shortname": "Shortname",
-              "title": "Title",
-              "description": "Description",
-              "status": "Status",
-              "project_shortname": "Project",
-              "target_release": "Release",
-              "parent": "Parent",
-              "url": column_config.LinkColumn("Edit URL", display_text="Edit")
-          },
-          column_order=("id", "shortname", "title", "description", "status", "project_shortname", "parent",
-                        "target_release", "url"),
-          hide_index=True
-          )
+
+parameters = query_params
+if parameters:
+    task = get_objects_by_filters(Task, {"shortname": parameters["item"]})[0]
+    statuses = [status.name for status in TaskStatus]
+    status_index = statuses.index(task["status"])
+    form_dict = {
+        "title": text_input("Title", key="task_title", value=task["title"]),
+        "description": text_area("Description", key="task_description", value=task["description"]),
+        "status": selectbox("Status", key="task_status", options=statuses, index=status_index),
+    }
+
+    if button(label="Update", key="task_update_button", on_click=update_task, args=(task["id"],)):
+        success(f"Updated {task['title']}")
+else:
+    header("Tasks")
+    try:
+        target_release = get_objects_by_filters(Release, {"status": "Active"})[0]
+        all_objects = get_objects_by_filters(Task, {"project_shortname": current_project.split(':')[0],
+                                                    "target_release": target_release["shortname"]})
+
+        for item in all_objects:
+            item["url"] = f"http://localhost:8501/Tasks?item={item['shortname']}"
+
+        df = DataFrame(all_objects)
+
+        dataframe(all_objects,
+                  column_config={
+                      "shortname": "Shortname",
+                      "title": "Title",
+                      "description": "Description",
+                      "status": "Status",
+                      "parent": "Parent",
+                      "url": column_config.LinkColumn("View URL", display_text="View")
+                  },
+                  column_order=("shortname", "title", "description", "status", "url"),
+                  hide_index=True
+                  )
+    except IndexError:
+        header("No active release.")
