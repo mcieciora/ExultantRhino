@@ -11,7 +11,7 @@ pipeline {
         BRANCH_TO_USE = getValue("BRANCH", env.BRANCH_NAME)
         REPO_URL = "git@github.com:mcieciora/ExultantRhino.git"
         DOCKERHUB_REPO = "mcieciora/exultant_rhino"
-        FORCE_DOCKER_IMAGE_BUILD = getValue("FORCE_BUILD", false)
+        FORCE_DOCKER_IMAGE_BUILD = getValue("FORCE_BUILD", true)
     }
     options {
         skipDefaultCheckout()
