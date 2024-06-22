@@ -33,6 +33,7 @@ def get_session():
         session.rollback()
         raise
     finally:
+        session.expunge_all()
         session.close()
 
 
