@@ -6,6 +6,7 @@ Base = declarative_base()
 
 
 class Status(Enum):
+    """Items status class."""
     New = 0
     Active = 1
     Implemented = 2

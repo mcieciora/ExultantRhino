@@ -6,6 +6,7 @@ Base = declarative_base()
 
 
 class TaskStatus(Enum):
+    """Task """
     New = 0
     ToDo = 1
     InProgress = 2
@@ -15,7 +16,6 @@ class TaskStatus(Enum):
 
 class Task(Base):
     """Database Task model."""
-
     __tablename__ = "task"
     id = Column(Integer, primary_key=True)
     shortname = Column(String(25))

@@ -9,9 +9,7 @@ LOAD_WAIT = 1
 
 
 class SeleniumUtil:
-    """
-    Selenium utilization class.
-    """
+    """Selenium utilization class."""
     def __init__(self):
         self.driver = webdriver.Firefox()
         self.api_url = f"http://{environ['API_HOST']}:8501"

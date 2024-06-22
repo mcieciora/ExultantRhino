@@ -69,8 +69,7 @@ def get_next_shortname(object_type):
 
 def get_database_object(object_type, shortname):
     """
-    Get database object by its type (Project, Release, Requirement, TestCase, Bug) and shortname
-    in (proj/rls/req/tc/bug)-xxx format.
+    Get database object by its type (Project, Release, Requirement, TestCase, Bug) and shortname in (proj/rls/req/tc/bug)-xxx format.
 
     :return: Database object.
     """
@@ -170,7 +169,7 @@ def edit_database_object(object_type, object_id, new_data):
     """
     Edit database object by providing dict of new values.
 
-    :return: None
+    :return: None.
     """
     session = get_session()
     db_object = session.get(object_type, object_id)
@@ -183,7 +182,7 @@ def delete_database_object(object_type, object_id):
     """
     Delete database object by providing its type and database id.
 
-    :return: None
+    :return: None.
     """
     session = get_session()
     db_object = session.get(object_type, object_id)
@@ -195,7 +194,7 @@ def drop_rows_by_table(object_type):
     """
     Delete database table by providing its type.
 
-    :return: None
+    :return: None.
     """
     session = get_session()
     session.query(object_type).delete()
@@ -206,7 +205,7 @@ def init_db():
     """
     DB tables initialization.
 
-    :return: None
+    :return: None.
     """
     items_models.Base.metadata.create_all(_get_engine())
     tasks_models.Base.metadata.create_all(_get_engine())
