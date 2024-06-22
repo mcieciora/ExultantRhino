@@ -14,9 +14,7 @@ class TaskStatus(Enum):
 
 
 class Task(Base):
-    """
-    Database Task model.
-    """
+    """Database Task model."""
 
     __tablename__ = "task"
     id = Column(Integer, primary_key=True)

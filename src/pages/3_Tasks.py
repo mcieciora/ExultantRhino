@@ -9,6 +9,7 @@ from src.postgres_sql_alchemy import edit_database_object, get_all_objects_by_ty
 def find_projects():
     """
     Get all available projects in list format.
+
     :return: List of Project database objects.
     """
     all_projects = get_all_objects_by_type(Project)
@@ -26,6 +27,11 @@ current_project = sidebar.selectbox(
 
 
 def update_task(task_id):
+    """
+    Update task with form_dict data by given id.
+
+    :return: None.
+    """
     edit_database_object(Task, task_id, form_dict)
 
 

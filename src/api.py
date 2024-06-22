@@ -24,6 +24,7 @@ object_type_map = {
 def return_response(return_table):
     """
     Serialize database objects list to JSON formatted string.
+
     :return: JSON formatted string.
     """
     response.content_type = "application/json"
@@ -34,6 +35,7 @@ def return_response(return_table):
 def status():
     """
     Get current Streamlit application, API daemon and database statuses.
+
     :return: JSON formatted string.
     """
     # TODO implement app, api and db statuses check
@@ -45,6 +47,7 @@ def get_object_by_shortname(object_type, shortname):
     """
     Get database object by its type (Project, Release, Requirement, TestCase, Bug) and shortname
     in (proj/rls/req/tc/bug)-xxx format.
+
     :return: JSON formatted string.
     """
     return_value = get_database_object(object_type_map[object_type], shortname)
@@ -57,6 +60,7 @@ def get_objects(object_type):
     Get list of database objects by their type (Project, Release, Requirement, TestCase, Bug).
     Additional filters may be added as query parameters in API call.
     See: request_map dictionary values or call /help/objects
+
     :return: JSON formatted string.
     """
     if parameters := dict(request.params.items()):
@@ -70,6 +74,7 @@ def get_objects(object_type):
 def insert(object_type):
     """
     Insert object into database with given parameters values passed as query.
+
     :return: Committed object shortname value.
     """
     model_object = object_type_map[object_type]

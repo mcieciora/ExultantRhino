@@ -6,6 +6,7 @@ from automated_tests.selenium_util import SeleniumUtil
 def selenium_util():
     """
     Fixture opens browser window with exultant rhino app.
+
     :return: Yielding browser app.
     """
     selenium_util = SeleniumUtil()

@@ -7,6 +7,7 @@ from automated_tests.postgres_util import _drop_all_rows, _insert_dummy_project
 def empty_database_fixture_function():
     """
     Fixture yields empty database.
+
     :return: Yielding empty database prepared for postgres and api testing.
     """
     _drop_all_rows()
@@ -18,6 +19,7 @@ def empty_database_fixture_function():
 def empty_database_fixture_session():
     """
     Fixture yields empty database.
+
     :return: Yielding empty database prepared for postgres and api testing.
     """
     _drop_all_rows()
@@ -28,8 +30,8 @@ def empty_database_fixture_session():
 @fixture(scope="function")
 def one_object_of_type_database_fixture():
     """
-    Fixture creates Release, Requirement, TestCase and Bug objects in database parenting them to proj-0 created by
-    insert_dummy_project().
+    Fixture creates rls, req, tc and bug objects in database parenting them to proj-0 created by insert_dummy_project().
+
     :return: Yielding dummy database prepared for postgres and api testing.
     """
     project_shortname = _insert_dummy_project()
@@ -47,8 +49,8 @@ def one_object_of_type_database_fixture():
 @fixture(scope="function")
 def two_objects_of_type_database_fixture():
     """
-    Fixture creates Release, Requirement, TestCase and Bug objects in database parenting them to proj-0 created by
-    insert_dummy_project().
+    Fixture creates rls, req, tc and bug objects in database parenting them to proj-0 created by insert_dummy_project().
+
     :return: Yielding dummy database prepared for postgres and api testing.
     """
     project_shortname = _insert_dummy_project()
@@ -70,6 +72,7 @@ def two_objects_of_type_database_fixture():
 def one_fully_set_up_project():
     """
     Fixture creates one full project tree.
+
     :return: Yielding None
     """
     _drop_all_rows()
@@ -117,6 +120,7 @@ def one_fully_set_up_project():
 def two_fully_set_up_projects():
     """
     Fixture creates two full projects tree.
+
     :return: Yielding None
     """
     _drop_all_rows()
