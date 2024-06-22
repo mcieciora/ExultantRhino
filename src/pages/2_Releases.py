@@ -17,6 +17,7 @@ shortname_prefix = {
 def find_projects():
     """
     Get all available projects in list format.
+
     :return: List of Project database objects.
     """
     all_projects = get_all_objects_by_type(Project)

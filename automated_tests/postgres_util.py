@@ -7,15 +7,14 @@ from src.postgres_tasks_models import Task
 def _insert_dummy_project():
     """
     Insert dummy project into database for testing purposes.
+
     :return: Committed object shortname value.
     """
     return create_database_object(Project(title="new project", description="description of new project"))
 
 
 def _drop_all_rows():
-    """
-    Remove rows from all tables.
-    """
+    """Remove rows from all tables."""
     for object_type in [Project, Release, Requirement, Task, TestCase, Bug]:
         drop_rows_by_table(object_type)
 
@@ -23,6 +22,7 @@ def _drop_all_rows():
 def get_item_shortname_by_title(object_type, title):
     """
     Get item shortname by provided title.
+
     :return: Item shortname.
     """
     item = get_objects_by_filters(object_type, {"title": title})[0]
@@ -32,6 +32,7 @@ def get_item_shortname_by_title(object_type, title):
 def get_item_page_url_by_title(object_type, title):
     """
     Get item view page url by title.
+
     :return: Page view page url.
     """
     base_url = f"http://{environ['API_HOST']}:8501/+Create?item="

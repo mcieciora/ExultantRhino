@@ -22,7 +22,7 @@ class SeleniumUtil:
         return self.driver.find_element(By.XPATH, f"//*[@{xpath_element}='{accessible_text}']")
 
     def find_elements_by_xpath_accessible_text(self, accessible_text, xpath_element="aria-label"):
-        return self.driver.find_elements(By.XPATH, f"//*[@{xpath_element }='{accessible_text}']")
+        return self.driver.find_elements(By.XPATH, f"//*[@{xpath_element}='{accessible_text}']")
 
     def get_xpath_text_value(self, accessible_text, xpath_element):
         return self.find_element_by_xpath_accessible_text(accessible_text, xpath_element).text
