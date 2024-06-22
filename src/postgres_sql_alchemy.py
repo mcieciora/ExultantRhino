@@ -18,7 +18,12 @@ def _get_engine():
     )
 
 
-Session = sessionmaker(bind=_get_engine())
+def get_session():
+    """
+    Generate session with current engine class object value.
+    :return: Session class object.
+    """
+    return sessionmaker(bind=_get_engine())
 
 
 def convert_to_dict(database_object):
