@@ -22,6 +22,7 @@ def _get_engine():
 def get_session():
     """
     Generate session with current engine class object value.
+
     :return: Session class object.
     """
     return sessionmaker(bind=_get_engine()).begin()

@@ -1,5 +1,6 @@
 from pytest import mark
-from src.postgres_sql_alchemy import convert_to_dict, get_all_objects_by_type, get_next_shortname
+from src.postgres_sql_alchemy import convert_to_dict, get_all_objects, get_all_objects_by_type, get_database_object, \
+    get_next_shortname
 from src.postgres_items_models import Bug, Project, Release, Requirement, TestCase
 
 
@@ -22,6 +23,51 @@ def test__unittest__postgres__convert_to_dict():
     database_object = Release(title="new release", description="Release description", project_shortname="proj-0",
                               parent="proj-0")
     actual_value = convert_to_dict(database_object)
+    assert actual_value == expected_value, f"Expected: {expected_value}, actual: {actual_value}"
+
+
+@mark.unittest
+def test__unittest__postgres__convert_to_dict_handle_exception():
+    expected_value = {}
+    database_object = None
+    actual_value = convert_to_dict(database_object)
+    assert actual_value == expected_value, f"Expected: {expected_value}, actual: {actual_value}"
+
+
+@mark.unittest
+def test__unittest__postgres__get_database_object(mocker):
+    postgres_session_mock = \
+        mocker.patch("src.postgres_sql_alchemy.get_session").return_value.__enter__.return_value = mocker.Mock()
+    postgres_session_mock.query.return_value.filter_by.return_value.first.return_value = \
+        Project(title="new project", shortname="proj-0", description="description")
+    expected_value = {"id": None, "shortname": "proj-0", "title": "new project", "description": "description"}
+    actual_value = get_database_object(Project, "proj-0")
+    assert actual_value == expected_value, f"Expected: {expected_value}, actual: {actual_value}"
+
+
+@mark.unittest
+def test__unittest__postgres__get_database_object(mocker):
+    postgres_session_mock = \
+        mocker.patch("src.postgres_sql_alchemy.get_session").return_value.__enter__.return_value = mocker.Mock()
+    postgres_session_mock.query.return_value.filter_by.return_value.first.return_value = \
+        Project(title="new project", shortname="proj-0", description="description")
+    expected_value = {"id": None, "shortname": "proj-0", "title": "new project", "description": "description"}
+    actual_value = get_database_object(Project, "proj-0")
+    assert actual_value == expected_value, f"Expected: {expected_value}, actual: {actual_value}"
+
+
+@mark.unittest
+def test__unittest__postgres__get_all_objects(mocker):
+    postgres_session_mock = \
+        mocker.patch("src.postgres_sql_alchemy.get_session").return_value.__enter__.return_value = mocker.Mock()
+    postgres_session_mock.query.return_value.all.return_value = [
+        {"id": 0, "shortname": "proj-0", "title": "new project", "description": "description"},
+        {"id": 0, "shortname": "rls-0", "title": "new release", "description": "description"},
+        {"id": 0, "shortname": "req-0", "title": "new requirement", "description": "description"},
+        {"id": 0, "shortname": "tc-0", "title": "new testcase", "description": "description"},
+        {"id": 0, "shortname": "bug-0", "title": "new bug", "description": "description"}]
+    expected_value = 25
+    actual_value = len(get_all_objects())
     assert actual_value == expected_value, f"Expected: {expected_value}, actual: {actual_value}"
 
 
