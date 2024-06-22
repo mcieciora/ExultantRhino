@@ -70,7 +70,7 @@ def get_database_object(object_type, shortname):
 
     :return: Database object.
     """
-    with Session.begin() as session:
+    with get_session().begin() as session:
         database_object = (
             session.query(object_type).filter_by(shortname=shortname).first()
         )
@@ -95,7 +95,7 @@ def get_all_objects_by_type(object_type):
 
     :return: List of database objects.
     """
-    with Session.begin() as session:
+    with get_session().begin() as session:
         return [
             convert_to_dict(db_object)
             for db_object in session.query(object_type).all()
@@ -120,7 +120,7 @@ def get_objects_by_filters(object_type, filters_dict):
 
     :return: List of database objects.
     """
-    with Session.begin() as session:
+    with get_session().begin() as session:
         query = session.query(object_type)
     for key, value in filters_dict.items():
         query = query.filter(getattr(object_type, key).like("%%%s%%" % value))
@@ -157,7 +157,7 @@ def create_database_object(object_to_commit):
 
     :return: Committed object shortname value.
     """
-    with Session.begin() as session:
+    with get_session().begin() as session:
         setattr(object_to_commit, "shortname", get_next_shortname(type(object_to_commit)))
         session.add(object_to_commit)
         return object_to_commit.shortname
@@ -169,7 +169,7 @@ def edit_database_object(object_type, object_id, new_data):
 
     :return: None.
     """
-    with Session.begin() as session:
+    with get_session().begin() as session:
         db_object = session.get(object_type, object_id)
         for key, value in new_data.items():
             setattr(db_object, key, value)
@@ -181,7 +181,7 @@ def delete_database_object(object_type, object_id):
 
     :return: None.
     """
-    with Session.begin() as session:
+    with get_session().begin() as session:
         db_object = session.get(object_type, object_id)
         session.delete(db_object)
 
@@ -192,7 +192,7 @@ def drop_rows_by_table(object_type):
 
     :return: None.
     """
-    with Session.begin() as session:
+    with get_session().begin() as session:
         session.query(object_type).delete()
 
 
