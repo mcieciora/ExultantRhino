@@ -1,4 +1,5 @@
 from os import environ
+from contextlib import contextmanager
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import src.postgres_items_models as items_models
@@ -18,14 +19,23 @@ def _get_engine():
     )
 
 
+SessionMaker = sessionmaker(bind=_get_engine())
+
+
+@contextmanager
 def get_session():
     """
     Generate session with current engine class object value.
     :return: Session class object.
     """
-    session_maker = sessionmaker(bind=_get_engine())
-    _get_session = session_maker()
-    return _get_session
+    session = SessionMaker()
+    try:
+        yield session
+    except Exception as e:
+        session.rollback()
+        raise
+    finally:
+        session.close()
 
 
 def convert_to_dict(database_object):
@@ -69,10 +79,11 @@ def get_database_object(object_type, shortname):
     in (proj/rls/req/tc/bug)-xxx format.
     :return: Database object.
     """
-    database_object = (
-        get_session().query(object_type).filter_by(shortname=shortname).first()
-    )
-    return convert_to_dict(database_object)
+    with get_session() as session:
+        database_object = (
+            session.query(object_type).filter_by(shortname=shortname).first()
+        )
+        return convert_to_dict(database_object)
 
 
 def get_all_objects():
@@ -91,10 +102,11 @@ def get_all_objects_by_type(object_type):
     Get list of database objects by their type (Project, Release, Requirement, TestCase, Bug).
     :return: List of database objects.
     """
-    return [
-        convert_to_dict(db_object)
-        for db_object in get_session().query(object_type).all()
-    ]
+    with get_session() as session:
+        return [
+            convert_to_dict(db_object)
+            for db_object in session.query(object_type).all()
+        ]
 
 
 def get_all_objects_with_filters(object_types, filters_dict):
@@ -114,7 +126,8 @@ def get_objects_by_filters(object_type, filters_dict):
     and filtered by given query.
     :return: List of database objects.
     """
-    query = get_session().query(object_type)
+    with get_session() as session:
+        query = session.query(object_type)
     for key, value in filters_dict.items():
         query = query.filter(getattr(object_type, key).like("%%%s%%" % value)).all()
     return [convert_to_dict(db_object) for db_object in query]
@@ -148,10 +161,10 @@ def create_database_object(object_to_commit):
     Create database object from given dictionary.
     :return: Committed object shortname value.
     """
-    setattr(object_to_commit, "shortname", get_next_shortname(type(object_to_commit)))
-    session = get_session()
-    session.add(object_to_commit)
-    session.commit()
+    with get_session() as session:
+        setattr(object_to_commit, "shortname", get_next_shortname(type(object_to_commit)))
+        session.add(object_to_commit)
+        session.commit()
     return object_to_commit.shortname
 
 
@@ -160,11 +173,11 @@ def edit_database_object(object_type, object_id, new_data):
     Edit database object by providing dict of new values.
     :return: None
     """
-    session = get_session()
-    db_object = session.get(object_type, object_id)
-    for key, value in new_data.items():
-        setattr(db_object, key, value)
-    session.commit()
+    with get_session() as session:
+        db_object = session.get(object_type, object_id)
+        for key, value in new_data.items():
+            setattr(db_object, key, value)
+        session.commit()
 
 
 def delete_database_object(object_type, object_id):
@@ -172,10 +185,10 @@ def delete_database_object(object_type, object_id):
     Delete database object by providing its type and database id.
     :return: None
     """
-    session = get_session()
-    db_object = session.get(object_type, object_id)
-    session.delete(db_object)
-    session.commit()
+    with get_session() as session:
+        db_object = session.get(object_type, object_id)
+        session.delete(db_object)
+        session.commit()
 
 
 def drop_rows_by_table(object_type):
@@ -183,9 +196,9 @@ def drop_rows_by_table(object_type):
     Delete database table by providing its type.
     :return: None
     """
-    session = get_session()
-    session.query(object_type).delete()
-    session.commit()
+    with get_session() as session:
+        session.query(object_type).delete()
+        session.commit()
 
 
 def init_db():
