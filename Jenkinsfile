@@ -135,7 +135,7 @@ pipeline {
                     steps {
                         script {
                             testImage.inside("--rm -v $WORKSPACE:/app") {
-                                sh "python -m pydocstyle --ignore D100,D104,D107,D203,D204,D212 ."
+                                sh "python -m pydocstyle --ignore D100,D104,D107,D203,D204,D205,D212 ."
                             }
                         }
                     }

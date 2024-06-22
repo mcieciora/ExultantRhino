@@ -69,7 +69,7 @@ def get_next_shortname(object_type):
 
 def get_database_object(object_type, shortname):
     """
-    Get database object by its type (Project, Release, Requirement, TestCase, Bug) and shortname in (proj/rls/req/tc/bug)-xxx format.
+    Get database object by its type and shortname in (proj/rls/req/tc/bug)-xxx format.
 
     :return: Database object.
     """
@@ -117,8 +117,7 @@ def get_all_objects_with_filters(object_types, filters_dict):
 
 def get_objects_by_filters(object_type, filters_dict):
     """
-    Get list of database objects by their type (Project, Release, Requirement, TestCase, Bug)
-    and filtered by given query.
+    Get list of database objects by their type and filtered by given query.
 
     :return: List of database objects.
     """

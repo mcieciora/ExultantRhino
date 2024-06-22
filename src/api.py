@@ -45,8 +45,7 @@ def status():
 @route("/get/<object_type>/<shortname>")
 def get_object_by_shortname(object_type, shortname):
     """
-    Get database object by its type (Project, Release, Requirement, TestCase, Bug) and shortname
-    in (proj/rls/req/tc/bug)-xxx format.
+    Get database object by its type and shortname.
 
     :return: JSON formatted string.
     """
