@@ -58,7 +58,7 @@ def test__unittest__postgres__get_next_shortname(mocker):
 @mark.unittest
 def test__unittest__postgres__get_all_objects_by_type(mocker):
     postgres_session_mock = \
-        mocker.patch("src.postgres_sql_alchemy.get_session").return_value = mocker.Mock()
+        mocker.patch("src.postgres_sql_alchemy.get_session").return_value.__enter__.return_value = mocker.Mock()
     postgres_session_mock.query.return_value.all.return_value = [
         Project(title="project one", shortname="proj-1", description="description of project one"),
         Project(title="project two", shortname="proj-2", description="description of project two")]
