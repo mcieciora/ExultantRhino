@@ -46,17 +46,6 @@ def test__unittest__postgres__get_database_object(mocker):
 
 
 @mark.unittest
-def test__unittest__postgres__get_database_object(mocker):
-    postgres_session_mock = \
-        mocker.patch("src.postgres_sql_alchemy.get_session").return_value.__enter__.return_value = mocker.Mock()
-    postgres_session_mock.query.return_value.filter_by.return_value.first.return_value = \
-        Project(title="new project", shortname="proj-0", description="description")
-    expected_value = {"id": None, "shortname": "proj-0", "title": "new project", "description": "description"}
-    actual_value = get_database_object(Project, "proj-0")
-    assert actual_value == expected_value, f"Expected: {expected_value}, actual: {actual_value}"
-
-
-@mark.unittest
 def test__unittest__postgres__get_all_objects(mocker):
     postgres_session_mock = \
         mocker.patch("src.postgres_sql_alchemy.get_session").return_value.__enter__.return_value = mocker.Mock()
