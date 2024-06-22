@@ -20,9 +20,6 @@ def _get_engine():
     )
 
 
-SessionMaker = sessionmaker(bind=_get_engine())
-
-
 @contextmanager
 def get_session():
     """
@@ -30,7 +27,8 @@ def get_session():
 
     :return: Session class object.
     """
-    session = SessionMaker()
+    session_maker = sessionmaker(bind=_get_engine())
+    session = session_maker()
     try:
         yield session
     except Exception as e:
