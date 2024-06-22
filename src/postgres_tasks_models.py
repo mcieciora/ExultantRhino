@@ -6,7 +6,7 @@ Base = declarative_base()
 
 
 class TaskStatus(Enum):
-    """Task """
+    """Task statuses."""
     New = 0
     ToDo = 1
     InProgress = 2

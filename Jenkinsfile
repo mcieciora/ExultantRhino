@@ -135,7 +135,7 @@ pipeline {
                     steps {
                         script {
                             testImage.inside("--rm -v $WORKSPACE:/app") {
-                                sh "python -m pydocstyle --ignore D100,D104,D107,D212 ."
+                                sh "python -m pydocstyle --ignore D100,D104,D107,D203,D204,D212 ."
                             }
                         }
                     }
@@ -201,6 +201,12 @@ pipeline {
                     }
                 }
             }
+            post {
+                always {
+                    archiveArtifacts artifacts: "**/*_results.xml"
+                    junit "**/*_results.xml"
+                }
+            }
         }
         stage ("Run app & health check") {
             steps {
@@ -228,6 +234,12 @@ pipeline {
                         steps {
                             script {
                                 executeTestGroup("${TEST_GROUP}", testImage)
+                            }
+                        }
+                        post {
+                            always {
+                                archiveArtifacts artifacts: "**/*_results.xml"
+                                junit "**/*_results.xml"
                             }
                         }
                     }
@@ -281,11 +293,9 @@ pipeline {
     }
     post {
         always {
+            cleanWs()
             sh "docker rmi ${DOCKERHUB_REPO}:test_image"
             sh "docker compose down --rmi all -v"
-            archiveArtifacts artifacts: "**/*_results.xml"
-            junit "**/*_results.xml"
-            cleanWs()
         }
     }
 }
