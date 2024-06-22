@@ -1,4 +1,4 @@
-from streamlit import button, header, selectbox, sidebar, success, text_area, text_input, query_params, warning, write
+from streamlit import button, header, selectbox, sidebar, success, text_area, text_input, query_params, warning
 from src.postgres_items_models import Bug, Project, Release, Requirement, TestCase, Status
 from src.postgres_sql_alchemy import create_database_object, delete_database_object, edit_database_object, \
     get_all_objects_by_type, get_database_object, get_downstream_items, get_objects_by_filters
@@ -7,6 +7,7 @@ from src.postgres_sql_alchemy import create_database_object, delete_database_obj
 def find_projects():
     """
     Get all available projects in list format.
+
     :return: List of Project database objects.
     """
     all_projects = get_all_objects_by_type(Project)
@@ -51,6 +52,11 @@ else:
 
 
 def get_parent_target_release(parent):
+    """
+    Get target release value of parent object.
+
+    :return: Target release value.
+    """
     parent_object_type = get_parent_object_type(object_type)
     for db_object in get_all_objects_by_type(parent_object_type):
         if db_object["shortname"] == parent:
@@ -58,6 +64,11 @@ def get_parent_target_release(parent):
 
 
 def get_parent_object_type(input_type):
+    """
+    Get parent object type using declared mapping.
+
+    :return: Object type.
+    """
     parent_objects_map = {
         Release: Project,
         Requirement: Release,
@@ -68,6 +79,11 @@ def get_parent_object_type(input_type):
 
 
 def find_available_parents(return_pretty=False):
+    """
+    Find available parent of an object, that are created in currently chosen project.
+
+    :return: List of database shortnames.
+    """
     parent_object_type = get_parent_object_type(object_type)
     query = get_objects_by_filters(parent_object_type, {"project_shortname": current_project.split(":")[0]})
     if return_pretty:
@@ -77,6 +93,11 @@ def find_available_parents(return_pretty=False):
 
 
 def verify_form():
+    """
+    Form verification function.
+
+    :return: True or False depending on verification result.
+    """
     for key, value in form_dict.items():
         if value in ["", None]:
             warning("All field must be filled")
@@ -97,6 +118,11 @@ def verify_form():
 
 
 def changes_detected():
+    """
+    Verify if any changes were made to current form values.
+
+    :return: True or False depending on verification result.
+    """
     if ret_dict := {key: value for key, value in form_dict.items() if value not in ["", None] and item[key] != value}:
         return ret_dict
     else:
@@ -115,7 +141,8 @@ object_type = selectbox(
 )
 
 if object_type:
-    parent_item_options = find_available_parents(return_pretty=True) if object_type in ["Requirement", "Test case", "Bug"] else []
+    parent_item_options = find_available_parents(return_pretty=True) if object_type in \
+                                                                        ["Requirement", "Test case", "Bug"] else []
 
     form_map = {
         "title": {

@@ -10,6 +10,7 @@ from src.postgres_tasks_models import Task
 def _get_engine():
     """
     Get engine object with connection arguments taken from environment.
+
     :return: Engine class object.
     """
     return create_engine(
@@ -21,6 +22,7 @@ def _get_engine():
 def get_session():
     """
     Generate session with current engine class object value.
+
     :return: Session class object.
     """
     session_maker = sessionmaker(bind=_get_engine())
@@ -31,6 +33,7 @@ def get_session():
 def convert_to_dict(database_object):
     """
     Create dict out of given database object.
+
     :return: Database object dict.
     """
     try:
@@ -45,6 +48,7 @@ def convert_to_dict(database_object):
 def get_next_shortname(object_type):
     """
     Get next object shortname value based on given object type.
+
     :return: String value in (proj/rls/req/tc/bug)-xxx format.
     """
     shortname_prefix = {
@@ -65,8 +69,8 @@ def get_next_shortname(object_type):
 
 def get_database_object(object_type, shortname):
     """
-    Get database object by its type (Project, Release, Requirement, TestCase, Bug) and shortname
-    in (proj/rls/req/tc/bug)-xxx format.
+    Get database object by its type and shortname in (proj/rls/req/tc/bug)-xxx format.
+
     :return: Database object.
     """
     database_object = (
@@ -78,6 +82,7 @@ def get_database_object(object_type, shortname):
 def get_all_objects():
     """
     Get list of all database objects.
+
     :return: List of database objects.
     """
     all_objects = []
@@ -89,6 +94,7 @@ def get_all_objects():
 def get_all_objects_by_type(object_type):
     """
     Get list of database objects by their type (Project, Release, Requirement, TestCase, Bug).
+
     :return: List of database objects.
     """
     return [
@@ -100,6 +106,7 @@ def get_all_objects_by_type(object_type):
 def get_all_objects_with_filters(object_types, filters_dict):
     """
     Get list of all database objects.
+
     :return: List of database objects.
     """
     all_objects = []
@@ -110,8 +117,8 @@ def get_all_objects_with_filters(object_types, filters_dict):
 
 def get_objects_by_filters(object_type, filters_dict):
     """
-    Get list of database objects by their type (Project, Release, Requirement, TestCase, Bug)
-    and filtered by given query.
+    Get list of database objects by their type and filtered by given query.
+
     :return: List of database objects.
     """
     query = get_session().query(object_type)
@@ -123,6 +130,7 @@ def get_objects_by_filters(object_type, filters_dict):
 def get_downstream_items(parent_item_type, shortname, include_parent=False):
     """
     Get list of downstream items of given object.
+
     :return: List of downstream items.
     """
     all_items_types = [Project, Release, Requirement, TestCase, Bug]
@@ -146,6 +154,7 @@ def get_downstream_items(parent_item_type, shortname, include_parent=False):
 def create_database_object(object_to_commit):
     """
     Create database object from given dictionary.
+
     :return: Committed object shortname value.
     """
     setattr(object_to_commit, "shortname", get_next_shortname(type(object_to_commit)))
@@ -158,7 +167,8 @@ def create_database_object(object_to_commit):
 def edit_database_object(object_type, object_id, new_data):
     """
     Edit database object by providing dict of new values.
-    :return: None
+
+    :return: None.
     """
     session = get_session()
     db_object = session.get(object_type, object_id)
@@ -170,7 +180,8 @@ def edit_database_object(object_type, object_id, new_data):
 def delete_database_object(object_type, object_id):
     """
     Delete database object by providing its type and database id.
-    :return: None
+
+    :return: None.
     """
     session = get_session()
     db_object = session.get(object_type, object_id)
@@ -181,7 +192,8 @@ def delete_database_object(object_type, object_id):
 def drop_rows_by_table(object_type):
     """
     Delete database table by providing its type.
-    :return: None
+
+    :return: None.
     """
     session = get_session()
     session.query(object_type).delete()
@@ -191,7 +203,8 @@ def drop_rows_by_table(object_type):
 def init_db():
     """
     DB tables initialization.
-    :return: None
+
+    :return: None.
     """
     items_models.Base.metadata.create_all(_get_engine())
     tasks_models.Base.metadata.create_all(_get_engine())

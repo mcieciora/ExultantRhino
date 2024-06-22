@@ -17,6 +17,7 @@ shortname_prefix = {
 def find_projects():
     """
     Get all available projects in list format.
+
     :return: List of Project database objects.
     """
     all_projects = get_all_objects_by_type(Project)
@@ -24,6 +25,11 @@ def find_projects():
 
 
 def activate_release(release_shortname, refresh=False):
+    """
+    Set release state to Active if no other releases in project are active at the moment.
+
+    :return: None.
+    """
     if not refresh:
         activated_release = get_database_object(Release, release_shortname)
         activated_release["status"] = Status.Active.name
@@ -47,6 +53,11 @@ def activate_release(release_shortname, refresh=False):
 
 
 def finish_release(release_id):
+    """
+    Set release state to Implemented if number of tasks is equal to number of bugs, requirements and test cases.
+
+    :return: None.
+    """
     if len(all_tasks) != len(correlated_bugs) + len(correlated_requirements) + len(correlated_test_cases):
         error("Not all items are covered with tasks. Please use Refresh button.")
     else:

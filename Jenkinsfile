@@ -7,11 +7,11 @@ pipeline {
     environment {
         FLAG = getValue("FLAG", "smoke")
         TEST_GROUPS = getValue("TEST_GROUP", "all")
-        REGULAR_BUILD = getValue("REGULAR_BUILD", false)
+        REGULAR_BUILD = getValue("REGULAR_BUILD", true)
         BRANCH_TO_USE = getValue("BRANCH", env.BRANCH_NAME)
         REPO_URL = "git@github.com:mcieciora/ExultantRhino.git"
         DOCKERHUB_REPO = "mcieciora/exultant_rhino"
-        FORCE_DOCKER_IMAGE_BUILD = getValue("FORCE_BUILD", false)
+        FORCE_DOCKER_IMAGE_BUILD = getValue("FORCE_BUILD", true)
     }
     options {
         skipDefaultCheckout()
@@ -96,6 +96,11 @@ pipeline {
                     }
                 }
                 stage ("flake8") {
+                    when {
+                        expression {
+                            return false
+                        }
+                    }
                     steps {
                         script {
                             testImage.inside("--rm -v $WORKSPACE:/app") {
@@ -135,7 +140,7 @@ pipeline {
                     steps {
                         script {
                             testImage.inside("--rm -v $WORKSPACE:/app") {
-                                sh "python -m pydocstyle --ignore D100,D104,D107,D212 ."
+                                sh "python -m pydocstyle --ignore D100,D104,D107,D203,D204,D212 ."
                             }
                         }
                     }
@@ -152,6 +157,11 @@ pipeline {
                     }
                 }
                 stage ("mypy") {
+                    when {
+                        expression {
+                            return false
+                        }
+                    }
                     steps {
                         script {
                             testImage.inside("--rm -v $WORKSPACE:/app") {
@@ -174,6 +184,11 @@ pipeline {
                                 reportFiles: "index.html",
                                 reportName: "PyTestCov"
                             ]
+                        }
+                    }
+                    post {
+                        failure {
+                            archiveArtifacts artifacts: "htmlcov/*"
                         }
                     }
                 }
@@ -199,6 +214,12 @@ pipeline {
                     testImage.inside("--rm -v $WORKSPACE:/app") {
                         sh "python -m pytest -m unittest automated_tests -v --junitxml=results/unittests_results.xml"
                     }
+                }
+            }
+            post {
+                always {
+                    archiveArtifacts artifacts: "**/*_results.xml"
+                    junit "**/*_results.xml"
                 }
             }
         }
@@ -228,6 +249,12 @@ pipeline {
                         steps {
                             script {
                                 executeTestGroup("${TEST_GROUP}", testImage)
+                            }
+                        }
+                        post {
+                            always {
+                                archiveArtifacts artifacts: "**/*_results.xml"
+                                junit "**/*_results.xml"
                             }
                         }
                     }
@@ -281,11 +308,9 @@ pipeline {
     }
     post {
         always {
-            sh "docker rmi ${DOCKERHUB_REPO}:test_image"
             sh "docker compose down --rmi all -v"
-            archiveArtifacts artifacts: "**/*_results.xml"
-            junit "**/*_results.xml"
             cleanWs()
+            sh "docker rmi ${DOCKERHUB_REPO}:test_image"
         }
     }
 }

@@ -6,15 +6,14 @@ Base = declarative_base()
 
 
 class Status(Enum):
+    """Items status class."""
     New = 0
     Active = 1
     Implemented = 2
 
 
 class Project(Base):
-    """
-    Database Project model.
-    """
+    """Database Project model."""
 
     __tablename__ = "project"
     id = Column(Integer, primary_key=True)
@@ -24,9 +23,7 @@ class Project(Base):
 
 
 class Release(Base):
-    """
-    Database Release model.
-    """
+    """Database Release model."""
 
     __tablename__ = "release"
     id = Column(Integer, primary_key=True)
@@ -39,9 +36,7 @@ class Release(Base):
 
 
 class Requirement(Base):
-    """
-    Database Requirement model.
-    """
+    """Database Requirement model."""
 
     __tablename__ = "requirement"
     id = Column(Integer, primary_key=True)
@@ -55,9 +50,7 @@ class Requirement(Base):
 
 
 class TestCase(Base):
-    """
-    Database TestCase model.
-    """
+    """Database TestCase model."""
 
     __tablename__ = "testcase"
     id = Column(Integer, primary_key=True)
@@ -71,9 +64,7 @@ class TestCase(Base):
 
 
 class Bug(Base):
-    """
-    Database Bug model.
-    """
+    """Database Bug model."""
 
     __tablename__ = "bug"
     id = Column(Integer, primary_key=True)

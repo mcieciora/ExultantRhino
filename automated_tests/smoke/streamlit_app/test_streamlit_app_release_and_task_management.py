@@ -10,7 +10,7 @@ def test__smoke__streamlit_app__activate_release(two_fully_set_up_projects, sele
     selenium_util.choose_from_select_box("Selected proj-0: DEFAULT. current_project", "proj-1: new_project")
     selenium_util.submit_form_by_text("Activate")
 
-    assert "Current release: alpha" in selenium_util.driver.page_source, f"Expected release info not available"
+    assert "Current release: alpha" in selenium_util.driver.page_source, "Expected release info not available"
 
     expected_values = ["2", "3", "2", "Active"]
     for index, actual_value in \
@@ -79,7 +79,7 @@ def test__smoke__streamlit_app__add_new_item_and_finish_release(two_fully_set_up
     create_bug(selenium_util, "Additional bug", "Additional bug description", "proj-1", "tc-1")
     selenium_util.click_link_text("Releases")
     selenium_util.choose_from_select_box("Selected proj-0: DEFAULT. current_project", "proj-1: new_project")
-    expected_task_completion_percentage = f"Completion: 100.0%"
+    expected_task_completion_percentage = "Completion: 100.0%"
     assert expected_task_completion_percentage in selenium_util.driver.page_source, \
         f"Expected: {expected_task_completion_percentage} not found in page source."
     selenium_util.submit_form_by_text("Finish")
@@ -93,7 +93,7 @@ def test__smoke__streamlit_app__refresh_release_on_full_completion(two_fully_set
     selenium_util.click_link_text("Releases")
     selenium_util.choose_from_select_box("Selected proj-0: DEFAULT. current_project", "proj-1: new_project")
     selenium_util.submit_form_by_text("Refresh")
-    expected_task_completion_percentage = f"Completion: 88.89%"
+    expected_task_completion_percentage = "Completion: 88.89%"
     assert expected_task_completion_percentage in selenium_util.driver.page_source, \
         f"Expected: {expected_task_completion_percentage} not found in page source."
     selenium_util.go_to_page(f"http://{environ['API_HOST']}:8501/Tasks?item=task-8")
@@ -101,7 +101,7 @@ def test__smoke__streamlit_app__refresh_release_on_full_completion(two_fully_set
     selenium_util.submit_form()
     selenium_util.click_link_text("Releases")
     selenium_util.choose_from_select_box("Selected proj-0: DEFAULT. current_project", "proj-1: new_project")
-    expected_task_completion_percentage = f"Completion: 100.0%"
+    expected_task_completion_percentage = "Completion: 100.0%"
     assert expected_task_completion_percentage in selenium_util.driver.page_source, \
         f"Expected: {expected_task_completion_percentage} not found in page source."
 
@@ -122,7 +122,7 @@ def test__smoke__streamlit_app__finish_release_on_full_completion(two_fully_set_
 def test__smoke__streamlit_app__multiple_releases_activation(two_fully_set_up_projects, selenium_util):
     selenium_util.click_link_text("Releases")
     selenium_util.submit_form_by_text("Activate")
-    assert "Activate" not in selenium_util.driver.page_source, f"Expected: Activate found in page source."
+    assert "Activate" not in selenium_util.driver.page_source, "Expected: Activate found in page source."
     selenium_util.click_link_text("Tasks")
     expected_number_of_tasks = 7
     actual_number_of_tasks = len(findall(r'aria-rowindex="\d+"', selenium_util.driver.page_source))
@@ -154,4 +154,4 @@ def test__smoke__streamlit_app__finish_multiple_releases(two_fully_set_up_projec
     assert expected_number_of_tasks == actual_number_of_tasks, \
         f"Expected value: {expected_number_of_tasks} does not equal {actual_number_of_tasks}"
     assert "No active release." not in selenium_util.driver.page_source, \
-        f"Expected: No active release. found in page source."
+        "Expected: No active release. found in page source."
