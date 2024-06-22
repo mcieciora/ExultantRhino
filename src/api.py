@@ -57,6 +57,7 @@ def get_object_by_shortname(object_type, shortname):
 def get_objects(object_type):
     """
     Get list of database objects by their type (Project, Release, Requirement, TestCase, Bug).
+
     Additional filters may be added as query parameters in API call.
     See: request_map dictionary values or call /help/objects
 
