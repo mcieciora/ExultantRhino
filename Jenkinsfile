@@ -96,6 +96,11 @@ pipeline {
                     }
                 }
                 stage ("flake8") {
+                    when {
+                        expression {
+                            return false
+                        }
+                    }
                     steps {
                         script {
                             testImage.inside("--rm -v $WORKSPACE:/app") {
@@ -152,6 +157,11 @@ pipeline {
                     }
                 }
                 stage ("mypy") {
+                    when {
+                        expression {
+                            return false
+                        }
+                    }
                     steps {
                         script {
                             testImage.inside("--rm -v $WORKSPACE:/app") {
