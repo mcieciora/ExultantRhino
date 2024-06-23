@@ -236,28 +236,29 @@ pipeline {
                 }
             }
         }
-        stage ("Run tests") {
-            matrix {
-                axes {
-                    axis {
-                        name "TEST_GROUP"
-                        values "postgres", "streamlit"
-                    }
+        stage ("Run tests [postgres]") {
+            steps {
+                script {
+                    executeTestGroup("postgres", testImage)
                 }
-                stages {
-                    stage ("Test stage") {
-                        steps {
-                            script {
-                                executeTestGroup("${TEST_GROUP}", testImage)
-                            }
-                        }
-                        post {
-                            always {
-                                archiveArtifacts artifacts: "**/*_results.xml"
-                                junit "**/*_results.xml"
-                            }
-                        }
-                    }
+            }
+            post {
+                always {
+                    archiveArtifacts artifacts: "**/*_results.xml"
+                    junit "**/*_results.xml"
+                }
+            }
+        }
+        stage ("Run tests [streamlit app]") {
+            steps {
+                script {
+                    executeTestGroup("streamlit", testImage)
+                }
+            }
+            post {
+                always {
+                    archiveArtifacts artifacts: "**/*_results.xml"
+                    junit "**/*_results.xml"
                 }
             }
         }
