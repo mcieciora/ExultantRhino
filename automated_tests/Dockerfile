@@ -1,6 +1,9 @@
 FROM python:3.12.2-slim
 
-RUN apt-get update && apt-get install -y libpq-dev gcc
+RUN echo "deb http://deb.debian.org/debian/ unstable main contrib non-free" >> /etc/apt/sources.list.d/debian.list
+RUN apt-get update
+
+RUN apt-get install -y libpq-dev gcc firefox
 
 WORKDIR /app
 COPY pytest.ini ./

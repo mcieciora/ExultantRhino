@@ -241,7 +241,7 @@ pipeline {
                 axes {
                     axis {
                         name "TEST_GROUP"
-                        values "postgres"
+                        values "postgres", "streamlit"
                     }
                 }
                 stages {
