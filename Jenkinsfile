@@ -252,7 +252,9 @@ pipeline {
         stage ("Run tests [streamlit app]") {
             steps {
                 script {
-                    executeTestGroup("streamlit", testImage)
+                    withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
+                        sh "docker run --rm --network general_network --env-file ${env_file} --privileged mcieciora/exultant_rhino:test_image python -m pytest -m smoke -k streamlit automated_tests -v --junitxml=results/streamlit_results.xml"
+                    }
                 }
             }
             post {
@@ -326,7 +328,7 @@ def executeTestGroup(testGroup, testImage) {
     if (env.TEST_GROUPS == "all" || env.TEST_GROUPS.contains(testGroup)) {
         echo "Running ${testGroup}"
             withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
-                testImage.inside("--rm --network general_network --env-file ${env_file} --privileged -v $WORKSPACE:/app") {
+                testImage.inside("--rm --network general_network --env-file ${env_file} --privileged") {
                     sh "python -m pytest -m ${FLAG} -k ${testGroup} automated_tests -v --junitxml=results/${testGroup}_results.xml"
             }
         }

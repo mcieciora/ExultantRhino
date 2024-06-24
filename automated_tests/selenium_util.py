@@ -6,8 +6,8 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.firefox.service import Service
 
-STANDARD_WAIT = 0.5
-LOAD_WAIT = 1
+STANDARD_WAIT = 0.75
+LOAD_WAIT = 1.5
 
 
 class SeleniumUtil:
