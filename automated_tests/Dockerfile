@@ -13,6 +13,7 @@ COPY requirements/ .
 
 WORKDIR /app/automated_tests
 COPY automated_tests .
+RUN chmod -R a+x /app/automated_tests/utils
 
 WORKDIR /app/src
 COPY src .
