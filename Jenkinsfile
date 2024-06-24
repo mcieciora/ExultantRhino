@@ -326,7 +326,7 @@ def executeTestGroup(testGroup, testImage) {
     if (env.TEST_GROUPS == "all" || env.TEST_GROUPS.contains(testGroup)) {
         echo "Running ${testGroup}"
             withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
-                testImage.inside("--rm --network general_network --env-file ${env_file} -v $WORKSPACE:/app") {
+                testImage.inside("--rm --network general_network --env-file ${env_file} --privileged -v $WORKSPACE:/app") {
                     sh "python -m pytest -m ${FLAG} -k ${testGroup} automated_tests -v --junitxml=results/${testGroup}_results.xml"
             }
         }
