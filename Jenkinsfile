@@ -272,15 +272,10 @@ pipeline {
             }
             parallel {
                 stage ("Push docker image") {
-                    when {
-                        expression {
-                            return env.BRANCH_TO_USE == "master" || env.BRANCH_TO_USE == "develop"
-                        }
-                    }
                     steps {
                         script {
                             docker.withRegistry("", "dockerhub_id") {
-                                def customImage = docker.build("${DOCKERHUB_REPO}:${env.BRANCH_TO_USE}-${curDate}")
+                                def customImage = docker.build("${DOCKERHUB_REPO}:${env.BRANCH_TO_USE}-${curDate}", "-f app.Dockerfile .")
                                 customImage.push()
                                 if (env.BRANCH_TO_USE == "master") {
                                     customImage.push("latest")
