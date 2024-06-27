@@ -236,28 +236,31 @@ pipeline {
                 }
             }
         }
-        stage ("Run tests") {
-            matrix {
-                axes {
-                    axis {
-                        name "TEST_GROUP"
-                        values "postgres"
+        stage ("Run tests [postgres]") {
+            steps {
+                script {
+                    executeTestGroup("postgres", testImage)
+                }
+            }
+            post {
+                always {
+                    archiveArtifacts artifacts: "**/*_results.xml"
+                    junit "**/*_results.xml"
+                }
+            }
+        }
+        stage ("Run tests [streamlit app]") {
+            steps {
+                script {
+                    withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
+                        sh "docker run --rm --network general_network --env-file ${env_file} --privileged ${DOCKERHUB_REPO}:test_image python -m pytest -m smoke -k streamlit automated_tests -v --junitxml=results/streamlit_results.xml"
                     }
                 }
-                stages {
-                    stage ("Test stage") {
-                        steps {
-                            script {
-                                executeTestGroup("${TEST_GROUP}", testImage)
-                            }
-                        }
-                        post {
-                            always {
-                                archiveArtifacts artifacts: "**/*_results.xml"
-                                junit "**/*_results.xml"
-                            }
-                        }
-                    }
+            }
+            post {
+                always {
+                    archiveArtifacts artifacts: "**/*_results.xml"
+                    junit "**/*_results.xml"
                 }
             }
         }
@@ -325,7 +328,7 @@ def executeTestGroup(testGroup, testImage) {
     if (env.TEST_GROUPS == "all" || env.TEST_GROUPS.contains(testGroup)) {
         echo "Running ${testGroup}"
             withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
-                testImage.inside("--rm --network general_network --env-file ${env_file} -v $WORKSPACE:/app") {
+                testImage.inside("--rm --network general_network --env-file ${env_file} --privileged") {
                     sh "python -m pytest -m ${FLAG} -k ${testGroup} automated_tests -v --junitxml=results/${testGroup}_results.xml"
             }
         }
