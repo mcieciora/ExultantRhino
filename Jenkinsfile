@@ -272,6 +272,11 @@ pipeline {
             }
             parallel {
                 stage ("Push docker image") {
+                    when {
+                        expression {
+                            return env.BRANCH_TO_USE == "master" || env.BRANCH_TO_USE == "develop"
+                        }
+                    }
                     steps {
                         script {
                             docker.withRegistry("", "dockerhub_id") {
