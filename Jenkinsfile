@@ -253,7 +253,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
-                        sh "docker run --rm --network general_network --env-file ${env_file} --privileged ${DOCKERHUB_REPO}:test_image python -m pytest -m smoke -k streamlit automated_tests -v --junitxml=results/streamlit_results.xml"
+                        sh "docker run --rm --network general_network --env-file ${env_file} --privileged ${DOCKERHUB_REPO}:test_image python -m pytest -x -m smoke -k streamlit automated_tests -v --junitxml=results/streamlit_results.xml"
                     }
                 }
             }
@@ -280,7 +280,7 @@ pipeline {
                     steps {
                         script {
                             docker.withRegistry("", "dockerhub_id") {
-                                def customImage = docker.build("${DOCKERHUB_REPO}:${env.BRANCH_TO_USE}-${curDate}")
+                                def customImage = docker.build("${DOCKERHUB_REPO}:${env.BRANCH_TO_USE}-${curDate}", "-f app.Dockerfile .")
                                 customImage.push()
                                 if (env.BRANCH_TO_USE == "master") {
                                     customImage.push("latest")
