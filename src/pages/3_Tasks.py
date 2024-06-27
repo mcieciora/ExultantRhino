@@ -36,7 +36,7 @@ def update_task(form_dict, task_id):
 
 def page(edit_page):
     """
-    Main page function.
+    Page function.
 
     :return: None
     """

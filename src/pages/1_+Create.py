@@ -123,7 +123,7 @@ def changes_detected():
 
 def page():
     """
-    Main page function.
+    Page function.
 
     :return: None
     """
