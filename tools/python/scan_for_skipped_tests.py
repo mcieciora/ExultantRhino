@@ -9,7 +9,7 @@ def scan_for_skipped_tests():
     :return: None
     """
     skipped_tests_dict = {}
-    for python_file in glob("automated_tests/**/test_*.py"):
+    for python_file in glob("automated_tests/**/**/test_*.py"):
         with open(python_file, "r", encoding="utf-8") as file:
             file_content = file.read()
             pattern = "@mark.skip"

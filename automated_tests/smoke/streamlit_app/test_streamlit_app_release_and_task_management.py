@@ -110,7 +110,7 @@ def test__smoke__streamlit_app__refresh_release_on_full_completion(two_fully_set
         f"Expected: {expected_task_completion_percentage} not found in page source."
 
 
-@mark.smoke
+@mark.nightly
 def test__smoke__streamlit_app__finish_release_on_full_completion(two_fully_set_up_projects, selenium_util):
     selenium_util.click_link_text("Releases")
     selenium_util.choose_from_select_box("Selected proj-0: DEFAULT. current_project", "proj-1: new_project")
