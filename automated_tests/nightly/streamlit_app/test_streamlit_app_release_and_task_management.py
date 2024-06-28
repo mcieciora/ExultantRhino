@@ -4,7 +4,7 @@ from pytest import mark
 from automated_tests.streamlit_ui_util import create_bug, create_requirement
 
 
-@mark.smoke
+@mark.nightly
 def test__smoke__streamlit_app__activate_release(two_fully_set_up_projects, selenium_util):
     selenium_util.click_link_text("Releases")
     selenium_util.choose_from_select_box("Selected proj-0: DEFAULT. current_project", "proj-1: new_project")
@@ -25,7 +25,7 @@ def test__smoke__streamlit_app__activate_release(two_fully_set_up_projects, sele
         f"Expected: {expected_task_completion_percentage} not found in page source."
 
 
-@mark.smoke
+@mark.nightly
 def test__smoke__streamlit_app__check_generated_tasks(two_fully_set_up_projects, selenium_util):
     selenium_util.click_link_text("Tasks")
     selenium_util.choose_from_select_box("Selected proj-0: DEFAULT. current_project", "proj-1: new_project")
@@ -54,7 +54,7 @@ def test__smoke__streamlit_app__refresh_release(two_fully_set_up_projects, selen
         assert expected_item in selenium_util.driver.page_source, f"Expected: {expected_item} not found in page source"
 
 
-@mark.smoke
+@mark.nightly
 def test__smoke__streamlit_app__change_task_status(two_fully_set_up_projects, selenium_util):
     selenium_util.go_to_page(f"http://{environ['API_HOST']}:8501/Tasks?item=task-0")
     selenium_util.choose_from_select_box("Selected New. Status", "ToDo")
