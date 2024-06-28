@@ -96,11 +96,6 @@ pipeline {
                     }
                 }
                 stage ("flake8") {
-                    when {
-                        expression {
-                            return false
-                        }
-                    }
                     steps {
                         script {
                             testImage.inside("--rm -v $WORKSPACE:/app") {
@@ -195,7 +190,7 @@ pipeline {
                 stage ("Scan for skipped tests") {
                     when {
                         expression {
-                            return env.BRANCH_TO_USE == "release" || env.BRANCH_TO_USE == "master"
+                            return env.BRANCH_TO_USE.contains("release") || env.BRANCH_TO_USE == "master"
                         }
                     }
                     steps {

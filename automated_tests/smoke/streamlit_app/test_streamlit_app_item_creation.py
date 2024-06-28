@@ -16,7 +16,7 @@ def test__smoke__streamlit_app__create_project(empty_database_fixture_session, s
     assert findall(r"Created proj-\d+", selenium_util.driver.page_source), "Project creation message not found."
 
 
-@mark.smoke
+@mark.nightly
 def test__smoke__streamlit_app__create_release(empty_database_fixture_session, selenium_util):
     test_data = {
         "item_name": "first_release",
@@ -32,7 +32,7 @@ def test__smoke__streamlit_app__create_release(empty_database_fixture_session, s
     assert findall(r"Created rls-\d+", selenium_util.driver.page_source), "Release creation message not found."
 
 
-@mark.smoke
+@mark.nightly
 def test__smoke__streamlit_app__create_requirement(empty_database_fixture_session, selenium_util):
     test_data = {
         "item_name": "first_requirement",
@@ -50,7 +50,7 @@ def test__smoke__streamlit_app__create_requirement(empty_database_fixture_sessio
     assert findall(r"Created req-\d+", selenium_util.driver.page_source), "Release creation message not found."
 
 
-@mark.smoke
+@mark.nightly
 def test__smoke__streamlit_app__create_test_case(empty_database_fixture_session, selenium_util):
     test_data = {
         "item_name": "test_case",
@@ -68,7 +68,7 @@ def test__smoke__streamlit_app__create_test_case(empty_database_fixture_session,
     assert findall(r"Created tc-\d+", selenium_util.driver.page_source), "Release creation message not found."
 
 
-@mark.smoke
+@mark.nightly
 def test__smoke__streamlit_app__create_bug(empty_database_fixture_session, selenium_util):
     test_data = {
         "item_name": "bug",

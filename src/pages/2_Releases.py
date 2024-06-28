@@ -1,4 +1,4 @@
-from streamlit import button, columns, container, error, header, metric, sidebar, subheader, write
+from streamlit import button, columns, container, error, header, metric, sidebar, subheader, success, write
 from src.postgres_items_models import Bug, Project, Release, Status, Requirement, TestCase
 from src.postgres_tasks_models import Task, TaskStatus
 from src.postgres_sql_alchemy import create_database_object, edit_database_object, get_all_objects_by_type, \
@@ -34,6 +34,7 @@ def activate_release(release_shortname, refresh=False):
         activated_release = get_database_object(Release, release_shortname)
         activated_release["status"] = Status.Active.name
         edit_database_object(Release, activated_release["id"], activated_release)
+        success(f"Release {activated_release['title']} is active now.")
     all_requirements = get_objects_by_filters(Requirement, {"target_release": release_shortname})
     all_test_cases = get_objects_by_filters(TestCase, {"target_release": release_shortname})
     all_bugs = get_objects_by_filters(Bug, {"target_release": release_shortname})
@@ -50,6 +51,8 @@ def activate_release(release_shortname, refresh=False):
             new_task = Task(**form_dict)
             item["children_task"] = create_database_object(new_task)
             edit_database_object(object_type, item["id"], item)
+    if refresh:
+        success("All tasks were updated.")
 
 
 def finish_release(release_id):
@@ -63,6 +66,7 @@ def finish_release(release_id):
     else:
         form_dict = {"status": TaskStatus.Implemented.name}
         edit_database_object(Release, release_id, form_dict)
+        success("Successfully finished release.")
 
 
 current_project = sidebar.selectbox(
