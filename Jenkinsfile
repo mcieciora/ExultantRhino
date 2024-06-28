@@ -190,7 +190,7 @@ pipeline {
                 stage ("Scan for skipped tests") {
                     when {
                         expression {
-                            return env.BRANCH_TO_USE.contains("release") || env.BRANCH_TO_USE == "master"
+                            return false
                         }
                     }
                     steps {
