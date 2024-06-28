@@ -1,5 +1,5 @@
 from pytest import mark
-from src.postgres_items_models import Bug, Release, Requirement, TestCase
+from src.postgres_items_models import Release
 from src.postgres_sql_alchemy import get_all_objects
 from automated_tests.postgres_util import get_item_page_url_by_title
 
