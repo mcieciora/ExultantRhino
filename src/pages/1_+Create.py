@@ -162,6 +162,25 @@ def edit_object(object_type, changes_dict):
     success(f"{item['shortname']}: {item['title']} was updated.")
 
 
+def generate_streamlit_form(object_type, form_map, parent_item_options):
+    """
+    Generate form dict for streamlit UI form.
+
+    :return: None
+    """
+    for form_key, form_item in form_map.items():
+        if object_type in form_item["applicable"]:
+            if parameters:
+                if form_key == "parent":
+                    form_item["args"][form_item["parametrized_value_field"]] = \
+                        [x.split(":")[0] for x in parent_item_options].index(item[form_key])
+                else:
+                    form_item["args"][form_item["parametrized_value_field"]] = item[form_key]
+            else:
+                form_item["args"][form_item["default_value_field"]] = form_item["default_value"]
+            form_dict[form_key] = form_item["streamlit_function"](**form_item["args"])
+
+
 def page():
     """
     Page function.
@@ -232,17 +251,8 @@ def page():
             },
         }
 
-        for form_key, form_item in form_map.items():
-            if object_type in form_item["applicable"]:
-                if parameters:
-                    if form_key == "parent":
-                        form_item["args"][form_item["parametrized_value_field"]] = \
-                            [x.split(":")[0] for x in parent_item_options].index(item[form_key])
-                    else:
-                        form_item["args"][form_item["parametrized_value_field"]] = item[form_key]
-                else:
-                    form_item["args"][form_item["default_value_field"]] = form_item["default_value"]
-                form_dict[form_key] = form_item["streamlit_function"](**form_item["args"])
+        generate_streamlit_form(object_type, form_map, parent_item_options)
+
         if parameters:
             if button(label="Update"):
                 if verify_form(object_type) and (changes_dict := changes_detected()):

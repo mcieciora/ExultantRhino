@@ -1,6 +1,6 @@
 from pytest import mark
-from src.postgres_sql_alchemy import convert_to_dict, get_all_objects, get_all_objects_by_type, get_all_objects_with_filters, \
-    get_database_object, get_next_shortname
+from src.postgres_sql_alchemy import convert_to_dict, get_all_objects, get_all_objects_by_type, get_database_object, \
+    get_next_shortname
 from src.postgres_items_models import Bug, Project, Release, Requirement, TestCase
 
 
