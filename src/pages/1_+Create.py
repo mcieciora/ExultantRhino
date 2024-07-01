@@ -121,6 +121,66 @@ def changes_detected():
         return False
 
 
+def delete_object(object_type):
+    """
+    Form object deletion.
+
+    :return: None
+    """
+    downstream_items = get_downstream_items(object_type_db_object_map[object_type], item["shortname"])
+    for downstream_item in downstream_items:
+        downstream_item_type = shortname_prefix[downstream_item["shortname"].split("-")[0]]
+        delete_database_object(downstream_item_type, downstream_item["id"])
+    delete_database_object(object_type_db_object_map[object_type], item["id"])
+    success(f"Deleted {item['title']} and {len(downstream_items)} related items.")
+
+
+def edit_object(object_type, changes_dict):
+    """
+    Form object edition.
+
+    :return: None
+    """
+    if "parent" in changes_dict:
+        parent_item = get_objects_by_filters(get_parent_object_type(object_type),
+                                             {"shortname": form_dict["parent"]})[-1]
+        if object_type_db_object_map[object_type] is Requirement and \
+                parent_item["shortname"] != item["target_release"]:
+            for downstream_item in get_downstream_items(object_type_db_object_map[object_type],
+                                                        item["shortname"]):
+                downstream_item_type = shortname_prefix[downstream_item["shortname"].split("-")[0]]
+                edit_database_object(downstream_item_type, downstream_item["id"],
+                                     {"target_release": form_dict["parent"]})
+        elif object_type_db_object_map[object_type] in [TestCase, Bug] and \
+                parent_item["target_release"] != item["target_release"]:
+            for downstream_item in get_downstream_items(object_type_db_object_map[object_type],
+                                                        item["shortname"]):
+                downstream_item_type = shortname_prefix[downstream_item["shortname"].split("-")[0]]
+                edit_database_object(downstream_item_type, downstream_item["id"],
+                                     {"target_release": parent_item["target_release"]})
+    edit_database_object(object_type_db_object_map[object_type], item["id"], form_dict)
+    success(f"{item['shortname']}: {item['title']} was updated.")
+
+
+def generate_streamlit_form(object_type, form_map, parent_item_options):
+    """
+    Generate form dict for streamlit UI form.
+
+    :return: None
+    """
+    for form_key, form_item in form_map.items():
+        if object_type in form_item["applicable"]:
+            if parameters:
+                if form_key == "parent":
+                    form_item["args"][form_item["parametrized_value_field"]] = \
+                        [x.split(":")[0] for x in parent_item_options].index(item[form_key])
+                else:
+                    form_item["args"][form_item["parametrized_value_field"]] = item[form_key]
+            else:
+                form_item["args"][form_item["default_value_field"]] = form_item["default_value"]
+            form_dict[form_key] = form_item["streamlit_function"](**form_item["args"])
+
+
 def page():
     """
     Page function.
@@ -191,47 +251,14 @@ def page():
             },
         }
 
-        for form_key, form_item in form_map.items():
-            if object_type in form_item["applicable"]:
-                if parameters:
-                    if form_key == "parent":
-                        form_item["args"][form_item["parametrized_value_field"]] = \
-                            [x.split(":")[0] for x in parent_item_options].index(item[form_key])
-                    else:
-                        form_item["args"][form_item["parametrized_value_field"]] = item[form_key]
-                else:
-                    form_item["args"][form_item["default_value_field"]] = form_item["default_value"]
-                form_dict[form_key] = form_item["streamlit_function"](**form_item["args"])
+        generate_streamlit_form(object_type, form_map, parent_item_options)
 
         if parameters:
             if button(label="Update"):
                 if verify_form(object_type) and (changes_dict := changes_detected()):
-                    if "parent" in changes_dict:
-                        parent_item = get_objects_by_filters(get_parent_object_type(object_type),
-                                                             {"shortname": form_dict["parent"]})[-1]
-                        if object_type_db_object_map[object_type] is Requirement and \
-                                parent_item["shortname"] != item["target_release"]:
-                            for downstream_item in get_downstream_items(object_type_db_object_map[object_type],
-                                                                        item["shortname"]):
-                                downstream_item_type = shortname_prefix[downstream_item["shortname"].split("-")[0]]
-                                edit_database_object(downstream_item_type, downstream_item["id"],
-                                                     {"target_release": form_dict["parent"]})
-                        elif object_type_db_object_map[object_type] in [TestCase, Bug] and \
-                                parent_item["target_release"] != item["target_release"]:
-                            for downstream_item in get_downstream_items(object_type_db_object_map[object_type],
-                                                                        item["shortname"]):
-                                downstream_item_type = shortname_prefix[downstream_item["shortname"].split("-")[0]]
-                                edit_database_object(downstream_item_type, downstream_item["id"],
-                                                     {"target_release": parent_item["target_release"]})
-                    edit_database_object(object_type_db_object_map[object_type], item["id"], form_dict)
-                    success(f"{item['shortname']}: {item['title']} was updated.")
+                    edit_object(object_type, changes_dict)
             if button(label="Delete"):
-                downstream_items = get_downstream_items(object_type_db_object_map[object_type], item["shortname"])
-                for downstream_item in downstream_items:
-                    downstream_item_type = shortname_prefix[downstream_item["shortname"].split("-")[0]]
-                    delete_database_object(downstream_item_type, downstream_item["id"])
-                delete_database_object(object_type_db_object_map[object_type], item["id"])
-                success(f"Deleted {item['title']} and {len(downstream_items)} related items.")
+                delete_object(object_type)
         elif button(label="Submit"):
             if verify_form(object_type):
                 new_object = object_type_db_object_map[object_type](**form_dict)

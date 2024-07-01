@@ -6,7 +6,7 @@ from src.postgres_sql_alchemy import get_objects_by_filters
 from automated_tests.postgres_util import get_item_page_url_by_title
 
 
-@mark.smoke
+@mark.nightly
 def test__smoke__streamlit_app__edit_items(one_object_of_type_database_fixture, selenium_util):
     test_data = {
         "project": "proj-0",
