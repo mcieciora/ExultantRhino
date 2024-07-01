@@ -2,10 +2,13 @@
 Exultant Rhino is an <i>open source project management app</i> with main focus on providing solutions to facilitate project management, accelerating the work of developers and testers, covering all requirements with tests and monitoring bugs, as well as easier generation of project documentation and automation of backlog management.
 
 <h2>About Rhino</h2>
-Rhino/Rhinoceros _(Rhinocerotidae)_  is universally recognized by its massive body, stumpy legs and either one or two dermal horns. 
-In some species, the horns may be short or not obvious. There are five main species among rhinos, which may differ in appearance, 
-which you can read more about in following articles: [White Rhinoceros](https://en.wikipedia.org/wiki/White_rhinoceros), [Black Rhinoceros](https://en.wikipedia.org/wiki/Black_rhinoceros), [Indian Rhinoceros](https://en.wikipedia.org/wiki/Indian_rhinoceros), [Javan Rhinoceros](https://en.wikipedia.org/wiki/Javan_rhinoceros), [Sumatran Rhinoceros](https://en.wikipedia.org/wiki/Sumatran_rhinoceros).
-Rhinoceroses are killed by poachers for their horns, which are bought and sold on the black market for high prices, leading to most living rhinoceros species being considered endangered. The contemporary market for rhino horn is overwhelmingly driven by China and Vietnam, where it is bought by wealthy consumers to use in traditional Chinese medicine, among other uses.
+Rhino/Rhinoceros _(Rhinocerotidae)_ is universally recognized by its massive body, stumpy legs and either one or two dermal horns.   
+In some species, the horns may be short or not obvious. There are five main species among rhinos, which may differ in appearance,   
+which you can read more about in following articles: 
+
+[White Rhinoceeros](https://en.wikipedia.org/wiki/White_rhinoceros) , [Black Rhinoceros](https://en.wikipedia.org/wiki/Black_rhinoceros), [Indian Rhinoceros](https://en.wikipedia.org/wiki/Indian_rhinoceros), [Javan Rhinoceros](https://en.wikipedia.org/wiki/Javan_rhinoceros), [Sumatran Rhinoceros](https://en.wikipedia.org/wiki/Sumatran_rhinoceros). 
+
+Rhinoceroses are killed by poachers for their horns, which are bought and sold on the black market for high prices, leading to most living rhinoceros species being considered endangered. The contemporary market for rhino horn is overwhelmingly driven by China and Vietnam, where it is bought by wealthy consumers to use in traditional Chinese medicine, among other uses.  
 This animal was chosen as mascot for this project to raise awareness, that the current fate and future of many species depends on ancient human beliefs in the healing and sometimes even magical possibilities of materials or body parts obtained from animals, which have no scientific support.
 
 ![rhino.png](doc/rhino.PNG)
@@ -20,7 +23,7 @@ As far as it is still beta release, there is no support for external databases o
 ```docker compose -f docker-compose-local.yml up -d db```
 
 <h3>Application setup</h3>
-Before starting application make sure you have got _.env_ file available in project root directory. Simple rename of _example.env_ is enough to make application work without additional configuration.
+Before starting application make sure you have got <i>.env</i> file available in project root directory. Simple rename of <i>example.env</i> is enough to make application work without additional configuration.
 
 Simply start application by calling:
 ```docker compose up -d```
