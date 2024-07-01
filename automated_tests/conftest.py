@@ -1,6 +1,19 @@
 from pytest import fixture
 from src.postgres_sql_alchemy import Bug, create_database_object, Project, Release, Requirement, TestCase
 from automated_tests.postgres_util import _drop_all_rows, _insert_dummy_project
+from automated_tests.selenium_util import SeleniumUtil
+
+
+@fixture(scope="function")
+def selenium_util():
+    """
+    Fixture opens browser window with exultant rhino app.
+
+    :return: Yielding browser app.
+    """
+    selenium_util = SeleniumUtil()
+    yield selenium_util
+    selenium_util.terminate()
 
 
 @fixture(scope="function")
