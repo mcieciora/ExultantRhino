@@ -87,7 +87,7 @@ pipeline {
                 stage ("pylint") {
                     steps {
                         script {
-                            testImage.inside("--rm -v $WORKSPACE:/app") {
+                            testImage.inside("--rm") {
                                 sh "python -m pylint src --max-line-length=120 --disable=C0114 --fail-under=8.5"
                                 sh "python -m pylint --load-plugins pylint_pytest automated_tests --max-line-length=120 --disable=C0114,C0116 --fail-under=9.5"
                                 sh "python -m pylint tools/python --max-line-length=120 --disable=C0114 --fail-under=9.5"
@@ -98,7 +98,7 @@ pipeline {
                 stage ("flake8") {
                     steps {
                         script {
-                            testImage.inside("--rm -v $WORKSPACE:/app") {
+                            testImage.inside("--rm") {
                                 sh "python -m flake8 --max-line-length 120 --max-complexity 10 src automated_tests tools/python"
                             }
                         }
@@ -107,7 +107,7 @@ pipeline {
                 stage ("ruff") {
                     steps {
                         script {
-                            testImage.inside("--rm -v $WORKSPACE:/app") {
+                            testImage.inside("--rm") {
                                 sh "python -m ruff check src automated_tests tools/python"
                             }
                         }
@@ -116,7 +116,7 @@ pipeline {
                 stage ("black") {
                     steps {
                         script {
-                            testImage.inside("--rm -v $WORKSPACE:/app") {
+                            testImage.inside("--rm") {
                                 sh "python -m black src automated_tests tools/python"
                             }
                         }
@@ -125,7 +125,7 @@ pipeline {
                 stage ("bandit") {
                     steps {
                         script {
-                            testImage.inside("--rm -v $WORKSPACE:/app") {
+                            testImage.inside("--rm") {
                                 sh "python -m bandit src automated_tests tools/python"
                             }
                         }
@@ -134,7 +134,7 @@ pipeline {
                 stage ("pydocstyle") {
                     steps {
                         script {
-                            testImage.inside("--rm -v $WORKSPACE:/app") {
+                            testImage.inside("--rm") {
                                 sh "python -m pydocstyle --ignore D100,D104,D107,D203,D204,D212 ."
                             }
                         }
@@ -143,7 +143,7 @@ pipeline {
                 stage ("radon") {
                     steps {
                         script {
-                            testImage.inside("--rm -v $WORKSPACE:/app") {
+                            testImage.inside("--rm") {
                                 sh "python -m radon cc ."
                                 sh "python -m radon mi ."
                                 sh "python -m radon hal ."
@@ -159,7 +159,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            testImage.inside("--rm -v $WORKSPACE:/app") {
+                            testImage.inside("--rm") {
                                 sh "python -m mypy src automated_tests tools/python"
                             }
                         }
@@ -168,7 +168,7 @@ pipeline {
                 stage ("Code coverage") {
                     steps {
                         script {
-                            testImage.inside("--rm -v $WORKSPACE:/app") {
+                            testImage.inside("--rm") {
                                 sh "python -m pytest --cov=src automated_tests/unittest --cov-fail-under=70 --cov-config=automated_tests/.coveragerc --cov-report=html"
                             }
                             publishHTML target: [
@@ -195,7 +195,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            testImage.inside("--rm -v $WORKSPACE:/app") {
+                            testImage.inside("--rm") {
                                 sh "python tools/python/scan_for_skipped_tests.py"
                             }
                         }
@@ -206,15 +206,15 @@ pipeline {
         stage ("Run unit tests") {
             steps {
                 script {
-                    testImage.inside("--rm -v $WORKSPACE:/app") {
+                    testImage.inside("--rm") {
                         sh "python -m pytest -m unittest automated_tests -v --junitxml=results/unittests_results.xml"
                     }
                 }
             }
             post {
                 always {
-                    archiveArtifacts artifacts: "**/*_results.xml"
-                    junit "**/*_results.xml"
+                    archiveArtifacts artifacts: "**/unittests_results.xml"
+                    junit "**/unittests_results.xml"
                 }
             }
         }
@@ -239,23 +239,21 @@ pipeline {
             }
             post {
                 always {
-                    archiveArtifacts artifacts: "**/*_results.xml"
-                    junit "**/*_results.xml"
+                    archiveArtifacts artifacts: "**/postgres_results.xml"
+                    junit "**/postgres_results.xml"
                 }
             }
         }
         stage ("Run tests [streamlit app]") {
             steps {
                 script {
-                    withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
-                        sh "docker run --rm --network general_network --env-file ${env_file} --privileged ${DOCKERHUB_REPO}:test_image python -m pytest -x -m smoke -k streamlit automated_tests -v --junitxml=results/streamlit_results.xml"
-                    }
+                    executeTestGroup("streamlit", testImage)
                 }
             }
             post {
                 always {
-                    archiveArtifacts artifacts: "**/*_results.xml"
-                    junit "**/*_results.xml"
+                    archiveArtifacts artifacts: "**/streamlit_results.xml"
+                    junit "**/streamlit_results.xml"
                 }
             }
         }
