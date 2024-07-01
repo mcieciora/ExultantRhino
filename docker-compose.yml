@@ -1,9 +1,16 @@
-version: "3.8"
-
 services:
-  example_app:
-    container_name: example_app
-    build: .
-    image: example_app
+  app:
+    container_name: exultant_rhino_app
+    build:
+      context: .
+      dockerfile: app.Dockerfile
     ports:
-      - "8000:8000"
+      - "8501:8501"
+    env_file:
+      - .env
+    networks:
+      - app_network
+networks:
+  app_network:
+      name: general_network
+      external: true

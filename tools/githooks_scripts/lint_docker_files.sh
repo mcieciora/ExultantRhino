@@ -1,7 +1,7 @@
 #!/bin/bash
 
 RETURN_VALUE=0
-ALL_DOCKERFILES=$(find . -name "Dockerfile")
+ALL_DOCKERFILES=$(find . -name "*Dockerfile")
 
 echo "$ALL_DOCKERFILES"
 

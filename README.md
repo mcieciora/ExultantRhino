@@ -1,121 +1,78 @@
-<h2>What is <i>CarelessVaquita</i></h2>  
-Careless Vaquita is an <i>open source project base template with ready to go CI/CD setup.</i> It is strongly targeted for Python developers, but with sufficient knowledge and ease, programmers of other languages ​​should have no problem adapting this solution to their needs, because this project only outlines good practices.
-Currently supported tools and versions:
+<h2>What is <i>ExultantRhino</i></h2>
+Exultant Rhino is an <i>open source project management app</i> with main focus on providing solutions to facilitate project management, accelerating the work of developers and testers, covering all requirements with tests and monitoring bugs, as well as easier generation of project documentation and automation of backlog management.
 
-- Jenkins 2.441 
-  - additional plugins listed in casc/plugins.txt
+<h2>About Rhino</h2>
+Rhino/Rhinoceros _(Rhinocerotidae)_ is universally recognized by its massive body, stumpy legs and either one or two dermal horns.   
+In some species, the horns may be short or not obvious. There are five main species among rhinos, which may differ in appearance,   
+which you can read more about in following articles: 
 
-- Python 3.9.18+ 
-  - requirements listed in requirements.requirements-testing.txt
+[White Rhinoceeros](https://en.wikipedia.org/wiki/White_rhinoceros) , [Black Rhinoceros](https://en.wikipedia.org/wiki/Black_rhinoceros), [Indian Rhinoceros](https://en.wikipedia.org/wiki/Indian_rhinoceros), [Javan Rhinoceros](https://en.wikipedia.org/wiki/Javan_rhinoceros), [Sumatran Rhinoceros](https://en.wikipedia.org/wiki/Sumatran_rhinoceros). 
 
-- Docker 24.0.0+ & DockerCompose 2.22.0
+Rhinoceroses are killed by poachers for their horns, which are bought and sold on the black market for high prices, leading to most living rhinoceros species being considered endangered. The contemporary market for rhino horn is overwhelmingly driven by China and Vietnam, where it is bought by wealthy consumers to use in traditional Chinese medicine, among other uses.  
+This animal was chosen as mascot for this project to raise awareness, that the current fate and future of many species depends on ancient human beliefs in the healing and sometimes even magical possibilities of materials or body parts obtained from animals, which have no scientific support.
 
-- Unix shell 5.0.0+
+![rhino.png](doc/rhino.PNG)
 
-- githooks 2.43.0+
-
-- groovy 4.0.18+
-
-<h2>About Vaquita</h2>  
-Vaquita <i>(Phocoena sinus)</i> has a small body with an unusually tall, triangular dorsal fin, a rounded head, and no distinguished beak. 
-The coloration is mostly grey with a darker back and a white ventral field. Prominent black patches surround its lips and eyes. 
-Vaquitas reproduction time is very long as they reach sexual maturity from six years old. 
-Their pregnancies last from 10 to 11 months, and vaquita calves are nursed by their mothers for 6-8 months until becoming independent. 
-In 2023, it was estimated that there are as few as 10 in the wild. 
-The drastic decline in vaquita population is the result of fisheries bycatch in commercial and illegal gillnets, including fisheries targeting the now-endangered Totoaba, 
-shrimp, and other available fish species.
-This animal was chosen as mascot for this project to raise awareness, that there are species critically endangered in the world which the exact number is not precisely 
-known and the moment of extinction will likely go completely unnoticed, but commercial massive fishing that bypasses government regulations will stay intact.
-
-![vaquita.png](doc/vaquita.PNG)
-
-<i>source:</i> [Vaquita - Wikipedia](https://en.wikipedia.org/wiki/Vaquita)
+_source:_ [Rhinoceros - Wikipedia](https://en.wikipedia.org/wiki/Rhinoceros)
 
 <h2>How to setup</h2>
-<h3>Step-by-step with sources</h3>   
 
-- Fork [CarelessVaquita](https://github.com/mcieciora/CarelessVaquita). source: [fork a repository](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo)
+<h3>Database setup</h3>
 
-- Setup git flow. source: [Atlassian - Gitflow workflow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow)
+As far as it is still beta release, there is no support for external databases other than PostgreSQL yet. It is recommended to use database declared in _docker-compose-local.yml_ by running:\
+```docker compose -f docker-compose-local.yml up -d db```
 
-<h3>Step-by-step with commands (suggested)</h3>
-<h4>Fork part</h4>
+<h3>Application setup</h3>
+Before starting application make sure you have got <i>.env</i> file available in project root directory. Simple rename of <i>example.env</i> is enough to make application work without additional configuration.
 
-- Create empty GitHub repository and clone it:
+Simply start application by calling:
+```docker compose up -d```
 
-```
-git clone <empty_repository_url> && cd <empty_repository_url>
-```
+<h2>How to use</h2>
+<b>NOTE: This is still beta release and layout may change in the future.</b>
 
-- Sync upstream of your repository to CarelessVaquita
+<h3>Foreword</h3>
+The main goal of ExultantRhino project is to deliver tool, that simplifies project planning, makes requirements vs. tests matrix coverage implementation easier and accelerates backlog and sprint maintenance on daily basis. 
+The main idea behind this tool is based on one to multiple topdown object type correlation. 
+Project may have multiple releases attached, as well as each release may have multiple requirements, but from bottom to top perspective each bug, test case, requirement, release has only one parent. 
+With this simple solution it is easier to track all objects inside project, but also it opens possibility to automate a lot of actions.
 
-```
-git remote add upstream https://github.com/mcieciora/CarelessVaquita.git
-```
+<h3>How to start</h3>
 
-- Pull changes from upstream master branch
+Firstly, go to your local instance of ExultantRhino e.g http://localhost:8501 (or any server where instance is running on port 8501).
 
-```
-git pull upstream master --allow-unrealted-histories
-```
+<h5>Navigation bar</h5>
+Navigation bar is located on the left hand side. By using it you can move from page to page, but also choose current project that you work on.
 
-- Set your repository origin header to master
+![navbar.png](doc/navbar.PNG)
 
-```
-git push origin master
-```
+<h5>Dashboard</h5>
+Dashboard is main page where project summary can be found. There are pieces of information about number of active releases, requirements, test cases and bugs.
+It is planned to extend this page with the latest news, notifications and graphs describing project in better details.
 
-- Remember to pull from time to time
+![dashboard.png](doc/dashboard.PNG)
 
-```
-git pull upstream master
-```
+<h5>+Create</h5>
+Create page is where items creation happens. 
+By choosing object type you can later fill item name, description and from Requirement type down - parent object as well. 
+Please note that project value is greyed out, so before creation double check if chosen project is correct :)
 
-<h4>Gitflow part</h4>
+![create.png](doc/create.PNG)
 
-- Initialize git flow
+<h5>Releases</h5>
+After release creation all available releases are visible here. 
+You can activate target one and that will generate correlated tasks. 
+If any new item is created simply use Refresh to generate missing tasks.
+Keep in mind that release can only be finished when 100% of tasks are done.
 
-```
-git flow init
-```
+![releases.png](doc/releases.PNG)
 
-- Map local master branch to remote master branch
+<h5>Tasks & Items</h5>
+All created tasks and items with View page urls. These two pages will be revamped in one of next releases.
 
-```
-git push --set-upstream origin master
-```
+<h5>Results & Configuration</h5>
+Still in development.
 
-- Map local development branch to remote development branch
+Happy Rhinoing ;)
 
-```
-git checkout develop && git push --set-upstream origin develop
-```
-
-- Feature start/finish flow:
-
-```
-git flow feature start <feature_name>
-
-touch my_file.txt
-
-git add my_file.txt
-
-git commit -m 'my_file added'
-
-git push --set-upstream origin feature/<feature_name>
-
-git push
-
-git flow feature finish feature_name
-
-git push
-```
-
-<h2>Known issues</h2>
-
-- Jenkins CasC uses host docker.sock
-
-
-Happy Vaquiting ;)  
-
-<i>mcieciora</i>
+_mcieciora_

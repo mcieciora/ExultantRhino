@@ -1,0 +1,24 @@
+pipelineJob("BuildAndPushDockerImage_INPUT.PROJECT_NAME") {
+    parameters {
+        stringParam("BRANCH", "develop", "Execution branch.")
+        stringParam("CUSTOM_TAG", "", "Tag of pushed image.")
+        stringParam("DOCKERFILE_PATH", "", "Path to Dockerfile.")
+    }
+    definition {
+        cpsScm {
+            scm {
+                git {
+                    remote {
+                        url("INPUT.PROJECT_URL")
+                    }
+                    branch('*/${BRANCH}')
+                }
+            }
+            scriptPath("tools/jenkins/BuildAndPushDockerImageJenkinsfile")
+            lightweight()
+        }
+    }
+    logRotator {
+        daysToKeep(7)
+    }
+}
