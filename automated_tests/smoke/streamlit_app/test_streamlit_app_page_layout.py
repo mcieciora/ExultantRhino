@@ -26,4 +26,4 @@ def test__smoke__streamlit_app__cached_project_select_box(two_projects_fixture, 
         assert "Selected first project" in selenium_util.driver.page_source, f"Project was not cached for {page}"
     selenium_util.click_link_text("Configuration")
     selenium_util.click_link_text("Dashboard")
-    assert "Selected new project" in selenium_util.driver.page_source, f"Project was not reset to default"
+    assert "Selected new project" in selenium_util.driver.page_source, "Project was not reset to default"
