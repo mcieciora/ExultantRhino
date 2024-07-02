@@ -89,7 +89,6 @@ if current_release:
 
 release_dataframe = []
 
-parent_project = get_objects_by_filters(Project, {"title": current_project})[0]
 all_releases = get_objects_by_filters(Release, {"project_shortname": current_project})
 
 for release in all_releases:
