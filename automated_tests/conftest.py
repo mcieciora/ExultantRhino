@@ -28,18 +28,6 @@ def empty_database_fixture_function():
     _drop_all_rows()
 
 
-@fixture(scope="session")
-def empty_database_fixture_session():
-    """
-    Fixture yields empty database.
-
-    :return: Yielding empty database prepared for postgres and api testing.
-    """
-    _drop_all_rows()
-    yield
-    _drop_all_rows()
-
-
 @fixture(scope="function")
 def one_object_of_type_database_fixture():
     """
@@ -70,13 +58,26 @@ def two_objects_of_type_database_fixture():
     parent_object = project_shortname
     object_types_list = [Release, Requirement, TestCase, Bug]
     for object_type in object_types_list:
-        for description in [f"{object_type.__name__.lower()} description", "test_description"]:
-            template_object_dict = {"title": f"new {object_type.__name__.lower()}",
+        for object_name in ["first", "second"]:
+            template_object_dict = {"title": f"{object_name} {object_type.__name__.lower()}",
                                     "project_shortname": project_shortname,
-                                    "description": f"{description}",
+                                    "description": f"{object_name}",
                                     "parent": parent_object}
             new_db_object = object_type(**template_object_dict)
             parent_object = create_database_object(new_db_object)
+    yield
+    _drop_all_rows()
+
+
+@fixture(scope="function")
+def two_projects_fixture():
+    """
+    Fixture creates two empty projects objects in database.
+
+    :return: Yielding dummy database prepared for postgres and api testing.
+    """
+    create_database_object(Project(title="first project", description="description of first project"))
+    create_database_object(Project(title="second project", description="description of second project"))
     yield
     _drop_all_rows()
 

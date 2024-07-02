@@ -1,7 +1,8 @@
-from streamlit import column_config, dataframe, header, sidebar
+from os import environ
+from streamlit import column_config, dataframe, header, session_state, sidebar, write
 from pandas import DataFrame
 from src.postgres_items_models import Project, Release, Requirement, TestCase, Bug
-from src.postgres_sql_alchemy import get_database_object, get_all_objects_with_filters, get_all_objects_by_type
+from src.postgres_sql_alchemy import get_all_objects_with_filters, get_all_objects_by_type, get_objects_by_filters
 
 
 def find_projects():
@@ -10,25 +11,25 @@ def find_projects():
 
     :return: List of Project database objects.
     """
-    all_projects = get_all_objects_by_type(Project)
-    return [f"{db_object['shortname']}: {db_object['title']}" for db_object in all_projects]
+    return [f"{db_object['title']}" for db_object in get_all_objects_by_type(Project)]
 
 
+all_projects = find_projects()
 current_project = sidebar.selectbox(
     label="current_project",
     key="current_project",
-    options=find_projects(),
-    index=0,
+    options=all_projects,
+    index=all_projects.index(session_state.current_project) if "current_project" in session_state else 0,
     placeholder="Select project...",
     label_visibility="collapsed",
 )
 
 header("Items")
-all_objects = [get_database_object(Project, current_project.split(":")[0])]
-all_objects.extend(get_all_objects_with_filters([Release, Requirement, TestCase, Bug],
-                                                {"project_shortname": current_project.split(":")[0]}))
+parent_project = get_objects_by_filters(Project, {"title": current_project})[0]
+all_objects = get_all_objects_with_filters([Release, Requirement, TestCase, Bug],
+                                           {"project_shortname": parent_project["shortname"]})
 for item in all_objects:
-    item["url"] = f"http://localhost:8501/+Create?item={item['shortname']}"
+    item["url"] = f"http://{environ['API_HOST']}:8501/+Create?item={item['shortname']}"
 
 df = DataFrame(all_objects)
 

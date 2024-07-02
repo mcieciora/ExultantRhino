@@ -10,7 +10,7 @@ def test__smoke__streamlit_app__create_release(empty_database_fixture_session, s
         "item_parent_project": "new_proj"
     }
     selenium_util.click_link_text("+Create")
-    selenium_util.choose_from_select_box("Selected proj-0: DEFAULT. current_project", test_data["item_parent_project"])
+    selenium_util.choose_from_select_box("Selected DEFAULT. current_project", test_data["item_parent_project"])
     selenium_util.choose_from_select_box("Select object type", "Release")
     selenium_util.write_input("Title", test_data["item_name"])
     selenium_util.write_input("Description", test_data["item_description"])
@@ -27,7 +27,7 @@ def test__smoke__streamlit_app__create_requirement(empty_database_fixture_sessio
         "item_parent_object": "rls-0"
     }
     selenium_util.click_link_text("+Create")
-    selenium_util.choose_from_select_box("Selected proj-0: DEFAULT. current_project", test_data["item_parent_project"])
+    selenium_util.choose_from_select_box("Selected DEFAULT. current_project", test_data["item_parent_project"])
     selenium_util.choose_from_select_box("Select object type", "Requirement")
     selenium_util.write_input("Title", test_data["item_name"])
     selenium_util.write_input("Description", test_data["item_description"])
@@ -45,7 +45,7 @@ def test__smoke__streamlit_app__create_test_case(empty_database_fixture_session,
         "item_parent_object": "req-0"
     }
     selenium_util.click_link_text("+Create")
-    selenium_util.choose_from_select_box("Selected proj-0: DEFAULT. current_project", test_data["item_parent_project"])
+    selenium_util.choose_from_select_box("Selected DEFAULT. current_project", test_data["item_parent_project"])
     selenium_util.choose_from_select_box("Select object type", "Test case")
     selenium_util.write_input("Title", test_data["item_name"])
     selenium_util.write_input("Description", test_data["item_description"])
@@ -63,7 +63,7 @@ def test__smoke__streamlit_app__create_bug(empty_database_fixture_session, selen
         "item_parent_object": "tc-0"
     }
     selenium_util.click_link_text("+Create")
-    selenium_util.choose_from_select_box("Selected proj-0: DEFAULT. current_project", test_data["item_parent_project"])
+    selenium_util.choose_from_select_box("Selected DEFAULT. current_project", test_data["item_parent_project"])
     selenium_util.choose_from_select_box("Select object type", "Bug")
     selenium_util.write_input("Title", test_data["item_name"])
     selenium_util.write_input("Description", test_data["item_description"])
