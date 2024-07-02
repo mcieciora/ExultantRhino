@@ -1,4 +1,5 @@
-from streamlit import button, header, selectbox, sidebar, success, text_area, text_input, query_params, warning
+from streamlit import button, header, selectbox, session_state, sidebar, success, text_area, text_input, query_params, \
+    warning
 from src.postgres_items_models import Bug, Project, Release, Requirement, TestCase, Status
 from src.postgres_sql_alchemy import create_database_object, delete_database_object, edit_database_object, \
     get_all_objects_by_type, get_database_object, get_downstream_items, get_objects_by_filters
@@ -10,15 +11,15 @@ def find_projects():
 
     :return: List of Project database objects.
     """
-    all_projects = get_all_objects_by_type(Project)
-    return [f"{db_object['shortname']}: {db_object['title']}" for db_object in all_projects]
+    return [f"{db_object['title']}" for db_object in get_all_objects_by_type(Project)]
 
 
+all_projects = find_projects()
 current_project = sidebar.selectbox(
     label="current_project",
     key="current_project",
-    options=find_projects(),
-    index=0,
+    options=all_projects,
+    index=all_projects.index(session_state.current_project) if "current_project" in session_state else 0,
     placeholder="Select project...",
     label_visibility="collapsed",
 )
@@ -76,7 +77,7 @@ def find_available_parents(object_type, return_pretty=False):
     :return: List of database shortnames.
     """
     parent_object_type = get_parent_object_type(object_type)
-    query = get_objects_by_filters(parent_object_type, {"project_shortname": current_project.split(":")[0]})
+    query = get_objects_by_filters(parent_object_type, {"project_shortname": current_project})
     if return_pretty:
         return [f"{db_object['shortname']}: {db_object['title']}" for db_object in query]
     else:
@@ -94,7 +95,7 @@ def verify_form(object_type):
             warning("All field must be filled")
             return False
     if "project_shortname" in form_dict:
-        form_dict["project_shortname"] = form_dict["project_shortname"].split(":")[0]
+        form_dict["project_shortname"] = form_dict["project_shortname"]
     if "parent" in form_dict:
         form_dict["parent"] = form_dict["parent"].split(":")[0]
     if object_type == "Release":

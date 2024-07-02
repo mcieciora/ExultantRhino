@@ -7,7 +7,7 @@ from automated_tests.streamlit_ui_util import create_bug, create_requirement
 @mark.nightly
 def test__smoke__streamlit_app__activate_release(two_fully_set_up_projects, selenium_util):
     selenium_util.click_link_text("Releases")
-    selenium_util.choose_from_select_box("Selected proj-0: DEFAULT. current_project", "proj-1: new_project")
+    selenium_util.choose_from_select_box("Selected DEFAULT. current_project", "new_project")
     selenium_util.submit_form_by_text("Activate")
     assert "Release alpha is active now." in selenium_util.driver.page_source, \
         "Expected release activation info not available"
@@ -28,7 +28,7 @@ def test__smoke__streamlit_app__activate_release(two_fully_set_up_projects, sele
 @mark.nightly
 def test__smoke__streamlit_app__check_generated_tasks(two_fully_set_up_projects, selenium_util):
     selenium_util.click_link_text("Tasks")
-    selenium_util.choose_from_select_box("Selected proj-0: DEFAULT. current_project", "proj-1: new_project")
+    selenium_util.choose_from_select_box("Selected DEFAULT. current_project", "new_project")
 
     expected_items = ["Cover req-3", "Cover req-4", "Cover tc-5", "Cover tc-6", "Cover tc-7", "Cover bug-2",
                       "Cover bug-3"]
@@ -40,13 +40,13 @@ def test__smoke__streamlit_app__check_generated_tasks(two_fully_set_up_projects,
 def test__smoke__streamlit_app__refresh_release(two_fully_set_up_projects, selenium_util):
     create_requirement(selenium_util, "Additional requirement", "Additional requirement description", "proj-1", "rls-2")
     selenium_util.click_link_text("Releases")
-    selenium_util.choose_from_select_box("Selected proj-0: DEFAULT. current_project", "proj-1: new_project")
+    selenium_util.choose_from_select_box("Selected DEFAULT. current_project", "new_project")
     selenium_util.submit_form_by_text("Refresh")
 
     assert "All tasks were updated." in selenium_util.driver.page_source, "Expected release update info not available"
 
     selenium_util.click_link_text("Tasks")
-    selenium_util.choose_from_select_box("Selected proj-0: DEFAULT. current_project", "proj-1: new_project")
+    selenium_util.choose_from_select_box("Selected DEFAULT. current_project", "new_project")
 
     expected_items = ["Cover req-3", "Cover req-4", "Cover req-5", "Cover tc-5", "Cover tc-6", "Cover tc-7",
                       "Cover bug-2", "Cover bug-3"]
@@ -69,7 +69,7 @@ def test__smoke__streamlit_app__verify_completion_percentage(two_fully_set_up_pr
         selenium_util.choose_from_select_box("Selected New. Status", "Implemented")
         selenium_util.submit_form()
         selenium_util.click_link_text("Releases")
-        selenium_util.choose_from_select_box("Selected proj-0: DEFAULT. current_project", "proj-1: new_project")
+        selenium_util.choose_from_select_box("Selected DEFAULT. current_project", "new_project")
         expected_task_completion_percentage = f"Completion: {task_index*12.5}%"
         assert expected_task_completion_percentage in selenium_util.driver.page_source, \
             f"Expected: {expected_task_completion_percentage} not found in page source."
@@ -82,7 +82,7 @@ def test__smoke__streamlit_app__add_new_item_and_finish_release(two_fully_set_up
     selenium_util.submit_form()
     create_bug(selenium_util, "Additional bug", "Additional bug description", "proj-1", "tc-1")
     selenium_util.click_link_text("Releases")
-    selenium_util.choose_from_select_box("Selected proj-0: DEFAULT. current_project", "proj-1: new_project")
+    selenium_util.choose_from_select_box("Selected DEFAULT. current_project", "new_project")
     expected_task_completion_percentage = "Completion: 100.0%"
     assert expected_task_completion_percentage in selenium_util.driver.page_source, \
         f"Expected: {expected_task_completion_percentage} not found in page source."
@@ -95,7 +95,7 @@ def test__smoke__streamlit_app__add_new_item_and_finish_release(two_fully_set_up
 @mark.nightly
 def test__smoke__streamlit_app__refresh_release_on_full_completion(two_fully_set_up_projects, selenium_util):
     selenium_util.click_link_text("Releases")
-    selenium_util.choose_from_select_box("Selected proj-0: DEFAULT. current_project", "proj-1: new_project")
+    selenium_util.choose_from_select_box("Selected DEFAULT. current_project", "new_project")
     selenium_util.submit_form_by_text("Refresh")
     expected_task_completion_percentage = "Completion: 88.89%"
     assert expected_task_completion_percentage in selenium_util.driver.page_source, \
@@ -104,7 +104,7 @@ def test__smoke__streamlit_app__refresh_release_on_full_completion(two_fully_set
     selenium_util.choose_from_select_box("Selected New. Status", "Implemented")
     selenium_util.submit_form()
     selenium_util.click_link_text("Releases")
-    selenium_util.choose_from_select_box("Selected proj-0: DEFAULT. current_project", "proj-1: new_project")
+    selenium_util.choose_from_select_box("Selected DEFAULT. current_project", "new_project")
     expected_task_completion_percentage = "Completion: 100.0%"
     assert expected_task_completion_percentage in selenium_util.driver.page_source, \
         f"Expected: {expected_task_completion_percentage} not found in page source."
@@ -113,7 +113,7 @@ def test__smoke__streamlit_app__refresh_release_on_full_completion(two_fully_set
 @mark.nightly
 def test__smoke__streamlit_app__finish_release_on_full_completion(two_fully_set_up_projects, selenium_util):
     selenium_util.click_link_text("Releases")
-    selenium_util.choose_from_select_box("Selected proj-0: DEFAULT. current_project", "proj-1: new_project")
+    selenium_util.choose_from_select_box("Selected DEFAULT. current_project", "new_project")
     selenium_util.submit_form_by_text("Finish")
     assert "Successfully finished release." in selenium_util.driver.page_source, "Expected release completion" \
                                                                                  " info not available"
