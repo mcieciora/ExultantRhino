@@ -1,5 +1,5 @@
 from os import environ
-from streamlit import column_config, dataframe, header, session_state, sidebar, write
+from streamlit import column_config, dataframe, header, session_state, sidebar
 from pandas import DataFrame
 from src.postgres_items_models import Project, Release, Requirement, TestCase, Bug
 from src.postgres_sql_alchemy import get_all_objects_with_filters, get_all_objects_by_type, get_objects_by_filters
