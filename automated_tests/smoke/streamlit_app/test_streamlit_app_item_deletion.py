@@ -22,6 +22,8 @@ def test__smoke__streamlit_app__delete_release(two_fully_set_up_projects, seleni
     selenium_util.go_to_page(test_page)
     selenium_util.submit_form_by_text("Delete")
 
+    assert "Items" in selenium_util.driver.current_url, "User was not redirected to Items page."
+
     affected_items = ["0_2", "req_3", "tc_4", "tc_5", "bug_tc_4"]
 
     actual_items = [item["title"] for item in get_all_objects()]

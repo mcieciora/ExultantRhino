@@ -3,7 +3,7 @@ from re import findall
 
 
 @mark.smoke
-def test__smoke__streamlit_app__create_project(empty_database_fixture_session, selenium_util):
+def test__smoke__streamlit_app__create_project(empty_database_fixture_function, selenium_util):
     test_data = {
         "item_name": "new_proj",
         "item_description": "new_proj description"
