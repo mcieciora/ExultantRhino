@@ -70,7 +70,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            sh "docker build -t test_image -f automated_tests/Dockerfile ."
+                            sh "docker build --no-cache -t test_image -f automated_tests/Dockerfile ."
                             if (env.BRANCH_TO_USE == "master" || env.BRANCH_TO_USE == "develop") {
                                 sh "docker tag test_image ${DOCKERHUB_REPO}:test_image"
                                 sh "docker push ${DOCKERHUB_REPO}:test_image"
@@ -276,7 +276,7 @@ pipeline {
                     steps {
                         script {
                             docker.withRegistry("", "dockerhub_id") {
-                                sh "docker build -t custom_image -f app.Dockerfile ."
+                                sh "docker build --no-cache -t custom_image -f app.Dockerfile ."
                                 sh "docker tag custom_image ${DOCKERHUB_REPO}:${env.BRANCH_TO_USE}-${curDate}"
                                 sh "docker push ${DOCKERHUB_REPO}:${env.BRANCH_TO_USE}-${curDate}"
                                 if (env.BRANCH_TO_USE == "master") {
