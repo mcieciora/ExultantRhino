@@ -1,4 +1,4 @@
-FROM --platform="${TARGETPLATFORM:-linux/amd64}" python:3.12.2-slim
+FROM python:3.12.2-slim
 
 RUN echo "deb http://deb.debian.org/debian/ unstable main contrib non-free" >> /etc/apt/sources.list.d/debian.list
 RUN apt-get update

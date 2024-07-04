@@ -151,19 +151,13 @@ pipeline {
                 stage ("Code coverage") {
                     steps {
                         script {
-                            sh "docker run --rm test_image python -m pytest --cov=src automated_tests/unittest --cov-fail-under=70 --cov-config=automated_tests/.coveragerc --cov-report=html"
-                            publishHTML target: [
-                                allowMissing: false,
-                                alwaysLinkToLastBuild: false,
-                                keepAll: true,
-                                reportDir: "htmlcov",
-                                reportFiles: "index.html",
-                                reportName: "PyTestCov"
-                            ]
+                            sh "docker run --name code_coverage_container test_image python -m pytest --cov=src automated_tests/unittest --cov-fail-under=70 --cov-config=automated_tests/.coveragerc --cov-report=html"
+                            sh "docker container cp code_coverage_container:/app/htmlcov ./"
                         }
                     }
                     post {
-                        failure {
+                        always {
+                            sh "docker rm code_coverage_container"
                             archiveArtifacts artifacts: "htmlcov/*"
                         }
                     }
@@ -185,13 +179,14 @@ pipeline {
         stage ("Run unit tests") {
             steps {
                 script {
-                    sh "docker run --rm test_image python -m pytest -m unittest automated_tests -v --junitxml=results/unittests_results.xml"
+                    sh "docker run --name unit_test_container test_image python -m pytest -m unittest automated_tests -v --junitxml=results/unittests_results.xml"
+                    sh "docker container cp unit_test_container:/app/results ./"
                 }
             }
             post {
                 always {
+                    sh "docker rm unit_test_container"
                     archiveArtifacts artifacts: "**/unittests_results.xml"
-                    junit "**/unittests_results.xml"
                 }
             }
         }
@@ -216,8 +211,8 @@ pipeline {
             }
             post {
                 always {
-                    archiveArtifacts artifacts: "**/postgres_results.xml"
-                    junit "**/postgres_results.xml"
+                    sh "docker rm ${TEST_GROUP}_test"
+                    archiveArtifacts artifacts: "**/${TEST_GROUP}_results.xml"
                 }
             }
         }
@@ -229,8 +224,8 @@ pipeline {
             }
             post {
                 always {
-                    archiveArtifacts artifacts: "**/streamlit_results.xml"
-                    junit "**/streamlit_results.xml"
+                    sh "docker rm ${TEST_GROUP}_test"
+                    archiveArtifacts artifacts: "**/${TEST_GROUP}_results.xml"
                 }
             }
         }
@@ -283,6 +278,15 @@ pipeline {
     post {
         always {
             sh "docker compose down --rmi all -v"
+            junit allowEmptyResults: true, testResults: "**/**_results.xml"
+            publishHTML target: [
+                allowMissing: false,
+                alwaysLinkToLastBuild: false,
+                keepAll: true,
+                reportDir: "htmlcov",
+                reportFiles: "index.html",
+                reportName: "PyTestCov"
+            ]
             cleanWs()
             sh "docker rmi ${DOCKERHUB_REPO}:test_image"
         }
@@ -299,7 +303,8 @@ def executeTestGroup(testGroup, testImage) {
     if (env.TEST_GROUPS == "all" || env.TEST_GROUPS.contains(testGroup)) {
         echo "Running ${testGroup}"
         withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
-            sh "docker run --rm --network general_network --env-file ${env_file} --privileged test_image python -m pytest -m ${FLAG} -k ${testGroup} automated_tests -v --junitxml=results/${testGroup}_results.xml"
+            sh "docker run --network general_network --env-file ${env_file} --privileged --name ${TEST_GROUP}_test test_image python -m pytest -m ${FLAG} -k ${testGroup} automated_tests -v --junitxml=results/${testGroup}_results.xml"
+            sh "docker container cp ${TEST_GROUP}_test:/app/results ./"
         }
     }
     else {
