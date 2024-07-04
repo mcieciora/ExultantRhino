@@ -34,10 +34,11 @@ pipeline {
             steps {
                 script {
                     if (params.BRANCH == "develop" || params.BRANCH == "master") {
-                        customImage = docker.image("${DOCKERHUB_REPO}:test_image")
+                        sh "docker pull ${DOCKERHUB_REPO}:test_image"
+                        sh "docker tag ${DOCKERHUB_REPO}:test_image test_image"
                     }
                     else {
-                        customImage = docker.build("${DOCKERHUB_REPO}:test_image", "-f automated_tests/Dockerfile .")
+                        sh "docker build -t test_image -f automated_tests/Dockerfile ."
                     }
                 }
             }
@@ -45,11 +46,9 @@ pipeline {
         stage("Verify dependencies") {
             steps {
                 script {
-                    customImage.inside("-v $WORKSPACE:/app") {
-                        return_value = sh(script: "python tools/python/python_dependencies_up_to_date_verification.py", returnStdout: true).trim()
-                        if (return_value.contains("Consider upgrading")) {
-                            unstable(return_value)
-                        }
+                    return_value = sh(script: "docker run --rm -v $WORKSPACE:/app test_image python tools/python/python_dependencies_up_to_date_verification.py", returnStdout: true).trim()
+                    if (return_value.contains("Consider upgrading")) {
+                        unstable(return_value)
                     }
                 }
             }

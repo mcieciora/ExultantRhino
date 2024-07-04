@@ -23,10 +23,9 @@ pipeline {
         stage ("Build and push") {
             steps {
                 script {
-                    customImage = docker.build("${DOCKERHUB_REPO}:${CUSTOM_TAG}", "-f ${DOCKERFILE_PATH} .")
-                    docker.withRegistry("", "dockerhub_id") {
-                        customImage.push()
-                    }
+                    sh "docker build -t custom_image -f ${DOCKERFILE_PATH} ."
+                    sh "docker tag custom_image ${DOCKERHUB_REPO}:${CUSTOM_TAG}"
+                    sh "docker push ${DOCKERHUB_REPO}:${CUSTOM_TAG}"
                 }
             }
         }
