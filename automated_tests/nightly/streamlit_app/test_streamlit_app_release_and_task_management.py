@@ -41,13 +41,11 @@ def test__nightly__streamlit_app__refresh_release(two_fully_set_up_projects, sel
     create_requirement(selenium_util, "Additional requirement", "Additional requirement description", "new_project",
                        "rls-2")
     selenium_util.click_link_text("Releases")
-    selenium_util.choose_from_select_box("Selected DEFAULT. current_project", "new_project")
     selenium_util.submit_form_by_text("Refresh")
 
     assert "All tasks were updated." in selenium_util.driver.page_source, "Expected release update info not available"
 
     selenium_util.click_link_text("Tasks")
-    selenium_util.choose_from_select_box("Selected DEFAULT. current_project", "new_project")
 
     expected_items = ["Cover req-3", "Cover req-4", "Cover req-5", "Cover tc-5", "Cover tc-6", "Cover tc-7",
                       "Cover bug-2", "Cover bug-3"]
