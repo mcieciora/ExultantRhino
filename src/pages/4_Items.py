@@ -25,9 +25,9 @@ current_project = sidebar.selectbox(
 )
 
 header("Items")
-parent_project = get_objects_by_filters(Project, {"title": current_project})[0]
-all_objects = get_all_objects_with_filters([Release, Requirement, TestCase, Bug],
-                                           {"project_shortname": parent_project["shortname"]})
+all_objects = [get_objects_by_filters(Project, {"title": current_project})[0]]
+all_objects.extend(get_all_objects_with_filters([Release, Requirement, TestCase, Bug],
+                                                {"project_shortname": current_project}))
 for item in all_objects:
     item["url"] = f"http://{environ['API_HOST']}:8501/+Create?item={item['shortname']}"
 

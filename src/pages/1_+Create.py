@@ -1,8 +1,12 @@
+from time import sleep
 from streamlit import button, header, selectbox, session_state, sidebar, success, text_area, text_input, query_params, \
-    warning
+    warning, switch_page
 from src.postgres_items_models import Bug, Project, Release, Requirement, TestCase, Status
 from src.postgres_sql_alchemy import create_database_object, delete_database_object, edit_database_object, \
     get_all_objects_by_type, get_database_object, get_downstream_items, get_objects_by_filters
+
+
+PAGE_REDIRECT_WAIT = 1.0
 
 
 def find_projects():
@@ -134,6 +138,7 @@ def delete_object(object_type):
         delete_database_object(downstream_item_type, downstream_item["id"])
     delete_database_object(object_type_db_object_map[object_type], item["id"])
     success(f"Deleted {item['title']} and {len(downstream_items)} related items.")
+    sleep(PAGE_REDIRECT_WAIT)
 
 
 def edit_object(object_type, changes_dict):
@@ -161,6 +166,7 @@ def edit_object(object_type, changes_dict):
                                      {"target_release": parent_item["target_release"]})
     edit_database_object(object_type_db_object_map[object_type], item["id"], form_dict)
     success(f"{item['shortname']}: {item['title']} was updated.")
+    sleep(PAGE_REDIRECT_WAIT)
 
 
 def generate_streamlit_form(object_type, form_map, parent_item_options):
@@ -258,13 +264,16 @@ def page():
             if button(label="Update"):
                 if verify_form(object_type) and (changes_dict := changes_detected()):
                     edit_object(object_type, changes_dict)
+                    switch_page("pages/4_Items.py")
             if button(label="Delete"):
                 delete_object(object_type)
+                switch_page("pages/4_Items.py")
         elif button(label="Submit"):
             if verify_form(object_type):
                 new_object = object_type_db_object_map[object_type](**form_dict)
                 new_object_id = create_database_object(new_object)
                 success(f"Created {new_object_id}")
+                # TODO clear form after submit
 
 
 def not_found():

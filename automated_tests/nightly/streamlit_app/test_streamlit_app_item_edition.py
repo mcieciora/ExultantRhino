@@ -7,9 +7,8 @@ from automated_tests.postgres_util import get_item_page_url_by_title
 
 
 @mark.nightly
-def test__smoke__streamlit_app__edit_items(one_object_of_type_database_fixture, selenium_util):
+def test__nightly__streamlit_app__edit_items(one_object_of_type_database_fixture, selenium_util):
     test_data = {
-        "project": "proj-0",
         "release": "rls-0",
         "requirement": "req-0",
         "testcase": "tc-0",
@@ -23,6 +22,7 @@ def test__smoke__streamlit_app__edit_items(one_object_of_type_database_fixture, 
         assert findall(f"{item_shortname}: new {item_type} was updated.",
                        selenium_util.driver.page_source), \
             f"{item_type.capitalize()} edition message not found."
+        assert "Items" in selenium_util.driver.current_url, "User was not redirected to Items page."
 
 
 @mark.nightly
