@@ -210,7 +210,6 @@ pipeline {
                         echo "Running postgres"
                         withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
                             sh "docker run --network general_network --env-file ${env_file} --privileged --name postgres_test test_image python -m pytest -m ${FLAG} -k postgres automated_tests -v --junitxml=results/postgres_results.xml"
-                            sh "docker container cp postgres_test:/app/results ./"
                         }
                     }
                     else {
@@ -224,8 +223,9 @@ pipeline {
                         try {
                             sh "docker container cp postgres_test:/app/results ./"
                         } catch (Exception e) {
-                            sh "docker rm postgres_test"
+                            echo "Failed to copy postgres results."
                         }
+                        sh "docker rm postgres_test"
                         archiveArtifacts artifacts: "**/postgres_results.xml"
                     }
                 }
@@ -238,7 +238,6 @@ pipeline {
                         echo "Running streamlit"
                         withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
                             sh "docker run --network general_network --env-file ${env_file} --privileged --name streamlit_test test_image python -m pytest -m ${FLAG} -k streamlit automated_tests -v --junitxml=results/streamlit_results.xml"
-
                         }
                     }
                     else {
@@ -252,8 +251,9 @@ pipeline {
                         try {
                             sh "docker container cp streamlit_test:/app/results ./"
                         } catch (Exception e) {
-                            sh "docker rm streamlit_test"
+                            echo "Failed to copy streamlit results."
                         }
+                        sh "docker rm streamlit_test"
                         archiveArtifacts artifacts: "**/streamlit_results.xml"
                     }
                 }
