@@ -1,4 +1,3 @@
-from os import environ
 from pytest import mark
 from src.postgres_items_models import Bug, Requirement, TestCase
 from src.postgres_sql_alchemy import get_all_objects

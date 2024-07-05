@@ -41,6 +41,8 @@ def test__nightly__streamlit_app__refresh_release(two_fully_set_up_projects, sel
     create_requirement(selenium_util, "Additional requirement", "Additional requirement description", "new_project",
                        "rls-2")
     selenium_util.click_link_text("Releases")
+    selenium_util.choose_from_select_box("Selected DEFAULT. current_project", "new_project")
+
     selenium_util.submit_form_by_text("Refresh")
 
     assert "All tasks were updated." in selenium_util.driver.page_source, "Expected release update info not available"
@@ -81,6 +83,7 @@ def test__nightly__streamlit_app__add_new_item_and_finish_release(two_fully_set_
     selenium_util.submit_form()
     create_bug(selenium_util, "Additional bug", "Additional bug description", "new_project", "tc-1")
     selenium_util.click_link_text("Releases")
+    selenium_util.choose_from_select_box("Selected DEFAULT. current_project", "new_project")
     expected_task_completion_percentage = "Completion: 100.0%"
     assert expected_task_completion_percentage in selenium_util.driver.page_source, \
         f"Expected: {expected_task_completion_percentage} not found in page source."
