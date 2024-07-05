@@ -232,26 +232,50 @@ pipeline {
         stage ("Run tests [postgres]") {
             steps {
                 script {
-                    executeTestGroup("postgres", testImage)
+                    if (env.TEST_GROUPS == "all" || env.TEST_GROUPS.contains(testGroup)) {
+                        echo "Running postgres"
+                        withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
+                            sh "docker run --network general_network --env-file ${env_file} --privileged --name postgres_test test_image python -m pytest -m ${FLAG} -k postgres automated_tests -v --junitxml=results/postgres_results.xml"
+                            sh "docker container cp postgres_test:/app/results ./"
+                        }
+                    }
+                    else {
+                        echo "Skipping execution."
+                    }
                 }
             }
             post {
+                failure {
+                    sh "docker container cp postgres_test:/app/results ./"
+                }
                 always {
-                    sh "docker rm ${TEST_GROUP}_test"
-                    archiveArtifacts artifacts: "**/${TEST_GROUP}_results.xml"
+                    sh "docker rm postgres_test"
+                    archiveArtifacts artifacts: "**/postgres_results.xml"
                 }
             }
         }
-        stage ("Run tests [streamlit app]") {
+        stage ("Run tests [streamlit]") {
             steps {
                 script {
-                    executeTestGroup("streamlit", testImage)
+                    if (env.TEST_GROUPS == "all" || env.TEST_GROUPS.contains(testGroup)) {
+                        echo "Running streamlit"
+                        withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
+                            sh "docker run --network general_network --env-file ${env_file} --privileged --name streamlit_test test_image python -m pytest -m ${FLAG} -k streamlit automated_tests -v --junitxml=results/streamlit_results.xml"
+                            sh "docker container cp streamlit_test:/app/results ./"
+                        }
+                    }
+                    else {
+                        echo "Skipping execution."
+                    }
                 }
             }
             post {
+                failure {
+                    sh "docker container cp streamlit_test:/app/results ./"
+                }
                 always {
-                    sh "docker rm ${TEST_GROUP}_test"
-                    archiveArtifacts artifacts: "**/${TEST_GROUP}_results.xml"
+                    sh "docker rm streamlit_test"
+                    archiveArtifacts artifacts: "**/streamlit_results.xml"
                 }
             }
         }
@@ -314,7 +338,7 @@ pipeline {
                 reportName: "PyTestCov"
             ]
             cleanWs()
-            sh "docker rmi ${DOCKERHUB_REPO}:test_image"
+            sh "docker rmi test_image"
         }
     }
 }
@@ -322,18 +346,4 @@ pipeline {
 
 def getValue(variable, defaultValue) {
     return params.containsKey(variable) ? params.get(variable) : defaultValue
-}
-
-
-def executeTestGroup(testGroup, testImage) {
-    if (env.TEST_GROUPS == "all" || env.TEST_GROUPS.contains(testGroup)) {
-        echo "Running ${testGroup}"
-        withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
-            sh "docker run --network general_network --env-file ${env_file} --privileged --name ${TEST_GROUP}_test test_image python -m pytest -m ${FLAG} -k ${testGroup} automated_tests -v --junitxml=results/${testGroup}_results.xml"
-            sh "docker container cp ${TEST_GROUP}_test:/app/results ./"
-        }
-    }
-    else {
-        echo "Skipping execution."
-    }
 }
