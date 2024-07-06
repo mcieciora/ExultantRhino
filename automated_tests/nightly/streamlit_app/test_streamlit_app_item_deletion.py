@@ -62,4 +62,5 @@ def test__nightly__streamlit_app__delete_task_and_verify_task_deletion(two_fully
     selenium_util.submit_form_by_text("Delete")
     selenium_util.click_link_text("Tasks")
     affected_item = "task-2"
-    assert affected_item not in selenium_util.driver.page_source, f"{affected_item} found in page source."
+    actual_items = [item["title"] for item in get_all_objects()]
+    assert affected_item not in actual_items, f"{affected_item} found in page source."
