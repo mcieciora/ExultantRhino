@@ -273,7 +273,6 @@ def page():
                 new_object = object_type_db_object_map[object_type](**form_dict)
                 new_object_id = create_database_object(new_object)
                 success(f"Created {new_object_id}")
-                # TODO clear form after submit
 
 
 def not_found():
