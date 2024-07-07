@@ -238,6 +238,9 @@ pipeline {
                         echo "Running streamlit"
                         withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
                             sh "docker run --network general_network --env-file ${env_file} --privileged --name streamlit_test test_image python -m pytest -m ${FLAG} -k streamlit automated_tests -v --junitxml=results/streamlit_results.xml"
+                            if (env.BRANCH_TO_USE.contains("release") || env.BRANCH_TO_USE == "master") {
+                                sh "docker run --network general_network --env-file ${env_file} --privileged --name streamlit_test test_image python -m pytest -m regression -k streamlit automated_tests -v --junitxml=results/streamlit_results.xml"
+                            }
                         }
                     }
                     else {

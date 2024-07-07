@@ -62,3 +62,7 @@ def test__nightly__streamlit_app__create_bug(empty_database_fixture_session, sel
     selenium_util.choose_from_select_box("Parent item", test_data["item_parent_object"])
     selenium_util.submit_form()
     assert findall(r"Created bug-\d+", selenium_util.driver.page_source), "Bug creation message not found."
+    expected_value = ""
+    for form_field in ["Title", "Description", "Parent item"]:
+        assert expected_value == selenium_util.find_element_by_xpath_accessible_text(form_field).text, \
+            f"{form_field} value foes not equal {expected_value}"
