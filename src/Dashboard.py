@@ -1,4 +1,4 @@
-from streamlit import columns, header, sidebar, metric
+from streamlit import columns, header, sidebar, metric, write
 from src.postgres_items_models import Bug, Project, Release, Requirement, TestCase
 from src.postgres_sql_alchemy import get_all_objects_by_type, get_objects_by_filters, init_db
 
@@ -26,36 +26,44 @@ current_project = sidebar.selectbox(
 
 
 header("Dashboard")
-releases, requirements, testcases, bugs = columns(4)
+releases_col, requirements_col, testcases_col, bugs_col = columns(4)
 
-with releases:
+releases = get_objects_by_filters(Release, {"project_shortname": current_project.split(':')[0]})
+requirements = get_objects_by_filters(Requirement, {"project_shortname": current_project.split(':')[0]})
+test_cases = get_objects_by_filters(TestCase, {"project_shortname": current_project.split(':')[0]})
+bugs = get_objects_by_filters(Bug, {"project_shortname": current_project.split(':')[0]})
+
+with releases_col:
     metric(
         label="Releases",
         value=len(
-            get_objects_by_filters(Release, {"project_shortname": current_project.split(':')[0]})
+            releases
         ),
     )
 
-with requirements:
+with requirements_col:
     metric(
         label="Requirements",
         value=len(
-            get_objects_by_filters(Requirement, {"project_shortname": current_project.split(':')[0]})
+            requirements
         ),
     )
 
-with testcases:
+with testcases_col:
     metric(
         label="Test cases",
         value=len(
-            get_objects_by_filters(TestCase, {"project_shortname": current_project.split(':')[0]})
+            test_cases
         ),
     )
 
-with bugs:
+with bugs_col:
     metric(
         label="Bugs",
         value=len(
-            get_objects_by_filters(Bug, {"project_shortname": current_project.split(':')[0]})
+            bugs
         ),
     )
+
+if len(bugs) > 0:
+    write(f"There are {len(bugs)} active bugs.")
