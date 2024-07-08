@@ -17,4 +17,4 @@ def test__smoke__streamlit_app__create_project(empty_database_fixture_function, 
     expected_value = ""
     for form_field in ["Title", "Description"]:
         assert expected_value == selenium_util.find_element_by_xpath_accessible_text(form_field).text, \
-            f"{form_field} value foes not equal {expected_value}"
+            f"{form_field} value does not equal {expected_value}"
