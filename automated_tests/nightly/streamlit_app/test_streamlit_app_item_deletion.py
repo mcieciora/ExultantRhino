@@ -55,7 +55,7 @@ def test__nightly__streamlit_app__delete_bug(two_fully_set_up_projects, selenium
 @mark.nightly
 def test__nightly__streamlit_app__delete_task_and_verify_task_deletion(two_fully_set_up_projects, selenium_util):
     selenium_util.click_link_text("Releases")
-    selenium_util.choose_from_select_box("Selected DEFAULT. current_project", "new_project")
+    selenium_util.choose_from_select_box("Selected DEFAULT. current_project_select_box", "new_project")
     selenium_util.submit_form_by_text("Activate")
     test_page = get_item_page_url_by_title(TestCase, "t1")
     selenium_util.go_to_page(test_page)
