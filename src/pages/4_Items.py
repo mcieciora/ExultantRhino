@@ -15,19 +15,19 @@ def find_projects():
 
 
 all_projects = find_projects()
-current_project = sidebar.selectbox(
-    label="current_project",
-    key="current_project",
+session_state.current_project = sidebar.selectbox(
+    label="current_project_select_box",
+    key="current_project_select_box",
     options=all_projects,
-    index=all_projects.index(session_state.current_project) if "current_project" in session_state else 0,
+    index=all_projects.index(session_state["current_project"]) if "current_project" in session_state else 0,
     placeholder="Select project...",
     label_visibility="collapsed",
 )
 
 header("Items")
-all_objects = [get_objects_by_filters(Project, {"title": current_project})[0]]
+all_objects = [get_objects_by_filters(Project, {"title": session_state.current_project})[0]]
 all_objects.extend(get_all_objects_with_filters([Release, Requirement, TestCase, Bug],
-                                                {"project_shortname": current_project}))
+                                                {"project_shortname": session_state.current_project}))
 for item in all_objects:
     item["url"] = f"http://{environ['API_HOST']}:8501/+Create?item={item['shortname']}"
 

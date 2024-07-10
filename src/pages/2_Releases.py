@@ -25,11 +25,11 @@ def find_projects():
 
 
 all_projects = find_projects()
-current_project = sidebar.selectbox(
-    label="current_project",
-    key="current_project",
+session_state.current_project = sidebar.selectbox(
+    label="current_project_select_box",
+    key="current_project_select_box",
     options=all_projects,
-    index=all_projects.index(session_state.current_project) if "current_project" in session_state else 0,
+    index=all_projects.index(session_state["current_project"]) if "current_project" in session_state else 0,
     placeholder="Select project...",
     label_visibility="collapsed",
 )
@@ -82,15 +82,15 @@ def finish_release(release_id):
 
 header("Releases")
 current_release = get_objects_by_filters(Release,
-                                         {"project_shortname": current_project, "status": "Active"})
+                                         {"project_shortname": session_state.current_project, "status": "Active"})
 if current_release:
     current_release = current_release[-1]
     subheader(f"Current release: {current_release['title']}")
 
 release_dataframe = []
 
-parent_project = get_objects_by_filters(Project, {"title": current_project})[0]
-all_releases = get_objects_by_filters(Release, {"project_shortname": current_project})
+parent_project = get_objects_by_filters(Project, {"title": session_state.current_project})[0]
+all_releases = get_objects_by_filters(Release, {"project_shortname": session_state.current_project})
 
 for release in all_releases:
     correlated_requirements = get_objects_by_filters(Requirement, {"target_release": release["shortname"]})

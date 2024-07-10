@@ -13,11 +13,11 @@ def find_projects():
 
 
 all_projects = find_projects()
-current_project = sidebar.selectbox(
-    label="current_project",
-    key="current_project",
+session_state.current_project = sidebar.selectbox(
+    label="current_project_select_box",
+    key="current_project_select_box",
     options=all_projects,
-    index=all_projects.index(session_state.current_project) if "current_project" in session_state else 0,
+    index=all_projects.index(session_state["current_project"]) if "current_project" in session_state else 0,
     placeholder="Select project...",
     label_visibility="collapsed",
 )

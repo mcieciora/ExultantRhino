@@ -1,4 +1,4 @@
-from streamlit import columns, header, session_state, sidebar, metric
+from streamlit import columns, header, session_state, sidebar, metric, write
 from src.postgres_items_models import Bug, Project, Release, Requirement, TestCase
 from src.postgres_sql_alchemy import get_all_objects_by_type, get_objects_by_filters, init_db
 
@@ -16,14 +16,15 @@ def find_projects():
 
 
 all_projects = find_projects()
-current_project = sidebar.selectbox(
-    label="current_project",
-    key="current_project",
+session_state.current_project = sidebar.selectbox(
+    label="current_project_select_box",
+    key="current_project_select_box",
     options=all_projects,
-    index=all_projects.index(session_state.current_project) if "current_project" in session_state else 0,
+    index=all_projects.index(session_state["current_project"]) if "current_project" in session_state else 0,
     placeholder="Select project...",
     label_visibility="collapsed",
 )
+
 
 header("Dashboard")
 releases, requirements, testcases, bugs = columns(4)
@@ -32,7 +33,7 @@ with releases:
     metric(
         label="Releases",
         value=len(
-            get_objects_by_filters(Release, {"project_shortname": current_project})
+            get_objects_by_filters(Release, {"project_shortname": session_state.current_project})
         ),
     )
 
@@ -40,7 +41,7 @@ with requirements:
     metric(
         label="Requirements",
         value=len(
-            get_objects_by_filters(Requirement, {"project_shortname": current_project})
+            get_objects_by_filters(Requirement, {"project_shortname": session_state.current_project})
         ),
     )
 
@@ -48,7 +49,7 @@ with testcases:
     metric(
         label="Test cases",
         value=len(
-            get_objects_by_filters(TestCase, {"project_shortname": current_project})
+            get_objects_by_filters(TestCase, {"project_shortname": session_state.current_project})
         ),
     )
 
@@ -56,6 +57,6 @@ with bugs:
     metric(
         label="Bugs",
         value=len(
-            get_objects_by_filters(Bug, {"project_shortname": current_project})
+            get_objects_by_filters(Bug, {"project_shortname": session_state.current_project})
         ),
     )
