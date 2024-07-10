@@ -56,7 +56,7 @@ def page(edit_page):
         header("Tasks")
         try:
             target_release = get_objects_by_filters(Release, {"status": "Active"})[0]
-            all_objects = get_objects_by_filters(Task, {"project_shortname": current_project,
+            all_objects = get_objects_by_filters(Task, {"project_shortname": session_state.current_project,
                                                         "target_release": target_release["shortname"]})
 
             for item in all_objects:

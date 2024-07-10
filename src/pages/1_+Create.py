@@ -81,7 +81,7 @@ def find_available_parents(object_type, return_pretty=False):
     :return: List of database shortnames.
     """
     parent_object_type = get_parent_object_type(object_type)
-    query = get_objects_by_filters(parent_object_type, {"project_shortname": current_project})
+    query = get_objects_by_filters(parent_object_type, {"project_shortname": session_state.current_project})
     if return_pretty:
         return [f"{db_object['shortname']}: {db_object['title']}" for db_object in query]
     else:
@@ -236,7 +236,7 @@ def page():
                 "streamlit_function": text_input,
                 "parametrized_value_field": "value",
                 "default_value_field": "value",
-                "default_value": current_project,
+                "default_value": session_state.current_project,
                 "args": {
                     "label": "Parent project",
                     "disabled": True,
