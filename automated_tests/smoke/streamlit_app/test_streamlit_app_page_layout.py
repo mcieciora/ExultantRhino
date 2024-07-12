@@ -55,5 +55,5 @@ def test__regression__streamlit_app__select_box_fails_to_gather_list_of_parent_i
     selenium_util.go_to_page(test_page)
     project_select_box = selenium_util.find_element_by_xpath_accessible_text("Selected new_project. "
                                                                              "current_project_select_box")
-    assert project_select_box, f"Expected select box element not found."
+    assert project_select_box, "Expected select box element not found."
     assert expected_value == project_select_box.is_enabled(), "Project select box is enabled."
