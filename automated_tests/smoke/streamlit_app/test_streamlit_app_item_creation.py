@@ -14,7 +14,9 @@ def test__smoke__streamlit_app__create_project(empty_database_fixture_function, 
     selenium_util.write_input("Description", test_data["item_description"])
     selenium_util.submit_form()
     assert findall(r"Created proj-\d+", selenium_util.driver.page_source), "Project creation message not found."
-    expected_value = ""
-    for form_field in ["Title", "Description"]:
-        assert expected_value == selenium_util.find_element_by_xpath_accessible_text(form_field).text, \
-            f"{form_field} value does not equal {expected_value}"
+    expected_value = None
+    assert "Selected Project. Select object type" in selenium_util.driver.page_source, "Select object type select " \
+                                                                                       "box not found"
+    for form_field in ["Title", "Description", "Project Shortname", "Project"]:
+        assert expected_value == selenium_util.find_element_by_xpath_accessible_text(form_field), \
+            f"Found {form_field} after form submission."

@@ -11,15 +11,12 @@ def test__nightly__streamlit_app__activate_release(two_fully_set_up_projects, se
     selenium_util.submit_form_by_text("Activate")
     assert "Release alpha is active now." in selenium_util.driver.page_source, \
         "Expected release activation info not available"
-
     assert "Current release: alpha" in selenium_util.driver.page_source, "Expected release info not available"
-
     expected_values = ["2", "3", "2", "Active"]
     for index, actual_value in \
             enumerate(selenium_util.find_elements_by_xpath_accessible_text("stMetricValue", "data-testid")):
         expected_value = expected_values[index]
         assert expected_value == actual_value.text, f"Expected value: {expected_value} does not equal {actual_value}"
-
     expected_task_completion_percentage = "Completion: 0.0%"
     assert expected_task_completion_percentage in selenium_util.driver.page_source, \
         f"Expected: {expected_task_completion_percentage} not found in page source."
@@ -29,7 +26,6 @@ def test__nightly__streamlit_app__activate_release(two_fully_set_up_projects, se
 def test__nightly__streamlit_app__check_generated_tasks(two_fully_set_up_projects, selenium_util):
     selenium_util.click_link_text("Tasks")
     selenium_util.choose_from_select_box("Selected DEFAULT. current_project_select_box", "new_project")
-
     expected_items = ["Cover req-3", "Cover req-4", "Cover tc-5", "Cover tc-6", "Cover tc-7", "Cover bug-2",
                       "Cover bug-3"]
     for expected_item in expected_items:
@@ -40,15 +36,11 @@ def test__nightly__streamlit_app__check_generated_tasks(two_fully_set_up_project
 def test__nightly__streamlit_app__refresh_release(two_fully_set_up_projects, selenium_util):
     create_requirement(selenium_util, "Additional requirement", "Additional requirement description", "new_project",
                        "rls-2")
-    selenium_util.click_link_text("Releases")
     selenium_util.choose_from_select_box("Selected DEFAULT. current_project_select_box", "new_project")
-
+    selenium_util.click_link_text("Releases")
     selenium_util.submit_form_by_text("Refresh")
-
     assert "All tasks were updated." in selenium_util.driver.page_source, "Expected release update info not available"
-
     selenium_util.click_link_text("Tasks")
-
     expected_items = ["Cover req-3", "Cover req-4", "Cover req-5", "Cover tc-5", "Cover tc-6", "Cover tc-7",
                       "Cover bug-2", "Cover bug-3"]
     for expected_item in expected_items:
@@ -155,10 +147,8 @@ def test__nightly__streamlit_app__finish_multiple_releases(two_fully_set_up_proj
         selenium_util.go_to_page(f"http://{environ['API_HOST']}:8501/Tasks?item=task-{task_index}")
         selenium_util.choose_from_select_box("Selected New. Status", "Implemented")
         selenium_util.submit_form()
+    selenium_util.click_link_text("Releases")
+    selenium_util.submit_form_by_text("Finish")
     selenium_util.click_link_text("Tasks")
-    expected_number_of_tasks = 0
-    actual_number_of_tasks = len(findall(r'aria-rowindex="\d+"', selenium_util.driver.page_source))
-    assert expected_number_of_tasks == actual_number_of_tasks, \
-        f"Expected value: {expected_number_of_tasks} does not equal {actual_number_of_tasks}"
-    assert "No active release." not in selenium_util.driver.page_source, \
+    assert "No active release." in selenium_util.driver.page_source, \
         "Expected: No active release. found in page source."

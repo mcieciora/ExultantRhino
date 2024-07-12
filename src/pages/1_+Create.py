@@ -2,31 +2,12 @@ from time import sleep
 from streamlit import button, header, selectbox, session_state, sidebar, success, text_area, text_input, \
     query_params, warning, switch_page
 from src.postgres_items_models import Bug, Project, Release, Requirement, TestCase, Status
+from src.postgres_tasks_models import Task
 from src.postgres_sql_alchemy import create_database_object, delete_database_object, edit_database_object, \
     get_all_objects_by_type, get_database_object, get_downstream_items, get_objects_by_filters
 
 
 PAGE_REDIRECT_WAIT = 1.0
-
-
-def find_projects():
-    """
-    Get all available projects in list format.
-
-    :return: List of Project database objects.
-    """
-    return [f"{db_object['title']}" for db_object in get_all_objects_by_type(Project)]
-
-
-all_projects = find_projects()
-session_state.current_project = sidebar.selectbox(
-    label="current_project_select_box",
-    key="current_project_select_box",
-    options=all_projects,
-    index=all_projects.index(session_state["current_project"]) if "current_project" in session_state else 0,
-    placeholder="Select project...",
-    label_visibility="collapsed",
-)
 
 shortname_prefix = {
     "proj": Project,
@@ -45,6 +26,41 @@ object_type_db_object_map = {
 }
 
 form_dict = {}
+
+
+def find_projects():
+    """
+    Get all available projects in list format.
+
+    :return: List of Project database objects.
+    """
+    return [f"{db_object['title']}" for db_object in get_all_objects_by_type(Project)]
+
+
+all_projects = find_projects()
+disabled = False
+if query_params:
+    try:
+        item_prefix = query_params["item"].split("-")[0]
+        item_object_type = shortname_prefix[item_prefix]
+        item = get_database_object(item_object_type, query_params["item"])
+        index = all_projects.index(item["project_shortname"])
+        disabled = True
+    except KeyError:
+        index = 0
+elif "current_project" in session_state:
+    index = all_projects.index(session_state["current_project"])
+else:
+    index = 0
+session_state.current_project = sidebar.selectbox(
+    label="current_project_select_box",
+    key="current_project_select_box",
+    options=all_projects,
+    index=index,
+    placeholder="Select project...",
+    label_visibility="collapsed",
+    disabled=disabled
+)
 
 
 def get_parent_target_release(object_type, parent):
@@ -132,12 +148,18 @@ def delete_object(object_type):
 
     :return: None
     """
+    tasks_count = 0
+    parent_item = get_database_object(object_type_db_object_map[object_type], item["shortname"])
     downstream_items = get_downstream_items(object_type_db_object_map[object_type], item["shortname"])
-    for downstream_item in downstream_items:
-        downstream_item_type = shortname_prefix[downstream_item["shortname"].split("-")[0]]
-        delete_database_object(downstream_item_type, downstream_item["id"])
-    delete_database_object(object_type_db_object_map[object_type], item["id"])
-    success(f"Deleted {item['title']} and {len(downstream_items)} related items.")
+    downstream_items.append(parent_item)
+    for delete_item in downstream_items:
+        if "children_task" in delete_item and delete_item["children_task"]:
+            task = get_database_object(Task, delete_item["children_task"])
+            delete_database_object(Task, task["id"])
+            tasks_count += 1
+        downstream_item_type = shortname_prefix[delete_item["shortname"].split("-")[0]]
+        delete_database_object(downstream_item_type, delete_item["id"])
+    success(f"Deleted {item['title']}, {len(downstream_items)} related items and {tasks_count} tasks")
     sleep(PAGE_REDIRECT_WAIT)
 
 
@@ -186,6 +208,15 @@ def generate_streamlit_form(object_type, form_map, parent_item_options):
             else:
                 form_item["args"][form_item["default_value_field"]] = form_item["default_value"]
             form_dict[form_key] = form_item["streamlit_function"](**form_item["args"])
+
+
+def submit(object_type):
+    if verify_form(object_type):
+        new_object = object_type_db_object_map[object_type](**form_dict)
+        new_object_id = create_database_object(new_object)
+        success(f"Created {new_object_id}")
+        for key in list(session_state.keys()):
+            del session_state[key]
 
 
 def page():
@@ -268,11 +299,8 @@ def page():
             if button(label="Delete"):
                 delete_object(object_type)
                 switch_page("pages/4_Items.py")
-        elif button(label="Submit"):
-            if verify_form(object_type):
-                new_object = object_type_db_object_map[object_type](**form_dict)
-                new_object_id = create_database_object(new_object)
-                success(f"Created {new_object_id}")
+        elif button(label="Submit", on_click=submit, args=(object_type,)):
+            pass
 
 
 def not_found():

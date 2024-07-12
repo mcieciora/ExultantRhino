@@ -47,6 +47,7 @@ def one_object_of_type_database_fixture():
 
     :return: Yielding dummy database prepared for postgres and api testing.
     """
+    _drop_all_rows()
     project_shortname = _insert_dummy_project()
     parent_object = project_shortname
     object_types_list = [Release, Requirement, TestCase, Bug]
@@ -66,6 +67,7 @@ def two_objects_of_type_database_fixture():
 
     :return: Yielding dummy database prepared for postgres and api testing.
     """
+    _drop_all_rows()
     project_shortname = _insert_dummy_project()
     parent_object = project_shortname
     object_types_list = [Release, Requirement, TestCase, Bug]

@@ -1,9 +1,11 @@
 from os import environ
+from time import sleep
 from pytest import mark
 from re import findall
 from src.postgres_items_models import Bug, Requirement, TestCase
 from src.postgres_sql_alchemy import get_objects_by_filters
 from automated_tests.postgres_util import get_item_page_url_by_title
+from automated_tests.selenium_util import LOAD_WAIT
 
 
 @mark.nightly
@@ -18,10 +20,11 @@ def test__nightly__streamlit_app__edit_items(one_object_of_type_database_fixture
         selenium_util.go_to_page(f"http://{environ['API_HOST']}:8501/+Create?item={item_shortname}")
         selenium_util.overwrite_value("Title", "edited title")
         selenium_util.overwrite_value("Description", "edited description")
-        selenium_util.submit_form()
+        selenium_util.submit_form(wait_for_load=False)
         assert findall(f"{item_shortname}: new {item_type} was updated.",
                        selenium_util.driver.page_source), \
             f"{item_type.capitalize()} edition message not found."
+        sleep(LOAD_WAIT)
         assert "Items" in selenium_util.driver.current_url, "User was not redirected to Items page."
 
 
