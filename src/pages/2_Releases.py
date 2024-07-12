@@ -1,4 +1,5 @@
-from streamlit import button, columns, container, error, header, metric, sidebar, subheader, success, write
+from streamlit import button, columns, container, error, header, metric, session_state, sidebar, subheader, success, \
+    write
 from src.postgres_items_models import Bug, Project, Release, Status, Requirement, TestCase
 from src.postgres_tasks_models import Task, TaskStatus
 from src.postgres_sql_alchemy import create_database_object, edit_database_object, get_all_objects_by_type, \
@@ -20,8 +21,18 @@ def find_projects():
 
     :return: List of Project database objects.
     """
-    all_projects = get_all_objects_by_type(Project)
-    return [f"{db_object['shortname']}: {db_object['title']}" for db_object in all_projects]
+    return [f"{db_object['title']}" for db_object in get_all_objects_by_type(Project)]
+
+
+all_projects = find_projects()
+session_state.current_project = sidebar.selectbox(
+    label="current_project_select_box",
+    key="current_project_select_box",
+    options=all_projects,
+    index=all_projects.index(session_state["current_project"]) if "current_project" in session_state else 0,
+    placeholder="Select project...",
+    label_visibility="collapsed",
+)
 
 
 def activate_release(release_shortname, refresh=False):
@@ -69,25 +80,17 @@ def finish_release(release_id):
         success("Successfully finished release.")
 
 
-current_project = sidebar.selectbox(
-    label="current_project",
-    key="current_project",
-    options=find_projects(),
-    index=0,
-    placeholder="Select project...",
-    label_visibility="collapsed",
-)
-
 header("Releases")
 current_release = get_objects_by_filters(Release,
-                                         {"project_shortname": current_project.split(':')[0], "status": "Active"})
+                                         {"project_shortname": session_state.current_project, "status": "Active"})
 if current_release:
     current_release = current_release[-1]
     subheader(f"Current release: {current_release['title']}")
 
 release_dataframe = []
 
-all_releases = get_objects_by_filters(Release, {"project_shortname": current_project.split(':')[0]})
+parent_project = get_objects_by_filters(Project, {"title": session_state.current_project})[0]
+all_releases = get_objects_by_filters(Release, {"project_shortname": session_state.current_project})
 
 for release in all_releases:
     correlated_requirements = get_objects_by_filters(Requirement, {"target_release": release["shortname"]})

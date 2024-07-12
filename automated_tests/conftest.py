@@ -47,6 +47,7 @@ def one_object_of_type_database_fixture():
 
     :return: Yielding dummy database prepared for postgres and api testing.
     """
+    _drop_all_rows()
     project_shortname = _insert_dummy_project()
     parent_object = project_shortname
     object_types_list = [Release, Requirement, TestCase, Bug]
@@ -66,6 +67,7 @@ def two_objects_of_type_database_fixture():
 
     :return: Yielding dummy database prepared for postgres and api testing.
     """
+    _drop_all_rows()
     project_shortname = _insert_dummy_project()
     parent_object = project_shortname
     object_types_list = [Release, Requirement, TestCase, Bug]
@@ -77,6 +79,19 @@ def two_objects_of_type_database_fixture():
                                     "parent": parent_object}
             new_db_object = object_type(**template_object_dict)
             parent_object = create_database_object(new_db_object)
+    yield
+    _drop_all_rows()
+
+
+@fixture(scope="function")
+def two_projects_fixture():
+    """
+    Fixture creates two empty projects objects in database.
+
+    :return: Yielding dummy database prepared for postgres and api testing.
+    """
+    create_database_object(Project(title="first project", description="description of first project"))
+    create_database_object(Project(title="second project", description="description of second project"))
     yield
     _drop_all_rows()
 
@@ -142,45 +157,45 @@ def two_fully_set_up_projects():
     create_database_object(Project(title="new_project", description="new_project description"))
 
     items_to_create = [
-        Release(**{"title": "0_1", "project_shortname": "proj-0", "description": "First release"}),
-        Release(**{"title": "0_2", "project_shortname": "proj-0", "description": "Second release"}),
-        Release(**{"title": "alpha", "project_shortname": "proj-1", "description": "alpha release"}),
+        Release(**{"title": "0_1", "project_shortname": "DEFAULT", "description": "First release"}),
+        Release(**{"title": "0_2", "project_shortname": "DEFAULT", "description": "Second release"}),
+        Release(**{"title": "alpha", "project_shortname": "new_project", "description": "alpha release"}),
 
-        Requirement(**{"title": "req_1", "project_shortname": "proj-0", "description": "req_1 description",
+        Requirement(**{"title": "req_1", "project_shortname": "DEFAULT", "description": "req_1 description",
                        "parent": "rls-0", "target_release": "rls-0"}),
-        Requirement(**{"title": "req_2", "project_shortname": "proj-0", "description": "req_2 description",
+        Requirement(**{"title": "req_2", "project_shortname": "DEFAULT", "description": "req_2 description",
                        "parent": "rls-0", "target_release": "rls-0"}),
-        Requirement(**{"title": "req_3", "project_shortname": "proj-0", "description": "req_3 description",
+        Requirement(**{"title": "req_3", "project_shortname": "DEFAULT", "description": "req_3 description",
                        "parent": "rls-1", "target_release": "rls-1"}),
-        Requirement(**{"title": "alpha_1", "project_shortname": "proj-1", "description": "alpha_1 description",
+        Requirement(**{"title": "alpha_1", "project_shortname": "new_project", "description": "alpha_1 description",
                        "parent": "rls-2", "target_release": "rls-2"}),
-        Requirement(**{"title": "alpha_2", "project_shortname": "proj-1", "description": "alpha_2 description",
+        Requirement(**{"title": "alpha_2", "project_shortname": "new_project", "description": "alpha_2 description",
                        "parent": "rls-2", "target_release": "rls-2"}),
 
-        TestCase(**{"title": "tc_1", "project_shortname": "proj-0", "description": "tc_1 description",
+        TestCase(**{"title": "tc_1", "project_shortname": "DEFAULT", "description": "tc_1 description",
                     "parent": "req-0", "target_release": "rls-0"}),
-        TestCase(**{"title": "tc_2", "project_shortname": "proj-0", "description": "tc_2 description",
+        TestCase(**{"title": "tc_2", "project_shortname": "DEFAULT", "description": "tc_2 description",
                     "parent": "req-0", "target_release": "rls-0"}),
-        TestCase(**{"title": "tc_3", "project_shortname": "proj-0", "description": "tc_3 description",
+        TestCase(**{"title": "tc_3", "project_shortname": "DEFAULT", "description": "tc_3 description",
                     "parent": "req-1", "target_release": "rls-0"}),
-        TestCase(**{"title": "tc_4", "project_shortname": "proj-0", "description": "tc_4 description",
+        TestCase(**{"title": "tc_4", "project_shortname": "DEFAULT", "description": "tc_4 description",
                     "parent": "req-2", "target_release": "rls-1"}),
-        TestCase(**{"title": "tc_5", "project_shortname": "proj-0", "description": "tc_5 description",
+        TestCase(**{"title": "tc_5", "project_shortname": "DEFAULT", "description": "tc_5 description",
                     "parent": "req-2", "target_release": "rls-1"}),
-        TestCase(**{"title": "t1", "project_shortname": "proj-1", "description": "t1 description",
+        TestCase(**{"title": "t1", "project_shortname": "new_project", "description": "t1 description",
                     "parent": "req-3", "target_release": "rls-2"}),
-        TestCase(**{"title": "t2", "project_shortname": "proj-1", "description": "t2 release",
+        TestCase(**{"title": "t2", "project_shortname": "new_project", "description": "t2 release",
                     "parent": "req-3", "target_release": "rls-2"}),
-        TestCase(**{"title": "t3", "project_shortname": "proj-1", "description": "t3 release",
+        TestCase(**{"title": "t3", "project_shortname": "new_project", "description": "t3 release",
                     "parent": "req-5", "target_release": "rls-2"}),
 
-        Bug(**{"title": "bug_tc_2", "project_shortname": "proj-0", "description": "bug_tc_2 description",
+        Bug(**{"title": "bug_tc_2", "project_shortname": "DEFAULT", "description": "bug_tc_2 description",
                "parent": "tc-1", "target_release": "rls-0"}),
-        Bug(**{"title": "bug_tc_4", "project_shortname": "proj-0", "description": "bug_tc_4 description",
+        Bug(**{"title": "bug_tc_4", "project_shortname": "DEFAULT", "description": "bug_tc_4 description",
                "parent": "tc-3", "target_release": "rls-1"}),
-        Bug(**{"title": "bt1", "project_shortname": "proj-1", "description": "bt1 description",
+        Bug(**{"title": "bt1", "project_shortname": "new_project", "description": "bt1 description",
                "parent": "tc-5", "target_release": "rls-2"}),
-        Bug(**{"title": "bt2", "project_shortname": "proj-1", "description": "bt2 description",
+        Bug(**{"title": "bt2", "project_shortname": "new_project", "description": "bt2 description",
                "parent": "tc-6", "target_release": "rls-2"})
     ]
 

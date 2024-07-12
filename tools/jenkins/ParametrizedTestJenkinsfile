@@ -5,7 +5,7 @@ pipeline {
     agent any
     parameters {
         choice(name: "FLAG", choices: ["unittest", "smoke", "regression", "nightly"], description: "Choose test flag.")
-        choice(name: "TEST_GROUP", choices: ["all", "api", "app", "db"], description: "Choose test group.")
+        choice(name: "TEST_GROUP", choices: ["all", "api", "postgres", "streamlit"], description: "Choose test group.")
         booleanParam(name: "REGULAR_BUILD", defaultValue: false, description: "If true code linters and staging will be executed too.")
         string(name: 'BRANCH', defaultValue: 'develop', description: "Execution branch.")
         booleanParam(name: "CUSTOM_WORKSPACE", defaultValue: false, description: "If true workspace will be set up from tools/resources.")
@@ -13,8 +13,8 @@ pipeline {
     }
     triggers {
         parameterizedCron('''
-                H 21 * * * %BRANCH=master;%FLAG=nightly
-                H 21 * * * %BRANCH=develop;%FLAG=nightly
+                H 21 * * * %BRANCH=master;FLAG=nightly
+                H 21 * * * %BRANCH=develop;FLAG=nightly
         ''')
     }
     environment {
@@ -236,7 +236,6 @@ pipeline {
                         echo "Running postgres"
                         withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
                             sh "docker run --network general_network --env-file ${env_file} --privileged --name postgres_test test_image python -m pytest -m ${FLAG} -k postgres automated_tests -v --junitxml=results/postgres_results.xml"
-                            sh "docker container cp postgres_test:/app/results ./"
                         }
                     }
                     else {
@@ -245,12 +244,16 @@ pipeline {
                 }
             }
             post {
-                failure {
-                    sh "docker container cp postgres_test:/app/results ./"
-                }
                 always {
-                    sh "docker rm postgres_test"
-                    archiveArtifacts artifacts: "**/postgres_results.xml"
+                    script {
+                        try {
+                            sh "docker container cp postgres_test:/app/results ./"
+                        } catch (Exception e) {
+                            echo "Failed to copy postgres results."
+                        }
+                        sh "docker rm postgres_test"
+                        archiveArtifacts artifacts: "**/postgres_results.xml"
+                    }
                 }
             }
         }
@@ -261,7 +264,6 @@ pipeline {
                         echo "Running streamlit"
                         withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
                             sh "docker run --network general_network --env-file ${env_file} --privileged --name streamlit_test test_image python -m pytest -m ${FLAG} -k streamlit automated_tests -v --junitxml=results/streamlit_results.xml"
-                            sh "docker container cp streamlit_test:/app/results ./"
                         }
                     }
                     else {
@@ -270,12 +272,16 @@ pipeline {
                 }
             }
             post {
-                failure {
-                    sh "docker container cp streamlit_test:/app/results ./"
-                }
                 always {
-                    sh "docker rm streamlit_test"
-                    archiveArtifacts artifacts: "**/streamlit_results.xml"
+                    script {
+                        try {
+                            sh "docker container cp streamlit_test:/app/results ./"
+                        } catch (Exception e) {
+                            echo "Failed to copy streamlit results."
+                        }
+                        sh "docker rm streamlit_test"
+                        archiveArtifacts artifacts: "**/streamlit_results.xml"
+                    }
                 }
             }
         }
