@@ -1,4 +1,4 @@
-from streamlit import header, sidebar
+from streamlit import header, session_state, sidebar
 from src.postgres_items_models import Project
 from src.postgres_sql_alchemy import get_all_objects_by_type
 
@@ -9,15 +9,15 @@ def find_projects():
 
     :return: List of Project database objects.
     """
-    all_projects = get_all_objects_by_type(Project)
-    return [f"{db_object['shortname']}: {db_object['title']}" for db_object in all_projects]
+    return [f"{db_object['title']}" for db_object in get_all_objects_by_type(Project)]
 
 
-current_project = sidebar.selectbox(
-    label="current_project",
-    key="current_project",
-    options=find_projects(),
-    index=0,
+all_projects = find_projects()
+session_state.current_project = sidebar.selectbox(
+    label="current_project_select_box",
+    key="current_project_select_box",
+    options=all_projects,
+    index=all_projects.index(session_state["current_project"]) if "current_project" in session_state else 0,
     placeholder="Select project...",
     label_visibility="collapsed",
 )

@@ -1,4 +1,4 @@
-from streamlit import columns, header, sidebar, metric, write
+from streamlit import columns, header, session_state, sidebar, metric, write
 from src.postgres_items_models import Bug, Project, Release, Requirement, TestCase
 from src.postgres_sql_alchemy import get_all_objects_by_type, get_objects_by_filters, init_db
 
@@ -11,15 +11,15 @@ def find_projects():
 
     :return: List of Project database objects.
     """
-    all_projects = get_all_objects_by_type(Project)
-    return [f"{db_object['shortname']}: {db_object['title']}" for db_object in all_projects]
+    return [f"{db_object['title']}" for db_object in get_all_objects_by_type(Project)]
 
 
-current_project = sidebar.selectbox(
-    label="current_project",
-    key="current_project",
-    options=find_projects(),
-    index=0,
+all_projects = find_projects()
+session_state.current_project = sidebar.selectbox(
+    label="current_project_select_box",
+    key="current_project_select_box",
+    options=all_projects,
+    index=all_projects.index(session_state["current_project"]) if "current_project" in session_state else 0,
     placeholder="Select project...",
     label_visibility="collapsed",
 )
@@ -28,10 +28,10 @@ current_project = sidebar.selectbox(
 header("Dashboard")
 releases_col, requirements_col, testcases_col, bugs_col = columns(4)
 
-releases = get_objects_by_filters(Release, {"project_shortname": current_project.split(':')[0]})
-requirements = get_objects_by_filters(Requirement, {"project_shortname": current_project.split(':')[0]})
-test_cases = get_objects_by_filters(TestCase, {"project_shortname": current_project.split(':')[0]})
-bugs = get_objects_by_filters(Bug, {"project_shortname": current_project.split(':')[0]})
+releases = get_objects_by_filters(Release, {"project_shortname": session_state.current_project})
+requirements = get_objects_by_filters(Requirement, {"project_shortname": session_state.current_project})
+test_cases = get_objects_by_filters(TestCase, {"project_shortname": session_state.current_project})
+bugs = get_objects_by_filters(Bug, {"project_shortname": session_state.current_project})
 
 with releases_col:
     metric(

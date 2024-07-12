@@ -10,7 +10,9 @@ def _insert_dummy_project():
 
     :return: Committed object shortname value.
     """
-    return create_database_object(Project(title="new project", description="description of new project"))
+    project_title = "new project"
+    create_database_object(Project(title=project_title, description="description of new project"))
+    return project_title
 
 
 def _drop_all_rows():
