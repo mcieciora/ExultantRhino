@@ -211,6 +211,11 @@ def generate_streamlit_form(object_type, form_map, parent_item_options):
 
 
 def submit(object_type):
+    """
+    On click wrapper that clears form fields.
+
+    :return: None
+    """
     if verify_form(object_type):
         new_object = object_type_db_object_map[object_type](**form_dict)
         new_object_id = create_database_object(new_object)
