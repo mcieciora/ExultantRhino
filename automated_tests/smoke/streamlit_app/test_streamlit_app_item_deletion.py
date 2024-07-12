@@ -17,6 +17,7 @@ def test__smoke__streamlit_app__delete_protected_default_project(two_fully_set_u
 
 
 @mark.smoke
+@mark.regression
 def test__smoke__streamlit_app__delete_release(two_fully_set_up_projects, selenium_util):
     test_page = get_item_page_url_by_title(Release, "0_2")
     selenium_util.go_to_page(test_page)

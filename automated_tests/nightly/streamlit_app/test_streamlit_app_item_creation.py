@@ -29,7 +29,7 @@ def test__nightly__streamlit_app__create_requirement(empty_database_fixture_sess
     selenium_util.write_input("Description", test_data["item_description"])
     selenium_util.choose_from_select_box("Parent item", test_data["item_parent_object"])
     selenium_util.submit_form()
-    assert findall(r"Created req-\d+", selenium_util.driver.page_source), "Release creation message not found."
+    assert findall(r"Created req-\d+", selenium_util.driver.page_source), "Requirement creation message not found."
 
 
 @mark.nightly
@@ -45,7 +45,7 @@ def test__nightly__streamlit_app__create_test_case(empty_database_fixture_sessio
     selenium_util.write_input("Description", test_data["item_description"])
     selenium_util.choose_from_select_box("Parent item", test_data["item_parent_object"])
     selenium_util.submit_form()
-    assert findall(r"Created tc-\d+", selenium_util.driver.page_source), "Release creation message not found."
+    assert findall(r"Created tc-\d+", selenium_util.driver.page_source), "Test case creation message not found."
 
 
 @mark.nightly
