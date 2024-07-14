@@ -187,7 +187,7 @@ def two_fully_set_up_projects():
         TestCase(**{"title": "t2", "project_shortname": "new_project", "description": "t2 release",
                     "parent": "req-3", "target_release": "rls-2"}),
         TestCase(**{"title": "t3", "project_shortname": "new_project", "description": "t3 release",
-                    "parent": "req-5", "target_release": "rls-2"}),
+                    "parent": "req-4", "target_release": "rls-2"}),
 
         Bug(**{"title": "bug_tc_2", "project_shortname": "DEFAULT", "description": "bug_tc_2 description",
                "parent": "tc-1", "target_release": "rls-0"}),

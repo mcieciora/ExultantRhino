@@ -1,6 +1,6 @@
 from pytest import mark
 from selenium.webdriver.common.by import By
-from automated_tests.streamlit_ui_util import create_release, create_requirement
+from automated_tests.streamlit_ui_util import create_bug, create_release, create_requirement, create_test_case
 
 
 @mark.smoke
@@ -20,22 +20,41 @@ def test__smoke__streamlit_app__dashboard_nav(two_fully_set_up_projects, seleniu
 
 
 @mark.smoke
-def test__smoke__streamlit_app__dashboard_summaries_releases(two_fully_set_up_projects, selenium_util):
-    expected_value = "There is 1 empty release."
-    target_project = "new_project"
-    create_release(selenium_util, "not_covered_released", "not_covered_released", target_project)
-    selenium_util.choose_from_select_box("Selected proj-0: DEFAULT. current_project", target_project)
+def test__smoke__streamlit_app__dashboard_summaries_releases(empty_database_fixture_session, selenium_util):
+    expected_value = "Notification. There is 1 empty release."
+    create_release(selenium_util, "not_covered_release", "not_covered_release", "DEFAULT")
+    selenium_util.click_link_text("Dashboard")
+    assert expected_value in selenium_util.driver.page_source, f"Expected value: {expected_value} not in page source."
+    expected_value = "Notification. There are 2 empty releases."
+    create_release(selenium_util, "not_covered_release", "not_covered_release", "DEFAULT")
+    selenium_util.click_link_text("Dashboard")
     assert expected_value in selenium_util.driver.page_source, f"Expected value: {expected_value} not in page source."
 
 
 @mark.smoke
-def test__smoke__streamlit_app__dashboard_summaries_requirements(two_fully_set_up_projects, selenium_util):
-    expected_value = "There is 1 requirement not covered with test cases."
-    create_requirement(selenium_util, "not_covered_requirement", "not_covered_requirement", "new_project", "req-3")
+def test__smoke__streamlit_app__dashboard_summaries_requirements(empty_database_fixture_session, selenium_util):
+    expected_values = ["Notification. There is 1 empty release.",
+                       "Notification. There is 1 requirement not covered with test cases."]
+    create_requirement(selenium_util, "not_covered_requirement", "not_covered_requirement", "DEFAULT", "rls-0")
+    selenium_util.click_link_text("Dashboard")
+    for expected_value in expected_values:
+        assert expected_value in selenium_util.driver.page_source, f"Expected value: {expected_value} not in page " \
+                                                                   f"source."
+    expected_value = "Notification. There are 2 requirements not covered with test cases."
+    create_requirement(selenium_util, "not_covered_requirement", "not_covered_requirement", "DEFAULT", "rls-1")
+    selenium_util.click_link_text("Dashboard")
     assert expected_value in selenium_util.driver.page_source, f"Expected value: {expected_value} not in page source."
 
 
 @mark.smoke
-def test__smoke__streamlit_app__dashboard_summaries_bugs(two_fully_set_up_projects, selenium_util):
-    expected_value = "There are 2 active bugs"
+def test__smoke__streamlit_app__dashboard_summaries_bugs(empty_database_fixture_session, selenium_util):
+    create_test_case(selenium_util, "test_test_case", "test_test_case", "DEFAULT", "req-0")
+    selenium_util.click_link_text("Dashboard")
+    expected_value = "Notification. There is 1 active bug."
+    create_bug(selenium_util, "test_bug", "test_bug", "DEFAULT", "tc-0")
+    selenium_util.click_link_text("Dashboard")
+    assert expected_value in selenium_util.driver.page_source, f"Expected value: {expected_value} not in page source."
+    expected_value = "Notification. There are 2 active bugs."
+    create_bug(selenium_util, "test_bug", "test_bug", "DEFAULT", "tc-0")
+    selenium_util.click_link_text("Dashboard")
     assert expected_value in selenium_util.driver.page_source, f"Expected value: {expected_value} not in page source."

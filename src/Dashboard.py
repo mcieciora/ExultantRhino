@@ -1,4 +1,4 @@
-from streamlit import columns, header, session_state, sidebar, metric, write
+from streamlit import columns, container, divider, header, session_state, sidebar, metric, write
 from src.postgres_items_models import Bug, Project, Release, Requirement, TestCase
 from src.postgres_sql_alchemy import get_all_objects_by_type, get_objects_by_filters, init_db
 
@@ -65,5 +65,21 @@ with bugs_col:
         ),
     )
 
-if len(bugs) > 0:
-    write(f"There are {len(bugs)} active bugs.")
+not_covered_releases = [release for release in releases
+                        if not list(filter(lambda x: x["target_release"] == release["shortname"], requirements))]
+not_covered_requirements = [requirement for requirement in requirements
+                            if not list(filter(lambda x: x["parent"] == requirement["shortname"], test_cases))]
+if (releases_length := len(not_covered_releases)) > 0:
+    with container(border=True):
+        write(f":blue[Notification.] There {'are' if releases_length > 1 else 'is'} {releases_length} empty "
+              f"{'releases' if releases_length > 1 else 'release'}.")
+if (requirements_length := len(not_covered_requirements)) > 0:
+    with container(border=True):
+        write(f":blue[Notification.] There {'are' if requirements_length > 1 else 'is'} {requirements_length} "
+              f"{'requirements' if requirements_length > 1 else 'requirement'} not covered with test cases.")
+if (bugs_length := len(bugs)) > 0:
+    with container(border=True):
+        write(f":blue[Notification.] There {'are' if bugs_length > 1 else 'is'} {bugs_length} active "
+              f"{'bugs' if bugs_length > 1 else 'bug'}.")
+
+divider()
