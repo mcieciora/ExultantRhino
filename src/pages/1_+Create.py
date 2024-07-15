@@ -110,6 +110,9 @@ def verify_form(object_type):
 
     :return: True or False depending on verification result.
     """
+    if object_type == "Project" and form_dict["title"] != item["title"]:
+        warning("Project title cannot be edited.")
+        return False
     for key, value in form_dict.items():
         if value in ["", None]:
             warning("All field must be filled")
@@ -149,7 +152,8 @@ def delete_object(object_type):
     :return: None
     """
     tasks_count = 0
-    parent_item = get_database_object(object_type_db_object_map[object_type], item["shortname"])
+    parent_item = get_objects_by_filters(Project, {"title": item["shortname"]}) if object_type == "Project" else \
+        get_database_object(object_type_db_object_map[object_type], item["shortname"])
     downstream_items = get_downstream_items(object_type_db_object_map[object_type], item["shortname"])
     downstream_items.append(parent_item)
     for delete_item in downstream_items:
@@ -218,10 +222,12 @@ def submit(object_type):
     """
     if verify_form(object_type):
         new_object = object_type_db_object_map[object_type](**form_dict)
-        new_object_id = create_database_object(new_object)
-        success(f"Created {new_object_id}")
-        for key in list(session_state.keys()):
-            del session_state[key]
+        if new_object_id := create_database_object(new_object):
+            success(f"Created {new_object_id}")
+            for key in list(session_state.keys()):
+                del session_state[key]
+        else:
+            warning(f"Project with title: {new_object.title} already exists.")
 
 
 def page():
@@ -302,8 +308,12 @@ def page():
                     edit_object(object_type, changes_dict)
                     switch_page("pages/4_Items.py")
             if button(label="Delete"):
-                delete_object(object_type)
-                switch_page("pages/4_Items.py")
+                if object_type == "Project" and item["title"] == "DEFAULT":
+                    warning("DEFAULT project cannot be deleted.")
+                    return False
+                else:
+                    delete_object(object_type)
+                    switch_page("pages/4_Items.py")
         elif button(label="Submit", on_click=submit, args=(object_type,)):
             pass
 

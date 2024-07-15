@@ -1,4 +1,5 @@
-from streamlit import columns, container, divider, header, session_state, sidebar, metric, write
+from os import environ
+from streamlit import columns, divider, expander, header, session_state, sidebar, markdown, metric, write
 from src.postgres_items_models import Bug, Project, Release, Requirement, TestCase
 from src.postgres_sql_alchemy import get_all_objects_by_type, get_objects_by_filters, init_db
 
@@ -70,16 +71,21 @@ not_covered_releases = [release for release in releases
 not_covered_requirements = [requirement for requirement in requirements
                             if not list(filter(lambda x: x["parent"] == requirement["shortname"], test_cases))]
 if (releases_length := len(not_covered_releases)) > 0:
-    with container(border=True):
-        write(f":blue[Notification.] There {'are' if releases_length > 1 else 'is'} {releases_length} empty "
-              f"{'releases' if releases_length > 1 else 'release'}.")
+    with expander(f":blue[Notification.] There {'are' if releases_length > 1 else 'is'} {releases_length} empty "
+                  f"{'releases' if releases_length > 1 else 'release'}."):
+        for release in not_covered_releases:
+            markdown(f"[View {release['title']}]"
+                     f"(http://{environ['API_HOST']}:8501/+Create?item={release['shortname']})")
 if (requirements_length := len(not_covered_requirements)) > 0:
-    with container(border=True):
-        write(f":blue[Notification.] There {'are' if requirements_length > 1 else 'is'} {requirements_length} "
-              f"{'requirements' if requirements_length > 1 else 'requirement'} not covered with test cases.")
+    with expander(f":blue[Notification.] There {'are' if requirements_length > 1 else 'is'} {requirements_length} "
+                  f"{'requirements' if requirements_length > 1 else 'requirement'} not covered with any test case."):
+        for requirement in not_covered_requirements:
+            markdown(f"[View {requirement['title']}]"
+                     f"(http://{environ['API_HOST']}:8501/+Create?item={requirement['shortname']})")
 if (bugs_length := len(bugs)) > 0:
-    with container(border=True):
-        write(f":blue[Notification.] There {'are' if bugs_length > 1 else 'is'} {bugs_length} active "
-              f"{'bugs' if bugs_length > 1 else 'bug'}.")
+    with expander(f":blue[Notification.] There {'are' if bugs_length > 1 else 'is'} {bugs_length} active "
+                  f"{'bugs' if bugs_length > 1 else 'bug'}."):
+        for bug in bugs:
+            markdown(f"[View {bug['title']}](http://{environ['API_HOST']}:8501/+Create?item={bug['shortname']})")
 
 divider()
