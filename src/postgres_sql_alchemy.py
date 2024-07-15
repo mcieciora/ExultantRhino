@@ -135,8 +135,11 @@ def get_downstream_items(parent_item_type, shortname, include_parent=False):
     :return: List of downstream items.
     """
     if parent_item_type is Project:
-        # TODO cover with unit test
-        return get_all_objects_with_filters([Release, Requirement, TestCase, Bug], {"project_shortname": shortname})
+        downstream_list = get_all_objects_with_filters([Release, Requirement, TestCase, Bug],
+                                                       {"project_shortname": shortname})
+        if include_parent:
+            downstream_list.extend(get_objects_by_filters(Project, {"title": shortname}))
+        return downstream_list
 
     all_items_types = [Project, Release, Requirement, TestCase, Bug]
     parent_item = get_database_object(parent_item_type, shortname)
