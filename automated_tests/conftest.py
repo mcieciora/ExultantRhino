@@ -19,9 +19,9 @@ def selenium_util():
 @fixture(scope="function")
 def empty_database_fixture_function():
     """
-    Fixture yields empty database.
+    Empty database function fixture.
 
-    :return: Yielding empty database prepared for postgres and api testing.
+    :return: None
     """
     _drop_all_rows()
     yield
@@ -31,9 +31,9 @@ def empty_database_fixture_function():
 @fixture(scope="session")
 def empty_database_fixture_session():
     """
-    Fixture yields empty database.
+    Empty database session fixture.
 
-    :return: Yielding empty database prepared for postgres and api testing.
+    :return: None
     """
     _drop_all_rows()
     yield
@@ -218,40 +218,41 @@ def multiple_not_covered_items():
     _drop_all_rows()
 
     create_database_object(Project(title="DEFAULT", description="DEFAULT project"))
+    create_database_object(Project(title="new_project", description="DEFAULT project"))
 
     items_to_create = [
-        Release(**{"title": "0_1", "project_shortname": "DEFAULT", "description": "First release"}),
-        Release(**{"title": "0_2", "project_shortname": "DEFAULT", "description": "Second release"}),
-        Release(**{"title": "0_3", "project_shortname": "DEFAULT", "description": "Third release"}),
-        Release(**{"title": "0_4", "project_shortname": "DEFAULT", "description": "Fourth release"}),
+        Release(**{"title": "0_1", "project_shortname": "new_project", "description": "First release"}),
+        Release(**{"title": "0_2", "project_shortname": "new_project", "description": "Second release"}),
+        Release(**{"title": "0_3", "project_shortname": "new_project", "description": "Third release"}),
+        Release(**{"title": "0_4", "project_shortname": "new_project", "description": "Fourth release"}),
 
-        Requirement(**{"title": "req_1", "project_shortname": "DEFAULT", "description": "req_1 description",
+        Requirement(**{"title": "req_1", "project_shortname": "new_project", "description": "req_1 description",
                        "parent": "rls-0", "target_release": "rls-0"}),
-        Requirement(**{"title": "req_2", "project_shortname": "DEFAULT", "description": "req_2 description",
+        Requirement(**{"title": "req_2", "project_shortname": "new_project", "description": "req_2 description",
                        "parent": "rls-0", "target_release": "rls-0"}),
-        Requirement(**{"title": "req_3", "project_shortname": "DEFAULT", "description": "req_3 description",
+        Requirement(**{"title": "req_3", "project_shortname": "new_project", "description": "req_3 description",
                        "parent": "rls-0", "target_release": "rls-0"}),
-        Requirement(**{"title": "req_4", "project_shortname": "DEFAULT", "description": "req_4 description",
+        Requirement(**{"title": "req_4", "project_shortname": "new_project", "description": "req_4 description",
                        "parent": "rls-0", "target_release": "rls-0"}),
 
-        TestCase(**{"title": "tc_1", "project_shortname": "DEFAULT", "description": "tc_1 description",
+        TestCase(**{"title": "tc_1", "project_shortname": "new_project", "description": "tc_1 description",
                     "parent": "req-0", "target_release": "rls-0"}),
-        TestCase(**{"title": "tc_2", "project_shortname": "DEFAULT", "description": "tc_2 description",
+        TestCase(**{"title": "tc_2", "project_shortname": "new_project", "description": "tc_2 description",
                     "parent": "req-0", "target_release": "rls-0"}),
-        TestCase(**{"title": "tc_3", "project_shortname": "DEFAULT", "description": "tc_3 description",
+        TestCase(**{"title": "tc_3", "project_shortname": "new_project", "description": "tc_3 description",
                     "parent": "req-0", "target_release": "rls-0"}),
-        TestCase(**{"title": "tc_4", "project_shortname": "DEFAULT", "description": "tc_4 description",
+        TestCase(**{"title": "tc_4", "project_shortname": "new_project", "description": "tc_4 description",
                     "parent": "req-0", "target_release": "rls-0"}),
-        TestCase(**{"title": "tc_5", "project_shortname": "DEFAULT", "description": "tc_5 description",
+        TestCase(**{"title": "tc_5", "project_shortname": "new_project", "description": "tc_5 description",
                     "parent": "req-0", "target_release": "rls-0"}),
 
-        Bug(**{"title": "bug_1", "project_shortname": "DEFAULT", "description": "bug_1 description",
+        Bug(**{"title": "bug_1", "project_shortname": "new_project", "description": "bug_1 description",
                "parent": "tc-0", "target_release": "rls-0"}),
-        Bug(**{"title": "bug_2", "project_shortname": "DEFAULT", "description": "bug_2 description",
+        Bug(**{"title": "bug_2", "project_shortname": "new_project", "description": "bug_2 description",
                "parent": "tc-0", "target_release": "rls-0"}),
-        Bug(**{"title": "bug_3", "project_shortname": "DEFAULT", "description": "bug_3 description",
+        Bug(**{"title": "bug_3", "project_shortname": "new_project", "description": "bug_3 description",
                "parent": "tc-0", "target_release": "rls-0"}),
-        Bug(**{"title": "bug_4", "project_shortname": "DEFAULT", "description": "bug_4 description",
+        Bug(**{"title": "bug_4", "project_shortname": "new_project", "description": "bug_4 description",
                "parent": "tc-0", "target_release": "rls-0"}),
     ]
 

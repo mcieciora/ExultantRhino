@@ -64,5 +64,6 @@ def test__smoke__streamlit_app__dashboard_summaries_bugs(empty_database_fixture_
 def test__smoke__streamlit_app__dashboard_expander_hyperlinks(multiple_not_covered_items, selenium_util):
     expected_items = ["View 0_2", "View 0_3", "View 0_4", "View req_2", "View req_3", "View req_4", "View bug_1",
                       "View bug_2", "View bug_3", "View bug_4"]
+    selenium_util.choose_from_select_box("Selected DEFAULT. current_project_select_box", "new_project")
     for expected_item in expected_items:
         assert expected_item in selenium_util.driver.page_source
