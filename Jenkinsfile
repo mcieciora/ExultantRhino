@@ -152,7 +152,11 @@ pipeline {
                     steps {
                         script {
                             sh "docker run --name code_coverage_container test_image python -m pytest --cov=src automated_tests/unittest --cov-fail-under=70 --cov-config=automated_tests/.coveragerc --cov-report=html"
-                            sh "docker container cp code_coverage_container:/app/htmlcov ./"
+                            try {
+                                sh "docker container cp code_coverage_container:/app/htmlcov ./"
+                            } catch (Exception e) {
+                                echo "Failed to copy code coverage results."
+                            }
                         }
                     }
                     post {
@@ -180,7 +184,11 @@ pipeline {
             steps {
                 script {
                     sh "docker run --name unit_test_container test_image python -m pytest -m unittest automated_tests -v --junitxml=results/unittests_results.xml"
-                    sh "docker container cp unit_test_container:/app/results ./"
+                    try {
+                        sh "docker container cp unit_test_container:/app/results ./"
+                    } catch (Exception e) {
+                        echo "Failed to copy unit tests results."
+                    }
                 }
             }
             post {
