@@ -19,9 +19,9 @@ def selenium_util():
 @fixture(scope="function")
 def empty_database_fixture_function():
     """
-    Fixture yields empty database.
+    Empty database function fixture.
 
-    :return: Yielding empty database prepared for postgres and api testing.
+    :return: None
     """
     _drop_all_rows()
     yield
@@ -31,9 +31,9 @@ def empty_database_fixture_function():
 @fixture(scope="session")
 def empty_database_fixture_session():
     """
-    Fixture yields empty database.
+    Empty database session fixture.
 
-    :return: Yielding empty database prepared for postgres and api testing.
+    :return: None
     """
     _drop_all_rows()
     yield
@@ -96,7 +96,7 @@ def two_projects_fixture():
     _drop_all_rows()
 
 
-@fixture(scope="module")
+@fixture(scope="session")
 def one_fully_set_up_project():
     """
     Fixture creates one full project tree.
@@ -157,9 +157,12 @@ def two_fully_set_up_projects():
     create_database_object(Project(title="new_project", description="new_project description"))
 
     items_to_create = [
-        Release(**{"title": "0_1", "project_shortname": "DEFAULT", "description": "First release"}),
-        Release(**{"title": "0_2", "project_shortname": "DEFAULT", "description": "Second release"}),
-        Release(**{"title": "alpha", "project_shortname": "new_project", "description": "alpha release"}),
+        Release(**{"title": "0_1", "project_shortname": "DEFAULT", "description": "First release",
+                   "parent": "DEFAULT"}),
+        Release(**{"title": "0_2", "project_shortname": "DEFAULT", "description": "Second release",
+                   "parent": "DEFAULT"}),
+        Release(**{"title": "alpha", "project_shortname": "new_project", "description": "alpha release",
+                   "parent": "new_project"}),
 
         Requirement(**{"title": "req_1", "project_shortname": "DEFAULT", "description": "req_1 description",
                        "parent": "rls-0", "target_release": "rls-0"}),
@@ -187,7 +190,7 @@ def two_fully_set_up_projects():
         TestCase(**{"title": "t2", "project_shortname": "new_project", "description": "t2 release",
                     "parent": "req-3", "target_release": "rls-2"}),
         TestCase(**{"title": "t3", "project_shortname": "new_project", "description": "t3 release",
-                    "parent": "req-5", "target_release": "rls-2"}),
+                    "parent": "req-4", "target_release": "rls-2"}),
 
         Bug(**{"title": "bug_tc_2", "project_shortname": "DEFAULT", "description": "bug_tc_2 description",
                "parent": "tc-1", "target_release": "rls-0"}),
@@ -197,6 +200,60 @@ def two_fully_set_up_projects():
                "parent": "tc-5", "target_release": "rls-2"}),
         Bug(**{"title": "bt2", "project_shortname": "new_project", "description": "bt2 description",
                "parent": "tc-6", "target_release": "rls-2"})
+    ]
+
+    for item in items_to_create:
+        create_database_object(item)
+    yield
+    _drop_all_rows()
+
+
+@fixture(scope="function")
+def multiple_not_covered_items():
+    """
+    Fixture creates tree consisting multiple not covered items of all types.
+
+    :return: Yielding None
+    """
+    _drop_all_rows()
+
+    create_database_object(Project(title="DEFAULT", description="DEFAULT project"))
+    create_database_object(Project(title="new_project", description="DEFAULT project"))
+
+    items_to_create = [
+        Release(**{"title": "0_1", "project_shortname": "new_project", "description": "First release"}),
+        Release(**{"title": "0_2", "project_shortname": "new_project", "description": "Second release"}),
+        Release(**{"title": "0_3", "project_shortname": "new_project", "description": "Third release"}),
+        Release(**{"title": "0_4", "project_shortname": "new_project", "description": "Fourth release"}),
+
+        Requirement(**{"title": "req_1", "project_shortname": "new_project", "description": "req_1 description",
+                       "parent": "rls-0", "target_release": "rls-0"}),
+        Requirement(**{"title": "req_2", "project_shortname": "new_project", "description": "req_2 description",
+                       "parent": "rls-0", "target_release": "rls-0"}),
+        Requirement(**{"title": "req_3", "project_shortname": "new_project", "description": "req_3 description",
+                       "parent": "rls-0", "target_release": "rls-0"}),
+        Requirement(**{"title": "req_4", "project_shortname": "new_project", "description": "req_4 description",
+                       "parent": "rls-0", "target_release": "rls-0"}),
+
+        TestCase(**{"title": "tc_1", "project_shortname": "new_project", "description": "tc_1 description",
+                    "parent": "req-0", "target_release": "rls-0"}),
+        TestCase(**{"title": "tc_2", "project_shortname": "new_project", "description": "tc_2 description",
+                    "parent": "req-0", "target_release": "rls-0"}),
+        TestCase(**{"title": "tc_3", "project_shortname": "new_project", "description": "tc_3 description",
+                    "parent": "req-0", "target_release": "rls-0"}),
+        TestCase(**{"title": "tc_4", "project_shortname": "new_project", "description": "tc_4 description",
+                    "parent": "req-0", "target_release": "rls-0"}),
+        TestCase(**{"title": "tc_5", "project_shortname": "new_project", "description": "tc_5 description",
+                    "parent": "req-0", "target_release": "rls-0"}),
+
+        Bug(**{"title": "bug_1", "project_shortname": "new_project", "description": "bug_1 description",
+               "parent": "tc-0", "target_release": "rls-0"}),
+        Bug(**{"title": "bug_2", "project_shortname": "new_project", "description": "bug_2 description",
+               "parent": "tc-0", "target_release": "rls-0"}),
+        Bug(**{"title": "bug_3", "project_shortname": "new_project", "description": "bug_3 description",
+               "parent": "tc-0", "target_release": "rls-0"}),
+        Bug(**{"title": "bug_4", "project_shortname": "new_project", "description": "bug_4 description",
+               "parent": "tc-0", "target_release": "rls-0"}),
     ]
 
     for item in items_to_create:

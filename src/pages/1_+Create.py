@@ -104,12 +104,15 @@ def find_available_parents(object_type, return_pretty=False):
         return [db_object["shortname"] for db_object in query]
 
 
-def verify_form(object_type):
+def verify_form(object_type, edit=False):
     """
     Form verification function.
 
     :return: True or False depending on verification result.
     """
+    if object_type == "Project" and edit and form_dict["title"] != item["title"]:
+        warning("Project title cannot be edited.")
+        return False
     for key, value in form_dict.items():
         if value in ["", None]:
             warning("All field must be filled")
@@ -142,7 +145,7 @@ def changes_detected():
         return False
 
 
-def delete_object(object_type):
+def delete_item(object_type):
     """
     Form object deletion.
 
@@ -152,13 +155,30 @@ def delete_object(object_type):
     parent_item = get_database_object(object_type_db_object_map[object_type], item["shortname"])
     downstream_items = get_downstream_items(object_type_db_object_map[object_type], item["shortname"])
     downstream_items.append(parent_item)
-    for delete_item in downstream_items:
-        if "children_task" in delete_item and delete_item["children_task"]:
-            task = get_database_object(Task, delete_item["children_task"])
+    for downstream_item in downstream_items:
+        if "children_task" in downstream_item and downstream_item["children_task"]:
+            task = get_database_object(Task, downstream_item["children_task"])
             delete_database_object(Task, task["id"])
             tasks_count += 1
-        downstream_item_type = shortname_prefix[delete_item["shortname"].split("-")[0]]
-        delete_database_object(downstream_item_type, delete_item["id"])
+        delete_database_object(shortname_prefix[downstream_item["shortname"].split("-")[0]], downstream_item["id"])
+    success(f"Deleted {item['title']}, {len(downstream_items)} related items and {tasks_count} tasks")
+    sleep(PAGE_REDIRECT_WAIT)
+
+
+def delete_project():
+    """
+    Form project deletion.
+
+    :return: None
+    """
+    tasks_count = 0
+    for downstream_item in (downstream_items := get_downstream_items(Project, item["title"])):
+        if "children_task" in downstream_item and downstream_item["children_task"]:
+            task = get_database_object(Task, downstream_item["children_task"])
+            delete_database_object(Task, task["id"])
+            tasks_count += 1
+        delete_database_object(shortname_prefix[downstream_item["shortname"].split("-")[0]], downstream_item["id"])
+    delete_database_object(shortname_prefix[item["shortname"].split("-")[0]], item["id"])
     success(f"Deleted {item['title']}, {len(downstream_items)} related items and {tasks_count} tasks")
     sleep(PAGE_REDIRECT_WAIT)
 
@@ -218,10 +238,12 @@ def submit(object_type):
     """
     if verify_form(object_type):
         new_object = object_type_db_object_map[object_type](**form_dict)
-        new_object_id = create_database_object(new_object)
-        success(f"Created {new_object_id}")
-        for key in list(session_state.keys()):
-            del session_state[key]
+        if new_object_id := create_database_object(new_object):
+            success(f"Created {new_object_id}")
+            for key in list(session_state.keys()):
+                del session_state[key]
+        else:
+            warning(f"Project with title: {new_object.title} already exists.")
 
 
 def page():
@@ -298,12 +320,21 @@ def page():
 
         if parameters:
             if button(label="Update"):
-                if verify_form(object_type) and (changes_dict := changes_detected()):
+                if verify_form(object_type, edit=True) and (changes_dict := changes_detected()):
                     edit_object(object_type, changes_dict)
                     switch_page("pages/4_Items.py")
             if button(label="Delete"):
-                delete_object(object_type)
-                switch_page("pages/4_Items.py")
+                if object_type == "Project":
+                    if item["title"] == "DEFAULT":
+                        warning("DEFAULT project cannot be deleted.")
+                        return False
+                    else:
+                        delete_project()
+                        session_state["current_project"] = "DEFAULT"
+                        switch_page("pages/4_Items.py")
+                else:
+                    delete_item(object_type)
+                    switch_page("pages/4_Items.py")
         elif button(label="Submit", on_click=submit, args=(object_type,)):
             pass
 

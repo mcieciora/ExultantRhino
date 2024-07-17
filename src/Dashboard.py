@@ -1,4 +1,5 @@
-from streamlit import columns, header, session_state, sidebar, metric
+from os import environ
+from streamlit import columns, divider, expander, header, session_state, sidebar, markdown, metric
 from src.postgres_items_models import Bug, Project, Release, Requirement, TestCase
 from src.postgres_sql_alchemy import get_all_objects_by_type, get_objects_by_filters, init_db
 
@@ -26,36 +27,65 @@ session_state.current_project = sidebar.selectbox(
 
 
 header("Dashboard")
-releases, requirements, testcases, bugs = columns(4)
+releases_col, requirements_col, testcases_col, bugs_col = columns(4)
 
-with releases:
+releases = get_objects_by_filters(Release, {"project_shortname": session_state.current_project})
+requirements = get_objects_by_filters(Requirement, {"project_shortname": session_state.current_project})
+test_cases = get_objects_by_filters(TestCase, {"project_shortname": session_state.current_project})
+bugs = get_objects_by_filters(Bug, {"project_shortname": session_state.current_project})
+
+with releases_col:
     metric(
         label="Releases",
         value=len(
-            get_objects_by_filters(Release, {"project_shortname": session_state.current_project})
+            releases
         ),
     )
 
-with requirements:
+with requirements_col:
     metric(
         label="Requirements",
         value=len(
-            get_objects_by_filters(Requirement, {"project_shortname": session_state.current_project})
+            requirements
         ),
     )
 
-with testcases:
+with testcases_col:
     metric(
         label="Test cases",
         value=len(
-            get_objects_by_filters(TestCase, {"project_shortname": session_state.current_project})
+            test_cases
         ),
     )
 
-with bugs:
+with bugs_col:
     metric(
         label="Bugs",
         value=len(
-            get_objects_by_filters(Bug, {"project_shortname": session_state.current_project})
+            bugs
         ),
     )
+
+not_covered_releases = [release for release in releases
+                        if not list(filter(lambda x: x["target_release"] == release["shortname"], requirements))]
+not_covered_requirements = [requirement for requirement in requirements
+                            if not list(filter(lambda x: x["parent"] == requirement["shortname"], test_cases))]
+if (releases_length := len(not_covered_releases)) > 0:
+    with expander(f":blue[Notification.] There {'are' if releases_length > 1 else 'is'} {releases_length} empty "
+                  f"{'releases' if releases_length > 1 else 'release'}."):
+        for release in not_covered_releases:
+            markdown(f"[View {release['title']}]"
+                     f"(http://{environ['API_HOST']}:8501/+Create?item={release['shortname']})")
+if (requirements_length := len(not_covered_requirements)) > 0:
+    with expander(f":blue[Notification.] There {'are' if requirements_length > 1 else 'is'} {requirements_length} "
+                  f"{'requirements' if requirements_length > 1 else 'requirement'} not covered with any test case."):
+        for requirement in not_covered_requirements:
+            markdown(f"[View {requirement['title']}]"
+                     f"(http://{environ['API_HOST']}:8501/+Create?item={requirement['shortname']})")
+if (bugs_length := len(bugs)) > 0:
+    with expander(f":blue[Notification.] There {'are' if bugs_length > 1 else 'is'} {bugs_length} active "
+                  f"{'bugs' if bugs_length > 1 else 'bug'}."):
+        for bug in bugs:
+            markdown(f"[View {bug['title']}](http://{environ['API_HOST']}:8501/+Create?item={bug['shortname']})")
+
+divider()

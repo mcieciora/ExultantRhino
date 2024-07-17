@@ -4,18 +4,6 @@ from src.postgres_sql_alchemy import get_all_objects
 from automated_tests.postgres_util import get_item_page_url_by_title
 
 
-@mark.skip("Under requirement verification")
-@mark.smoke
-def test__smoke__streamlit_app__delete_project(two_fully_set_up_projects, selenium_util):
-    pass
-
-
-@mark.skip("Under requirement verification")
-@mark.smoke
-def test__smoke__streamlit_app__delete_protected_default_project(two_fully_set_up_projects, selenium_util):
-    pass
-
-
 @mark.smoke
 @mark.regression
 def test__smoke__streamlit_app__delete_release(two_fully_set_up_projects, selenium_util):

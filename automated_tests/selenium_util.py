@@ -68,12 +68,13 @@ class SeleniumUtil:
         if wait_for_load:
             sleep(LOAD_WAIT)
 
-    def submit_form_by_text(self, button_text):
+    def submit_form_by_text(self, button_text, wait_for_load=True):
         """Find secondary form by button text and submit."""
         submit_buttons = self.driver.find_elements(By.XPATH, "//button[@kind='secondary']")
         submit_button = [button for button in submit_buttons if button.text == button_text]
         submit_button[0].click()
-        sleep(LOAD_WAIT)
+        if wait_for_load:
+            sleep(LOAD_WAIT)
 
     def write_input(self, accessible_text, text):
         """Insert value into found element."""
