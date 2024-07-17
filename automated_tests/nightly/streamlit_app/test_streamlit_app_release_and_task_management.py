@@ -1,7 +1,9 @@
 from os import environ
 from re import findall
 from pytest import mark
+from src.postgres_items_models import TestCase
 from automated_tests.streamlit_ui_util import create_bug, create_requirement
+from automated_tests.postgres_util import get_item_page_url_by_title
 
 
 @mark.nightly
@@ -20,6 +22,20 @@ def test__nightly__streamlit_app__activate_release(two_fully_set_up_projects, se
     expected_task_completion_percentage = "Completion: 0.0%"
     assert expected_task_completion_percentage in selenium_util.driver.page_source, \
         f"Expected: {expected_task_completion_percentage} not found in page source."
+
+
+@mark.nightly
+def test__nightly__streamlit_app__check_related_task_info(two_fully_set_up_projects, selenium_util):
+    test_page = get_item_page_url_by_title(TestCase, "t1")
+    selenium_util.go_to_page(test_page)
+    expected_value = f"http://{environ['API_HOST']}:8501/+Create?item=task-2"
+    assert expected_value in selenium_util.driver.page_source, f"Expected: {expected_value} not found in page source"
+    for item_id in ["proj-0", "rls-0", "req-0"]:
+        test_page = f"http://{environ['API_HOST']}:8501/+Create?item={item_id}"
+        selenium_util.go_to_page(test_page)
+        not_expected_value = "Related task:"
+        assert not_expected_value not in selenium_util.driver.page_source, f"Expected: {not_expected_value} " \
+                                                                           f" found in page source"
 
 
 @mark.nightly

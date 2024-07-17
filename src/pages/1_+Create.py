@@ -1,6 +1,7 @@
+from os import environ
 from time import sleep
-from streamlit import button, header, selectbox, session_state, sidebar, success, text_area, text_input, \
-    query_params, warning, switch_page
+from streamlit import button, columns, header, markdown, selectbox, session_state, sidebar, success, text_area, \
+    text_input, query_params, warning, switch_page
 from src.postgres_items_models import Bug, Project, Release, Requirement, TestCase, Status
 from src.postgres_tasks_models import Task
 from src.postgres_sql_alchemy import create_database_object, delete_database_object, edit_database_object, \
@@ -313,28 +314,34 @@ def page():
                     "key": "parent_item_select_box",
                     "index": None
                 }
-            },
+            }
         }
 
         generate_streamlit_form(object_type, form_map, parent_item_options)
 
         if parameters:
-            if button(label="Update"):
-                if verify_form(object_type, edit=True) and (changes_dict := changes_detected()):
-                    edit_object(object_type, changes_dict)
-                    switch_page("pages/4_Items.py")
-            if button(label="Delete"):
-                if object_type == "Project":
-                    if item["title"] == "DEFAULT":
-                        warning("DEFAULT project cannot be deleted.")
-                        return False
-                    else:
-                        delete_project()
-                        session_state["current_project"] = "DEFAULT"
+            if object_type in ["Requirement", "Test case", "Bug"] and item["children_task"]:
+                related_task_url = f"http://{environ['API_HOST']}:8501/Tasks?item={item['children_task']}"
+                markdown(f"Related task: [{item['children_task']}]({related_task_url})")
+            update_button_col, delete_button_col, nan_col = columns([1, 1, 5])
+            with update_button_col:
+                if button(label="Update"):
+                    if verify_form(object_type, edit=True) and (changes_dict := changes_detected()):
+                        edit_object(object_type, changes_dict)
                         switch_page("pages/4_Items.py")
-                else:
-                    delete_item(object_type)
-                    switch_page("pages/4_Items.py")
+            with delete_button_col:
+                if button(label="Delete"):
+                    if object_type == "Project":
+                        if item["title"] == "DEFAULT":
+                            warning("DEFAULT project cannot be deleted.")
+                            return False
+                        else:
+                            delete_project()
+                            session_state["current_project"] = "DEFAULT"
+                            switch_page("pages/4_Items.py")
+                    else:
+                        delete_item(object_type)
+                        switch_page("pages/4_Items.py")
         elif button(label="Submit", on_click=submit, args=(object_type,)):
             pass
 

@@ -1,6 +1,5 @@
 from os import environ
-from streamlit import column_config, dataframe, header, session_state, sidebar
-from pandas import DataFrame
+from streamlit import columns, container, header, markdown, selectbox, session_state, sidebar
 from src.postgres_items_models import Project, Release, Requirement, TestCase, Bug
 from src.postgres_sql_alchemy import get_all_objects_with_filters, get_all_objects_by_type, get_objects_by_filters
 
@@ -24,28 +23,34 @@ session_state.current_project = sidebar.selectbox(
     label_visibility="collapsed",
 )
 
-header("Items")
+header_column, select_box_column = columns(2)
+with header_column:
+    header("Items")
+with select_box_column:
+    selected_release = selectbox(
+        label="Filter by release",
+        label_visibility="collapsed",
+        key="filtered_release",
+        options=[f"{db_object['title']}" for db_object in
+                 get_objects_by_filters(Release, {"project_shortname": session_state.current_project})],
+        placeholder="Filter by release..."
+    )
 all_objects = [get_objects_by_filters(Project, {"title": session_state.current_project})[0]]
-all_objects.extend(get_all_objects_with_filters([Release, Requirement, TestCase, Bug],
-                                                {"project_shortname": session_state.current_project}))
+if selected_release:
+    target_release = get_objects_by_filters(Release, {"title": selected_release})[0]
+    all_objects.append(target_release)
+    all_objects.extend(get_all_objects_with_filters([Requirement, TestCase, Bug],
+                                                    {"project_shortname": session_state.current_project,
+                                                     "target_release": target_release["shortname"]}))
+else:
+    all_objects.extend(get_all_objects_with_filters([Release, Requirement, TestCase, Bug],
+                                                    {"project_shortname": session_state.current_project}))
+
 for item in all_objects:
     item["url"] = f"http://{environ['API_HOST']}:8501/+Create?item={item['shortname']}"
-
-df = DataFrame(all_objects)
-
-dataframe(all_objects,
-          column_config={
-              "shortname": "Shortname",
-              "title": "Title",
-              "description": "Description",
-              "status": "Status",
-              "project_shortname": "Project",
-              "target_release": "Release",
-              "parent": "Parent",
-              "children_task": "Task",
-              "url": column_config.LinkColumn("View URL", display_text="View")
-          },
-          column_order=("shortname", "title", "description", "status", "project_shortname", "parent",
-                        "children_task", "target_release", "url"),
-          hide_index=True
-          )
+    with container(border=True, ):
+        title_column, view_column = columns([6, 1])
+        with title_column:
+            markdown(f"{item['title']}")
+        with view_column:
+            markdown(f"[View]({item['url']})")

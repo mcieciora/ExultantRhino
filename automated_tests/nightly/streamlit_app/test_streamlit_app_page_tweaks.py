@@ -4,24 +4,24 @@ from src.postgres_sql_alchemy import TestCase
 from automated_tests.postgres_util import get_item_page_url_by_title
 
 
-@mark.smoke
-def test__smoke__streamlit_app__item_not_found(one_object_of_type_database_fixture, selenium_util):
+@mark.nightly
+def test__nightly__streamlit_app__item_not_found(one_object_of_type_database_fixture, selenium_util):
     test_data = "proj-1"
     expected_value = "Item not found"
     selenium_util.go_to_page(f"http://{environ['API_HOST']}:8501/+Create?item={test_data}")
     assert expected_value in selenium_util.driver.page_source, "Item not found message not found."
 
 
-@mark.smoke
-def test__smoke__streamlit_app__task_not_found(one_object_of_type_database_fixture, selenium_util):
+@mark.nightly
+def test__nightly__streamlit_app__task_not_found(one_object_of_type_database_fixture, selenium_util):
     test_data = "task-0"
     expected_value = "Task not found"
     selenium_util.go_to_page(f"http://{environ['API_HOST']}:8501/Tasks?item={test_data}")
     assert expected_value in selenium_util.driver.page_source, "Task not found message not found."
 
 
-@mark.smoke
-def test__smoke__streamlit_app__cached_project_select_box(two_projects_fixture, selenium_util):
+@mark.nightly
+def test__nightly__streamlit_app__cached_project_select_box(two_projects_fixture, selenium_util):
     selenium_util.choose_from_select_box("Selected first project. current_project_select_box", "second project")
     for page in ["+Create", "Releases", "Tasks", "Items", "Results", "Dashboard"]:
         selenium_util.click_link_text(page)
@@ -31,8 +31,9 @@ def test__smoke__streamlit_app__cached_project_select_box(two_projects_fixture, 
     assert "Selected first project" in selenium_util.driver.page_source, "Project was not reset to default"
 
 
-@mark.smoke
-def test__smoke_streamlit_app__project_select_box_disabled_enabled(one_object_of_type_database_fixture, selenium_util):
+@mark.nightly
+def test__nightly_streamlit_app__project_select_box_disabled_enabled(one_object_of_type_database_fixture,
+                                                                     selenium_util):
     test_data = "rls-0"
     selenium_util.click_link_text("+Create")
     project_select_box = selenium_util.find_element_by_xpath_accessible_text("Selected new project. "
@@ -46,9 +47,9 @@ def test__smoke_streamlit_app__project_select_box_disabled_enabled(one_object_of
     assert expected_value == project_select_box.is_enabled()
 
 
-@mark.smoke
+@mark.nightly
 @mark.regression
-def test__regression__streamlit_app__select_box_fails_to_gather_list_of_parent_items_when_different_project_is_set(
+def test__nightly__streamlit_app__select_box_fails_to_gather_list_of_parent_items_when_different_project_is_set(
         two_fully_set_up_projects, selenium_util):
     expected_value = False
     test_page = get_item_page_url_by_title(TestCase, "t1")
