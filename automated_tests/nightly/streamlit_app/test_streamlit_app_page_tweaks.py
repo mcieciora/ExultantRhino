@@ -1,5 +1,4 @@
 from os import environ
-
 from pytest import mark
 from src.postgres_sql_alchemy import TestCase
 from automated_tests.postgres_util import get_item_page_url_by_title
@@ -33,7 +32,8 @@ def test__nightly__streamlit_app__cached_project_select_box(two_projects_fixture
 
 
 @mark.nightly
-def test__nightly_streamlit_app__project_select_box_disabled_enabled(one_object_of_type_database_fixture, selenium_util):
+def test__nightly_streamlit_app__project_select_box_disabled_enabled(one_object_of_type_database_fixture,
+                                                                     selenium_util):
     test_data = "rls-0"
     selenium_util.click_link_text("+Create")
     project_select_box = selenium_util.find_element_by_xpath_accessible_text("Selected new project. "
