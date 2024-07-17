@@ -1,8 +1,7 @@
 from os.path import exists
-from streamlit import file_uploader, markdown, session_state, sidebar, subheader, success, tabs, write
+from streamlit import file_uploader, markdown, session_state, sidebar, subheader, success, tabs
 from src.postgres_items_models import Project
 from src.postgres_sql_alchemy import get_all_objects_by_type
-from os import listdir
 
 
 def find_projects():
@@ -24,7 +23,7 @@ session_state.current_project = sidebar.selectbox(
     label_visibility="collapsed",
 )
 
-
+project_md_file = f"{session_state.current_project}_README.md"
 markdown_tab, upload_tab = tabs(["View documentation", "Upload documentation"])
 
 
@@ -34,8 +33,8 @@ def read_md_file(md_file):
 
 
 with markdown_tab:
-    if exists("README.md"):
-        intro_markdown = read_md_file("README.md")
+    if exists(project_md_file):
+        intro_markdown = read_md_file(project_md_file)
         markdown(intro_markdown, unsafe_allow_html=True)
     else:
         subheader("No documentation uploaded.")
@@ -44,6 +43,6 @@ with upload_tab:
     uploaded_file = file_uploader("Choose a MD file")
     if uploaded_file:
         bytes_data = uploaded_file.getvalue()
-        with open("README.md", mode="wb") as markdown_file:
+        with open(project_md_file, mode="wb") as markdown_file:
             markdown_file.write(bytes_data)
             success(f"Uploaded {uploaded_file.name}")
