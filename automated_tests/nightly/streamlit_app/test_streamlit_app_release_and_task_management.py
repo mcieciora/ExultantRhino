@@ -33,7 +33,7 @@ def test__nightly__streamlit_app__check_related_task_info(two_fully_set_up_proje
     for item_id in ["proj-0", "rls-0", "req-0"]:
         test_page = f"http://{environ['API_HOST']}:8501/+Create?item={item_id}"
         selenium_util.go_to_page(test_page)
-        not_expected_value = f"Related task:"
+        not_expected_value = "Related task:"
         assert not_expected_value not in selenium_util.driver.page_source, f"Expected: {not_expected_value} " \
                                                                            f" found in page source"
 

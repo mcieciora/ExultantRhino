@@ -1,4 +1,5 @@
 from os import environ
+
 from pytest import mark
 from src.postgres_sql_alchemy import TestCase
 from automated_tests.postgres_util import get_item_page_url_by_title
