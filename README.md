@@ -48,9 +48,11 @@ Navigation bar is located on the left hand side. By using it you can move from p
 
 <h5>Dashboard</h5>
 Dashboard is main page where project summary can be found. There are pieces of information about number of active releases, requirements, test cases and bugs.
-It is planned to extend this page with the latest news, notifications and graphs describing project in better details.
+If any release is empty (has no requirement attached), requirement not covered with test case or bug is active you will see proper notification about that fact and also direct links to all items.
 
-![dashboard.png](doc/dashboard.PNG)
+![notifications.png](doc/notifications.PNG)
+
+It is planned to extend this page with graphs describing project in much better details.
 
 <h5>+Create</h5>
 Create page is where items creation happens. 
@@ -68,7 +70,17 @@ Keep in mind that release can only be finished when 100% of tasks are done.
 ![releases.png](doc/releases.PNG)
 
 <h5>Tasks & Items</h5>
-All created tasks and items with View page urls. These two pages will be revamped in one of next releases.
+All created tasks and items with View page urls and statuses. Items can be additionally filtered by available releases and tasks by their statuses. It is all to manage views in more convenient way.
+
+![items.png](doc/items.PNG)
+
+![tasks.png](doc/tasks.PNG)
+
+<h5>Documentation</h5>
+Documentation page is separate place dedicated for users to define it by themselves and put project description, manuals, important notes etc. there.
+To which in this project case is just the same README.md file that you are currently reading from so documentation would look just the same way as top page of this markdown.
+
+![documentation.png](doc/documentation.PNG)
 
 <h5>Results & Configuration</h5>
 Still in development.
