@@ -95,7 +95,7 @@ class SeleniumUtil:
         select_box = self.find_element_by_xpath_accessible_text(accessible_text)
         select_box.send_keys(select_item_text)
         sleep(STANDARD_WAIT)
-        select_box.send_keys(Keys.ARROW_DOWN, Keys.RETURN)
+        select_box.send_keys(Keys.RETURN)
         sleep(STANDARD_WAIT)
 
     def click_link_text(self, page_name):
