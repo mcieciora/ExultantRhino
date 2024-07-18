@@ -103,6 +103,15 @@ class SeleniumUtil:
         self.find_element_by_link_text(page_name).click()
         sleep(STANDARD_WAIT)
 
+    def upload_file(self, file_path):
+        """Find input element and pass file path to it."""
+        for element in self.find_elements_by_xpath_accessible_text("stMarkdownContainer", "data-testid"):
+            if element.text == "Upload documentation":
+                element.click()
+                break
+        self.find_element_by_xpath_accessible_text("stFileUploaderDropzoneInput", "data-testid").send_keys(file_path)
+        sleep(STANDARD_WAIT)
+
     def _unclick_form(self):
         """Unclick active form so that app updates form state."""
         actions = ActionChains(self.driver)
@@ -112,6 +121,11 @@ class SeleniumUtil:
     def go_to_page(self, url):
         """Go to given url page."""
         self.driver.get(url)
+        sleep(LOAD_WAIT)
+
+    def refresh_and_wait(self):
+        """Refresh page and wait LOAD_WAIT time."""
+        self.driver.refresh()
         sleep(LOAD_WAIT)
 
     def terminate(self):
