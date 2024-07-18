@@ -23,11 +23,16 @@ session_state.current_project = sidebar.selectbox(
     label_visibility="collapsed",
 )
 
-project_md_file = f"{session_state.current_project}_README.md"
+project_md_file = f"{session_state.current_project.replace(' ', '_')}_README.md"
 markdown_tab, upload_tab = tabs(["View documentation", "Upload documentation"])
 
 
 def read_md_file(md_file):
+    """
+    Open markdown file and get file content in bytes.
+
+    :return: File bytes data.
+    """
     with open(md_file, mode="r") as file:
         return file.read()
 
@@ -40,7 +45,7 @@ with markdown_tab:
         subheader("No documentation uploaded.")
 
 with upload_tab:
-    uploaded_file = file_uploader("Choose a MD file")
+    uploaded_file = file_uploader(label="Choose markdown file")
     if uploaded_file:
         bytes_data = uploaded_file.getvalue()
         with open(project_md_file, mode="wb") as markdown_file:

@@ -28,7 +28,7 @@ def empty_database_fixture_function():
     _drop_all_rows()
 
 
-@fixture(scope="session")
+@fixture(scope="module")
 def empty_database_fixture_session():
     """
     Empty database session fixture.
@@ -83,7 +83,7 @@ def two_objects_of_type_database_fixture():
     _drop_all_rows()
 
 
-@fixture(scope="function")
+@fixture(scope="module")
 def two_projects_fixture():
     """
     Fixture creates two empty projects objects in database.
@@ -96,7 +96,7 @@ def two_projects_fixture():
     _drop_all_rows()
 
 
-@fixture(scope="session")
+@fixture(scope="module")
 def one_fully_set_up_project():
     """
     Fixture creates one full project tree.

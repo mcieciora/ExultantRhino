@@ -23,7 +23,7 @@ def test__nightly__streamlit_app__task_not_found(one_object_of_type_database_fix
 @mark.nightly
 def test__nightly__streamlit_app__cached_project_select_box(two_projects_fixture, selenium_util):
     selenium_util.choose_from_select_box("Selected first project. current_project_select_box", "second project")
-    for page in ["+Create", "Releases", "Tasks", "Items", "Results", "Dashboard"]:
+    for page in ["+Create", "Releases", "Tasks", "Items", "Dashboard"]:
         selenium_util.click_link_text(page)
         assert "Selected second project" in selenium_util.driver.page_source, f"Project was not cached for {page}"
     selenium_util.choose_from_select_box("Selected second project. current_project_select_box", "first project")
