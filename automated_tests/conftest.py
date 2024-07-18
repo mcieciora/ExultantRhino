@@ -90,6 +90,7 @@ def two_projects_fixture():
 
     :return: Yielding dummy database prepared for postgres and api testing.
     """
+    _drop_all_rows()
     create_database_object(Project(title="first project", description="description of first project"))
     create_database_object(Project(title="second project", description="description of second project"))
     yield
