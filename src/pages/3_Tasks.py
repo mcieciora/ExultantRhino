@@ -1,5 +1,6 @@
-from streamlit import button, column_config, dataframe, header, selectbox, sidebar, success, text_area, text_input, \
-    warning, query_params
+from os import environ
+from streamlit import button, columns, container, header, markdown, selectbox, session_state, sidebar, subheader, \
+    success, text_area, text_input, warning, query_params
 from src.postgres_items_models import Project, Release
 from src.postgres_tasks_models import Task, TaskStatus
 from src.postgres_sql_alchemy import edit_database_object, get_all_objects_by_type, get_objects_by_filters
@@ -11,15 +12,15 @@ def find_projects():
 
     :return: List of Project database objects.
     """
-    all_projects = get_all_objects_by_type(Project)
-    return [f"{db_object['shortname']}: {db_object['title']}" for db_object in all_projects]
+    return [f"{db_object['title']}" for db_object in get_all_objects_by_type(Project)]
 
 
-current_project = sidebar.selectbox(
-    label="current_project",
-    key="current_project",
-    options=find_projects(),
-    index=0,
+all_projects = find_projects()
+session_state.current_project = sidebar.selectbox(
+    label="current_project_select_box",
+    key="current_project_select_box",
+    options=all_projects,
+    index=all_projects.index(session_state["current_project"]) if "current_project" in session_state else 0,
     placeholder="Select project...",
     label_visibility="collapsed",
 )
@@ -52,29 +53,39 @@ def page(edit_page):
         if button(label="Update", key="task_update_button", on_click=update_task, args=(form_dict, task["id"],)):
             success(f"Updated {task['title']}")
     else:
-        header("Tasks")
+        header_column, select_box_column = columns(2)
+        with header_column:
+            header("Tasks")
+        with select_box_column:
+            selected_task_status = selectbox(
+                label="Filter by status",
+                label_visibility="collapsed",
+                key="filtered_statuses",
+                options=["All"]+[status.name for status in TaskStatus],
+                placeholder="Filter by release..."
+            )
         try:
             target_release = get_objects_by_filters(Release, {"status": "Active"})[0]
-            all_objects = get_objects_by_filters(Task, {"project_shortname": current_project.split(':')[0],
-                                                        "target_release": target_release["shortname"]})
+            if selected_task_status == "All":
+                all_objects = get_objects_by_filters(Task, {"project_shortname": session_state.current_project,
+                                                            "target_release": target_release["shortname"]})
+            else:
+                all_objects = get_objects_by_filters(Task, {"project_shortname": session_state.current_project,
+                                                            "target_release": target_release["shortname"],
+                                                            "status": selected_task_status})
 
             for item in all_objects:
-                item["url"] = f"http://localhost:8501/Tasks?item={item['shortname']}"
-
-            dataframe(all_objects,
-                      column_config={
-                          "shortname": "Shortname",
-                          "title": "Title",
-                          "description": "Description",
-                          "status": "Status",
-                          "parent": "Parent",
-                          "url": column_config.LinkColumn("View URL", display_text="View")
-                      },
-                      column_order=("shortname", "title", "description", "status", "url"),
-                      hide_index=True
-                      )
-        except IndexError:
-            header("No active release.")
+                item["url"] = f"http://{environ['API_HOST']}:8501/Tasks?item={item['shortname']}"
+                with container(border=True, ):
+                    title_column, status_column, view_column = columns([5, 2, 1])
+                    with title_column:
+                        markdown(item['title'])
+                    with status_column:
+                        markdown(item["status"])
+                    with view_column:
+                        markdown(f"[View]({item['url']})")
+        except (IndexError, TypeError):
+            subheader("No active release.")
 
 
 def not_found():

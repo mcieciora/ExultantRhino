@@ -5,7 +5,7 @@ from src.postgres_items_models import Bug, Project, Release, Requirement, TestCa
 
 @mark.smoke
 def test__smoke__postgres__get_downstream_items__projects_return_with_parent(one_fully_set_up_project):
-    function_result = [item["shortname"] for item in get_downstream_items(Project, "proj-0", include_parent=True)]
+    function_result = [item["shortname"] for item in get_downstream_items(Project, "new project", include_parent=True)]
     expected_values = ["proj-0", "rls-0", "rls-1", "req-0", "req-1", "req-2", "tc-0", "tc-1", "tc-2", "tc-3", "tc-4",
                        "bug-0", "bug-1"]
 
@@ -19,7 +19,7 @@ def test__smoke__postgres__get_downstream_items__projects_return_with_parent(one
 
 @mark.smoke
 def test__smoke__postgres__get_downstream_items__projects_return_without_parent(one_fully_set_up_project):
-    function_result = [item["shortname"] for item in get_downstream_items(Project, "proj-0")]
+    function_result = [item["shortname"] for item in get_downstream_items(Project, "new project")]
     expected_values = ["rls-0", "rls-1", "req-0", "req-1", "req-2", "tc-0", "tc-1", "tc-2", "tc-3", "tc-4", "bug-0",
                        "bug-1"]
 

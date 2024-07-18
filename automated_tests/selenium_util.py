@@ -5,8 +5,12 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.firefox.service import Service
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.common.exceptions import NoSuchElementException
 
-STANDARD_WAIT = 0.75
+
+SHORT_WAIT = 0.1
+STANDARD_WAIT = 1.0
 LOAD_WAIT = 1.5
 
 
@@ -35,7 +39,10 @@ class SeleniumUtil:
 
         :return: Page element.
         """
-        return self.driver.find_element(By.XPATH, f"//*[@{xpath_element}='{accessible_text}']")
+        try:
+            return self.driver.find_element(By.XPATH, f"//*[@{xpath_element}='{accessible_text}']")
+        except NoSuchElementException:
+            return None
 
     def find_elements_by_xpath_accessible_text(self, accessible_text, xpath_element="aria-label"):
         """
@@ -53,18 +60,21 @@ class SeleniumUtil:
         """
         return self.find_element_by_xpath_accessible_text(accessible_text, xpath_element).text
 
-    def submit_form(self):
+    def submit_form(self, wait_for_load=True):
         """Submit secondary form in page."""
+        self._unclick_form()
         submit_button = self.driver.find_element(By.XPATH, "//button[@kind='secondary']")
         submit_button.click()
-        sleep(LOAD_WAIT)
+        if wait_for_load:
+            sleep(LOAD_WAIT)
 
-    def submit_form_by_text(self, button_text):
+    def submit_form_by_text(self, button_text, wait_for_load=True):
         """Find secondary form by button text and submit."""
         submit_buttons = self.driver.find_elements(By.XPATH, "//button[@kind='secondary']")
         submit_button = [button for button in submit_buttons if button.text == button_text]
         submit_button[0].click()
-        sleep(LOAD_WAIT)
+        if wait_for_load:
+            sleep(LOAD_WAIT)
 
     def write_input(self, accessible_text, text):
         """Insert value into found element."""
@@ -85,7 +95,7 @@ class SeleniumUtil:
         select_box = self.find_element_by_xpath_accessible_text(accessible_text)
         select_box.send_keys(select_item_text)
         sleep(STANDARD_WAIT)
-        select_box.send_keys(Keys.ARROW_DOWN, Keys.RETURN)
+        select_box.send_keys(Keys.RETURN)
         sleep(STANDARD_WAIT)
 
     def click_link_text(self, page_name):
@@ -93,9 +103,29 @@ class SeleniumUtil:
         self.find_element_by_link_text(page_name).click()
         sleep(STANDARD_WAIT)
 
+    def upload_file(self, file_path):
+        """Find input element and pass file path to it."""
+        for element in self.find_elements_by_xpath_accessible_text("stMarkdownContainer", "data-testid"):
+            if element.text == "Upload documentation":
+                element.click()
+                break
+        self.find_element_by_xpath_accessible_text("stFileUploaderDropzoneInput", "data-testid").send_keys(file_path)
+        sleep(STANDARD_WAIT)
+
+    def _unclick_form(self):
+        """Unclick active form so that app updates form state."""
+        actions = ActionChains(self.driver)
+        actions.move_by_offset(1, 1).click().perform()
+        sleep(SHORT_WAIT)
+
     def go_to_page(self, url):
         """Go to given url page."""
         self.driver.get(url)
+        sleep(LOAD_WAIT)
+
+    def refresh_and_wait(self):
+        """Refresh page and wait LOAD_WAIT time."""
+        self.driver.refresh()
         sleep(LOAD_WAIT)
 
     def terminate(self):

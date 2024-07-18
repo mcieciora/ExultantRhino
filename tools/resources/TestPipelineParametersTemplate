@@ -1,6 +1,6 @@
     parameters {
         choice(name: "FLAG", choices: ["unittest", "smoke", "regression", "nightly"], description: "Choose test flag.")
-        choice(name: "TEST_GROUP", choices: ["all", "api", "app", "db"], description: "Choose test group.")
+        choice(name: "TEST_GROUP", choices: ["all", "api", "postgres", "streamlit"], description: "Choose test group.")
         booleanParam(name: "REGULAR_BUILD", defaultValue: false, description: "If true code linters and staging will be executed too.")
         string(name: 'BRANCH', defaultValue: 'develop', description: "Execution branch.")
         booleanParam(name: "CUSTOM_WORKSPACE", defaultValue: false, description: "If true workspace will be set up from tools/resources.")
@@ -8,7 +8,7 @@
     }
     triggers {
         parameterizedCron('''
-                H 21 * * * %BRANCH=master;%FLAG=nightly
-                H 21 * * * %BRANCH=develop;%FLAG=nightly
+                H 21 * * * %BRANCH=master;FLAG=nightly
+                H 21 * * * %BRANCH=develop;FLAG=nightly
         ''')
     }

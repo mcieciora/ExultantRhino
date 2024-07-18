@@ -134,6 +134,13 @@ def get_downstream_items(parent_item_type, shortname, include_parent=False):
 
     :return: List of downstream items.
     """
+    if parent_item_type is Project:
+        downstream_list = get_all_objects_with_filters([Release, Requirement, TestCase, Bug],
+                                                       {"project_shortname": shortname})
+        if include_parent:
+            downstream_list.extend(get_objects_by_filters(Project, {"title": shortname}))
+        return downstream_list
+
     all_items_types = [Project, Release, Requirement, TestCase, Bug]
     parent_item = get_database_object(parent_item_type, shortname)
     downstream_list = [parent_item]
@@ -159,9 +166,12 @@ def create_database_object(object_to_commit):
     :return: Committed object shortname value.
     """
     with get_session() as session:
-        setattr(object_to_commit, "shortname", get_next_shortname(type(object_to_commit)))
-        session.add(object_to_commit)
-        return object_to_commit.shortname
+        if isinstance(object_to_commit, Project) and get_objects_by_filters(Project, {"title": object_to_commit.title}):
+            return None
+        else:
+            setattr(object_to_commit, "shortname", get_next_shortname(type(object_to_commit)))
+            session.add(object_to_commit)
+            return object_to_commit.shortname
 
 
 def edit_database_object(object_type, object_id, new_data):
