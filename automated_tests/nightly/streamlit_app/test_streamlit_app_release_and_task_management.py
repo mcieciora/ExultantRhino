@@ -28,7 +28,7 @@ def test__nightly__streamlit_app__activate_release(two_fully_set_up_projects, se
 def test__nightly__streamlit_app__check_related_task_info(two_fully_set_up_projects, selenium_util):
     test_page = get_item_page_url_by_title(TestCase, "t1")
     selenium_util.go_to_page(test_page)
-    expected_value = f"http://{environ['API_HOST']}:8501/+Create?item=task-2"
+    expected_value = f"http://{environ['API_HOST']}:8501/Tasks?item=task-2"
     assert expected_value in selenium_util.driver.page_source, f"Expected: {expected_value} not found in page source"
     for item_id in ["proj-0", "rls-0", "req-0"]:
         test_page = f"http://{environ['API_HOST']}:8501/+Create?item={item_id}"
@@ -139,8 +139,8 @@ def test__nightly__streamlit_app__multiple_releases_activation(two_fully_set_up_
     selenium_util.submit_form_by_text("Activate")
     assert "Activate" not in selenium_util.driver.page_source, "Expected: Activate found in page source."
     selenium_util.click_link_text("Tasks")
-    expected_number_of_tasks = 7
-    actual_number_of_tasks = len(findall(r'aria-rowindex="\d+"', selenium_util.driver.page_source))
+    expected_number_of_tasks = 6
+    actual_number_of_tasks = len(findall(r"Cover (req|tc|bug)-\d+", selenium_util.driver.page_source))
     assert expected_number_of_tasks == actual_number_of_tasks, \
         f"Expected value: {expected_number_of_tasks} does not equal {actual_number_of_tasks}"
 
@@ -155,8 +155,8 @@ def test__nightly__streamlit_app__finish_multiple_releases(two_fully_set_up_proj
     selenium_util.submit_form_by_text("Finish")
     selenium_util.submit_form_by_text("Activate")
     selenium_util.click_link_text("Tasks")
-    expected_number_of_tasks = 5
-    actual_number_of_tasks = len(findall(r'aria-rowindex="\d+"', selenium_util.driver.page_source))
+    expected_number_of_tasks = 4
+    actual_number_of_tasks = len(findall(r"Cover (req|tc|bug)-\d+", selenium_util.driver.page_source))
     assert expected_number_of_tasks == actual_number_of_tasks, \
         f"Expected value: {expected_number_of_tasks} does not equal {actual_number_of_tasks}"
     for task_index in range(15, 19):
