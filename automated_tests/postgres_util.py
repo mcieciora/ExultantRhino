@@ -1,6 +1,6 @@
 from os import environ
 from src.postgres_sql_alchemy import Bug, create_database_object, drop_rows_by_table, get_objects_by_filters, \
-    Project, Release, Requirement, TestCase
+    Project, Release, Result, Requirement, TestCase
 from src.postgres_tasks_models import Task
 
 
@@ -17,7 +17,7 @@ def _insert_dummy_project():
 
 def _drop_all_rows():
     """Remove rows from all tables."""
-    for object_type in [Project, Release, Requirement, Task, TestCase, Bug]:
+    for object_type in [Project, Release, Result, Requirement, Task, TestCase, Bug]:
         drop_rows_by_table(object_type)
 
 

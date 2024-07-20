@@ -1,5 +1,5 @@
 from pytest import mark
-from automated_tests.utils.api_util import send_request
+from automated_tests.api_util import send_request
 
 
 @mark.smoke
