@@ -6,14 +6,14 @@ from automated_tests.streamlit_ui_util import create_release
 
 @mark.nightly
 def test__nightly__streamlit_app__items_page(empty_database_fixture_function, selenium_util):
-    expected_items = ["<p>DEFAULT</p>", f"http://{environ['APX_HOST']}:8501/+Create?item=proj-0",
+    expected_items = ["<p>DEFAULT</p>", f"http://{environ['APP_HOST']}:8501/+Create?item=proj-0",
                       "Selected No options to select.."]
     selenium_util.click_link_text("Items")
     for item in expected_items:
         assert item in selenium_util.driver.page_source, f"{item} not found in page source."
     create_release(selenium_util, "alpha", "alpha description", "DEFAULT")
-    expected_items = ["<p>DEFAULT</p>", "<p>alpha</p>", f"http://{environ['APX_HOST']}:8501/+Create?item=proj-0",
-                      f"http://{environ['APX_HOST']}:8501/+Create?item=rls-0", "Selected alpha"]
+    expected_items = ["<p>DEFAULT</p>", "<p>alpha</p>", f"http://{environ['APP_HOST']}:8501/+Create?item=proj-0",
+                      f"http://{environ['APP_HOST']}:8501/+Create?item=rls-0", "Selected alpha"]
     selenium_util.click_link_text("Items")
     for item in expected_items:
         assert item in selenium_util.driver.page_source, f"{item} not found in page source."
@@ -54,7 +54,7 @@ def test__nightly__streamlit_app__tasks_page_active_release(two_fully_set_up_pro
 def test__nightly__streamlit_app__tasks_page_verify_status_change(two_fully_set_up_projects, selenium_util):
     selenium_util.choose_from_select_box("Selected DEFAULT. current_project_select_box", "new_project")
     for index, status in enumerate(["ToDo", "InProgress", "InReview", "Implemented"]):
-        selenium_util.go_to_page(f"http://{environ['APX_HOST']}:8501/Tasks?item=task-{index}")
+        selenium_util.go_to_page(f"http://{environ['APP_HOST']}:8501/Tasks?item=task-{index}")
         selenium_util.choose_from_select_box("Selected New. Status", status)
         selenium_util.submit_form()
     selenium_util.click_link_text("Dashboard")

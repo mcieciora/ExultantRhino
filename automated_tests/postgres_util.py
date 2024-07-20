@@ -37,6 +37,6 @@ def get_item_page_url_by_title(object_type, title):
 
     :return: Page view page url.
     """
-    base_url = f"http://{environ['APX_HOST']}:8501/+Create?item="
+    base_url = f"http://{environ['APP_HOST']}:8501/+Create?item="
 
     return f"{base_url}{get_item_shortname_by_title(object_type, title)}"

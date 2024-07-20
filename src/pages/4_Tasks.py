@@ -75,7 +75,7 @@ def page(edit_page):
                                                             "status": selected_task_status})
 
             for item in all_objects:
-                item["url"] = f"http://{environ['APX_HOST']}:8501/Tasks?item={item['shortname']}"
+                item["url"] = f"http://{environ['APP_HOST']}:8501/Tasks?item={item['shortname']}"
                 with container(border=True, ):
                     title_column, status_column, view_column = columns([5, 2, 1])
                     with title_column:
