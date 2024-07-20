@@ -10,6 +10,17 @@ services:
       - .env
     networks:
       - app_network
+  api:
+    container_name: exultant_rhino_api
+    build:
+      context: .
+      dockerfile: api.Dockerfile
+    ports:
+      - "8500:8500"
+    env_file:
+      - .env
+    networks:
+      - app_network
 networks:
   app_network:
       name: general_network

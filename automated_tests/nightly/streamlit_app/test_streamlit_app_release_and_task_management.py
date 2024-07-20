@@ -28,10 +28,10 @@ def test__nightly__streamlit_app__activate_release(two_fully_set_up_projects, se
 def test__nightly__streamlit_app__check_related_task_info(two_fully_set_up_projects, selenium_util):
     test_page = get_item_page_url_by_title(TestCase, "t1")
     selenium_util.go_to_page(test_page)
-    expected_value = f"http://{environ['API_HOST']}:8501/Tasks?item=task-2"
+    expected_value = f"http://{environ['APX_HOST']}:8501/Tasks?item=task-2"
     assert expected_value in selenium_util.driver.page_source, f"Expected: {expected_value} not found in page source"
     for item_id in ["proj-0", "rls-0", "req-0"]:
-        test_page = f"http://{environ['API_HOST']}:8501/+Create?item={item_id}"
+        test_page = f"http://{environ['APX_HOST']}:8501/+Create?item={item_id}"
         selenium_util.go_to_page(test_page)
         not_expected_value = "Related task:"
         assert not_expected_value not in selenium_util.driver.page_source, f"Expected: {not_expected_value} " \
@@ -65,7 +65,7 @@ def test__nightly__streamlit_app__refresh_release(two_fully_set_up_projects, sel
 
 @mark.nightly
 def test__nightly__streamlit_app__change_task_status(two_fully_set_up_projects, selenium_util):
-    selenium_util.go_to_page(f"http://{environ['API_HOST']}:8501/Tasks?item=task-0")
+    selenium_util.go_to_page(f"http://{environ['APX_HOST']}:8501/Tasks?item=task-0")
     selenium_util.choose_from_select_box("Selected New. Status", "ToDo")
     selenium_util.submit_form()
     assert findall("Updated Cover req-3", selenium_util.driver.page_source), "Task update message not found."
@@ -74,7 +74,7 @@ def test__nightly__streamlit_app__change_task_status(two_fully_set_up_projects, 
 @mark.nightly
 def test__nightly__streamlit_app__verify_completion_percentage(two_fully_set_up_projects, selenium_util):
     for task_index in range(1, 8):
-        selenium_util.go_to_page(f"http://{environ['API_HOST']}:8501/Tasks?item=task-{task_index}")
+        selenium_util.go_to_page(f"http://{environ['APX_HOST']}:8501/Tasks?item=task-{task_index}")
         selenium_util.choose_from_select_box("Selected New. Status", "Implemented")
         selenium_util.submit_form()
         selenium_util.click_link_text("Releases")
@@ -86,7 +86,7 @@ def test__nightly__streamlit_app__verify_completion_percentage(two_fully_set_up_
 
 @mark.nightly
 def test__nightly__streamlit_app__add_new_item_and_finish_release(two_fully_set_up_projects, selenium_util):
-    selenium_util.go_to_page(f"http://{environ['API_HOST']}:8501/Tasks?item=task-0")
+    selenium_util.go_to_page(f"http://{environ['APX_HOST']}:8501/Tasks?item=task-0")
     selenium_util.choose_from_select_box("Selected ToDo. Status", "Implemented")
     selenium_util.submit_form()
     create_bug(selenium_util, "Additional bug", "Additional bug description", "new_project", "tc-1")
@@ -109,7 +109,7 @@ def test__nightly__streamlit_app__refresh_release_on_full_completion(two_fully_s
     expected_task_completion_percentage = "Completion: 88.89%"
     assert expected_task_completion_percentage in selenium_util.driver.page_source, \
         f"Expected: {expected_task_completion_percentage} not found in page source."
-    selenium_util.go_to_page(f"http://{environ['API_HOST']}:8501/Tasks?item=task-8")
+    selenium_util.go_to_page(f"http://{environ['APX_HOST']}:8501/Tasks?item=task-8")
     selenium_util.choose_from_select_box("Selected New. Status", "Implemented")
     selenium_util.submit_form()
     selenium_util.click_link_text("Releases")
@@ -148,7 +148,7 @@ def test__nightly__streamlit_app__multiple_releases_activation(two_fully_set_up_
 @mark.nightly
 def test__nightly__streamlit_app__finish_multiple_releases(two_fully_set_up_projects, selenium_util):
     for task_index in range(9, 15):
-        selenium_util.go_to_page(f"http://{environ['API_HOST']}:8501/Tasks?item=task-{task_index}")
+        selenium_util.go_to_page(f"http://{environ['APX_HOST']}:8501/Tasks?item=task-{task_index}")
         selenium_util.choose_from_select_box("Selected New. Status", "Implemented")
         selenium_util.submit_form()
     selenium_util.click_link_text("Releases")
@@ -160,7 +160,7 @@ def test__nightly__streamlit_app__finish_multiple_releases(two_fully_set_up_proj
     assert expected_number_of_tasks == actual_number_of_tasks, \
         f"Expected value: {expected_number_of_tasks} does not equal {actual_number_of_tasks}"
     for task_index in range(15, 19):
-        selenium_util.go_to_page(f"http://{environ['API_HOST']}:8501/Tasks?item=task-{task_index}")
+        selenium_util.go_to_page(f"http://{environ['APX_HOST']}:8501/Tasks?item=task-{task_index}")
         selenium_util.choose_from_select_box("Selected New. Status", "Implemented")
         selenium_util.submit_form()
     selenium_util.click_link_text("Releases")

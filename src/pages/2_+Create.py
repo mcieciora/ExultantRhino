@@ -321,7 +321,7 @@ def page():
 
         if parameters:
             if object_type in ["Requirement", "Test case", "Bug"] and item["children_task"]:
-                related_task_url = f"http://{environ['API_HOST']}:8501/Tasks?item={item['children_task']}"
+                related_task_url = f"http://{environ['APX_HOST']}:8501/Tasks?item={item['children_task']}"
                 markdown(f"Related task: [{item['children_task']}]({related_task_url})")
             update_button_col, delete_button_col, nan_col = columns([1, 1, 5])
             with update_button_col:

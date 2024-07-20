@@ -8,7 +8,7 @@ from automated_tests.postgres_util import get_item_page_url_by_title
 def test__nightly__streamlit_app__item_not_found(one_object_of_type_database_fixture, selenium_util):
     test_data = "proj-1"
     expected_value = "Item not found"
-    selenium_util.go_to_page(f"http://{environ['API_HOST']}:8501/+Create?item={test_data}")
+    selenium_util.go_to_page(f"http://{environ['APX_HOST']}:8501/+Create?item={test_data}")
     assert expected_value in selenium_util.driver.page_source, "Item not found message not found."
 
 
@@ -16,7 +16,7 @@ def test__nightly__streamlit_app__item_not_found(one_object_of_type_database_fix
 def test__nightly__streamlit_app__task_not_found(one_object_of_type_database_fixture, selenium_util):
     test_data = "task-0"
     expected_value = "Task not found"
-    selenium_util.go_to_page(f"http://{environ['API_HOST']}:8501/Tasks?item={test_data}")
+    selenium_util.go_to_page(f"http://{environ['APX_HOST']}:8501/Tasks?item={test_data}")
     assert expected_value in selenium_util.driver.page_source, "Task not found message not found."
 
 
@@ -40,7 +40,7 @@ def test__nightly_streamlit_app__project_select_box_disabled_enabled(one_object_
                                                                              "current_project_select_box")
     expected_value = True
     assert expected_value == project_select_box.is_enabled()
-    selenium_util.go_to_page(f"http://{environ['API_HOST']}:8501/+Create?item={test_data}")
+    selenium_util.go_to_page(f"http://{environ['APX_HOST']}:8501/+Create?item={test_data}")
     project_select_box = selenium_util.find_element_by_xpath_accessible_text("Selected new project. "
                                                                              "current_project_select_box")
     expected_value = False

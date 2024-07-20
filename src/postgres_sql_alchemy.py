@@ -3,7 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import src.postgres_items_models as items_models
 import src.postgres_tasks_models as tasks_models
-from src.postgres_items_models import Bug, Project, Release, Requirement, TestCase
+from src.postgres_items_models import Bug, Project, Release, Result, Requirement, TestCase
 from src.postgres_tasks_models import Task
 
 
@@ -55,7 +55,8 @@ def get_next_shortname(object_type):
         Requirement: "req",
         TestCase: "tc",
         Bug: "bug",
-        Task: "task"
+        Task: "task",
+        Result: "rst"
     }
     try:
         last_object_id = max(

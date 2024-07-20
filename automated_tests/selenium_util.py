@@ -21,7 +21,7 @@ class SeleniumUtil:
         options.add_argument("-headless")
         service = Service(executable_path="./automated_tests/utils/geckodriver/geckodriver_0_34_0")
         self.driver = webdriver.Firefox(service=service, options=options)
-        self.api_url = f"http://{environ['API_HOST']}:8501"
+        self.api_url = f"http://{environ['APX_HOST']}:8501"
         self.driver.get(self.api_url)
         sleep(LOAD_WAIT)
 

@@ -17,7 +17,7 @@ def test__nightly__streamlit_app__edit_items(one_object_of_type_database_fixture
         "bug": "bug-0"
     }
     for item_type, item_shortname in test_data.items():
-        selenium_util.go_to_page(f"http://{environ['API_HOST']}:8501/+Create?item={item_shortname}")
+        selenium_util.go_to_page(f"http://{environ['APX_HOST']}:8501/+Create?item={item_shortname}")
         selenium_util.overwrite_value("Title", "edited title")
         selenium_util.overwrite_value("Description", "edited description")
         selenium_util.submit_form(wait_for_load=False)
