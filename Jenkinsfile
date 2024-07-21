@@ -47,7 +47,10 @@ pipeline {
                             sh "docker build --no-cache -t test_image -f automated_tests/Dockerfile ."
                             if (env.BRANCH_TO_USE == "master" || env.BRANCH_TO_USE == "develop") {
                                 sh "docker tag test_image ${DOCKERHUB_REPO}:test_image"
-                                sh "docker push ${DOCKERHUB_REPO}:test_image"
+                                withCredentials([usernamePassword(credentialsId: "dockerhub_id", usernameVariable: "USERNAME", passwordVariable: "PASSWORD")]) {
+                                    sh "docker login --username $USERNAME --password $PASSWORD"
+                                    sh "docker push ${DOCKERHUB_REPO}:test_image"
+                                }
                             }
                         }
                     }
@@ -86,7 +89,7 @@ pipeline {
                 stage ("pylint") {
                     steps {
                         script {
-                            sh "docker run --rm test_image python -m pylint src --max-line-length=120 --disable=C0114 --fail-under=8.5"
+                            sh "docker run --rm test_image python -m pylint src --max-line-length=120 --disable=C0114,R0903 --fail-under=8.5"
                             sh "docker run --rm test_image python -m pylint --load-plugins pylint_pytest automated_tests --max-line-length=120 --disable=C0114,C0116 --fail-under=9.5"
                             sh "docker run --rm test_image python -m pylint tools/python --max-line-length=120 --disable=C0114 --fail-under=9.5"
                         }
@@ -206,7 +209,7 @@ pipeline {
             steps {
                 script {
                     sh "chmod +x tools/shell_scripts/app_health_check.sh"
-                    sh "tools/shell_scripts/app_health_check.sh 30 1"
+                    sh "tools/shell_scripts/app_health_check.sh 30 2"
                 }
             }
             post {
@@ -271,6 +274,34 @@ pipeline {
                 }
             }
         }
+        stage ("Run tests [api]") {
+            when {
+                expression {
+                    return env.TEST_GROUPS == "all" || env.TEST_GROUPS.contains("api")
+                }
+            }
+            steps {
+                script {
+                    echo "Running api"
+                    withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
+                        sh "docker run --network general_network --env-file ${env_file} --privileged --name api_test test_image python -m pytest -m ${FLAG} -k api automated_tests -v --junitxml=results/api_results.xml"
+                    }
+                }
+            }
+            post {
+                always {
+                    script {
+                        try {
+                            sh "docker container cp api_test:/app/results ./"
+                        } catch (Exception e) {
+                            echo "Failed to copy api results."
+                        }
+                        sh "docker rm api_test"
+                        archiveArtifacts artifacts: "**/api_results.xml"
+                    }
+                }
+            }
+        }
         stage ("Staging") {
             when {
                 expression {
@@ -289,10 +320,13 @@ pipeline {
                             docker.withRegistry("", "dockerhub_id") {
                                 sh "docker build --no-cache -t custom_image -f app.Dockerfile ."
                                 sh "docker tag custom_image ${DOCKERHUB_REPO}:${env.BRANCH_TO_USE}-${curDate}"
-                                sh "docker push ${DOCKERHUB_REPO}:${env.BRANCH_TO_USE}-${curDate}"
-                                if (env.BRANCH_TO_USE == "master") {
-                                    sh "docker tag custom_image ${DOCKERHUB_REPO}:latest"
-                                    sh "docker push ${DOCKERHUB_REPO}:latest"
+                                withCredentials([usernamePassword(credentialsId: "dockerhub_id", usernameVariable: "USERNAME", passwordVariable: "PASSWORD")]) {
+                                    sh "docker login --username $USERNAME --password $PASSWORD"
+                                    sh "docker push ${DOCKERHUB_REPO}:${env.BRANCH_TO_USE}-${curDate}"
+                                    if (env.BRANCH_TO_USE == "master") {
+                                        sh "docker tag custom_image ${DOCKERHUB_REPO}:latest"
+                                        sh "docker push ${DOCKERHUB_REPO}:latest"
+                                    }
                                 }
                             }
                         }
@@ -320,6 +354,7 @@ pipeline {
     post {
         always {
             sh "docker compose down --rmi all -v"
+            sh "docker logout"
             junit allowEmptyResults: true, testResults: "**/**_results.xml"
             publishHTML target: [
                 allowMissing: false,

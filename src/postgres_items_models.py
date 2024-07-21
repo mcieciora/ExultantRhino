@@ -75,3 +75,17 @@ class Bug(Base):
     parent = Column(String(25))
     target_release = Column(String(25))
     children_task = Column(String(15))
+
+
+class Result(Base):
+    """Database Result model."""
+
+    __tablename__ = "result"
+    id = Column(Integer, primary_key=True)
+    shortname = Column(String(25))
+    title = Column(String(100))
+    project_shortname = Column(String(25))
+    build_url = Column(String(150))
+    passed = Column(Integer)
+    failed = Column(Integer)
+    skipped = Column(Integer)
