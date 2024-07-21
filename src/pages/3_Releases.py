@@ -102,7 +102,7 @@ for release in all_releases:
 
     with container(border=True, ):
         subheader(f"{release['shortname']}: {release['title']}")
-        req_col, tc_col, bug_col, status_col, button_col = columns(5)
+        req_col, tc_col, bug_col, status_col, button_col = columns([1, 1, 1, 2, 1])
         with req_col:
             metric("Requirements No.", len(correlated_requirements))
         with tc_col:
