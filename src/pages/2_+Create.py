@@ -328,7 +328,7 @@ def page():
                 if button(label="Update"):
                     if verify_form(object_type, edit=True) and (changes_dict := changes_detected()):
                         edit_object(object_type, changes_dict)
-                        switch_page("pages/4_Items.py")
+                        switch_page("pages/5_Items.py")
             with delete_button_col:
                 if button(label="Delete"):
                     if object_type == "Project":
@@ -338,10 +338,10 @@ def page():
                         else:
                             delete_project()
                             session_state["current_project"] = "DEFAULT"
-                            switch_page("pages/4_Items.py")
+                            switch_page("pages/5_Items.py")
                     else:
                         delete_item(object_type)
-                        switch_page("pages/4_Items.py")
+                        switch_page("pages/5_Items.py")
         elif button(label="Submit", on_click=submit, args=(object_type,)):
             pass
 
