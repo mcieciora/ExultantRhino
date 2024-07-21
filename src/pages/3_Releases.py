@@ -92,6 +92,9 @@ release_dataframe = []
 parent_project = get_objects_by_filters(Project, {"title": session_state.current_project})[0]
 all_releases = get_objects_by_filters(Release, {"project_shortname": session_state.current_project})
 
+if len(all_releases) == 0:
+    subheader("No releases available.")
+
 for release in all_releases:
     correlated_requirements = get_objects_by_filters(Requirement, {"target_release": release["shortname"]})
     correlated_test_cases = get_objects_by_filters(TestCase, {"target_release": release["shortname"]})

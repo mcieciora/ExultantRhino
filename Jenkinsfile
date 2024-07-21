@@ -206,7 +206,7 @@ pipeline {
             steps {
                 script {
                     sh "chmod +x tools/shell_scripts/app_health_check.sh"
-                    sh "tools/shell_scripts/app_health_check.sh 30 1"
+                    sh "tools/shell_scripts/app_health_check.sh 30 2"
                 }
             }
             post {
@@ -267,6 +267,34 @@ pipeline {
                         }
                         sh "docker rm streamlit_test"
                         archiveArtifacts artifacts: "**/streamlit_results.xml"
+                    }
+                }
+            }
+        }
+        stage ("Run tests [api]") {
+            when {
+                expression {
+                    return env.TEST_GROUPS == "all" || env.TEST_GROUPS.contains("api")
+                }
+            }
+            steps {
+                script {
+                    echo "Running api"
+                    withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
+                        sh "docker run --network general_network --env-file ${env_file} --privileged --name api_test test_image python -m pytest -m ${FLAG} -k api automated_tests -v --junitxml=results/api_results.xml"
+                    }
+                }
+            }
+            post {
+                always {
+                    script {
+                        try {
+                            sh "docker container cp api_test:/app/results ./"
+                        } catch (Exception e) {
+                            echo "Failed to copy api results."
+                        }
+                        sh "docker rm api_test"
+                        archiveArtifacts artifacts: "**/api_results.xml"
                     }
                 }
             }

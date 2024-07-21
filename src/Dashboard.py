@@ -75,17 +75,17 @@ if (releases_length := len(not_covered_releases)) > 0:
                   f"{'releases' if releases_length > 1 else 'release'}."):
         for release in not_covered_releases:
             markdown(f"[View {release['title']}]"
-                     f"(http://{environ['API_HOST']}:8501/+Create?item={release['shortname']})")
+                     f"(http://{environ['APP_HOST']}:8501/+Create?item={release['shortname']})")
 if (requirements_length := len(not_covered_requirements)) > 0:
     with expander(f":blue[Notification.] There {'are' if requirements_length > 1 else 'is'} {requirements_length} "
                   f"{'requirements' if requirements_length > 1 else 'requirement'} not covered with any test case."):
         for requirement in not_covered_requirements:
             markdown(f"[View {requirement['title']}]"
-                     f"(http://{environ['API_HOST']}:8501/+Create?item={requirement['shortname']})")
+                     f"(http://{environ['APP_HOST']}:8501/+Create?item={requirement['shortname']})")
 if (bugs_length := len(bugs)) > 0:
     with expander(f":blue[Notification.] There {'are' if bugs_length > 1 else 'is'} {bugs_length} active "
                   f"{'bugs' if bugs_length > 1 else 'bug'}."):
         for bug in bugs:
-            markdown(f"[View {bug['title']}](http://{environ['API_HOST']}:8501/+Create?item={bug['shortname']})")
+            markdown(f"[View {bug['title']}](http://{environ['APP_HOST']}:8501/+Create?item={bug['shortname']})")
 
 divider()

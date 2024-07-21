@@ -1,5 +1,5 @@
 from pytest import fixture
-from src.postgres_sql_alchemy import Bug, create_database_object, Project, Release, Requirement, TestCase
+from src.postgres_sql_alchemy import Bug, create_database_object, Project, Release, Result, Requirement, TestCase
 from automated_tests.postgres_util import _drop_all_rows, _insert_dummy_project
 from automated_tests.selenium_util import SeleniumUtil
 
@@ -259,5 +259,29 @@ def multiple_not_covered_items():
 
     for item in items_to_create:
         create_database_object(item)
+    yield
+    _drop_all_rows()
+
+
+@fixture(scope="session")
+def multiple_results():
+    """
+    Fixture creates tree consisting multiple not covered items of all types.
+
+    :return: Yielding None
+    """
+    _drop_all_rows()
+
+    _insert_dummy_project()
+    create_database_object(Result(title="develop_1", project_shortname="new project", build_url="", passed=100,
+                                  failed=10, skipped=5))
+    create_database_object(Result(title="develop_2", project_shortname="new project", build_url="", passed=100,
+                                  failed=0, skipped=0))
+    create_database_object(Result(title="develop_3", project_shortname="new project", build_url="", passed=0,
+                                  failed=0, skipped=0))
+    create_database_object(Result(title="develop_4", project_shortname="new project", build_url="", passed=0,
+                                  failed=10, skipped=5))
+    create_database_object(Result(title="develop_5", project_shortname="new project", build_url="", passed=1,
+                                  failed=1, skipped=1))
     yield
     _drop_all_rows()

@@ -1,2 +1,2 @@
 [run]
-omit = src/Dashboard.py,src/pages/*.py
+omit = src/Dashboard.py,src/pages/*.py,src/api.py
