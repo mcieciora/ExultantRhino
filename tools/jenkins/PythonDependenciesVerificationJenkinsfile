@@ -56,8 +56,15 @@ pipeline {
     }
     post {
         always {
-            sh "docker rmi ${DOCKERHUB_REPO}:test_image"
-            cleanWs()
+            script {
+                if (params.BRANCH == "develop" || params.BRANCH == "master") {
+                    sh "docker rmi ${DOCKERHUB_REPO}:test_image"
+                }
+                else {
+                    sh "docker rmi test_image"
+                }
+                cleanWs()
+            }
         }
     }
 }

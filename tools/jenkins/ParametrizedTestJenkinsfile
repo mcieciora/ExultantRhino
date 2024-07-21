@@ -73,7 +73,10 @@ pipeline {
                             sh "docker build --no-cache -t test_image -f automated_tests/Dockerfile ."
                             if (env.BRANCH_TO_USE == "master" || env.BRANCH_TO_USE == "develop") {
                                 sh "docker tag test_image ${DOCKERHUB_REPO}:test_image"
-                                sh "docker push ${DOCKERHUB_REPO}:test_image"
+                                withCredentials([usernamePassword(credentialsId: "dockerhub_id", usernameVariable: "USERNAME", passwordVariable: "PASSWORD")]) {
+                                    sh "docker login --username $USERNAME --password $PASSWORD"
+                                    sh "docker push ${DOCKERHUB_REPO}:test_image"
+                                }
                             }
                         }
                     }
@@ -343,10 +346,13 @@ pipeline {
                             docker.withRegistry("", "dockerhub_id") {
                                 sh "docker build --no-cache -t custom_image -f app.Dockerfile ."
                                 sh "docker tag custom_image ${DOCKERHUB_REPO}:${env.BRANCH_TO_USE}-${curDate}"
-                                sh "docker push ${DOCKERHUB_REPO}:${env.BRANCH_TO_USE}-${curDate}"
-                                if (env.BRANCH_TO_USE == "master") {
-                                    sh "docker tag custom_image ${DOCKERHUB_REPO}:latest"
-                                    sh "docker push ${DOCKERHUB_REPO}:latest"
+                                withCredentials([usernamePassword(credentialsId: "dockerhub_id", usernameVariable: "USERNAME", passwordVariable: "PASSWORD")]) {
+                                    sh "docker login --username $USERNAME --password $PASSWORD"
+                                    sh "docker push ${DOCKERHUB_REPO}:${env.BRANCH_TO_USE}-${curDate}"
+                                    if (env.BRANCH_TO_USE == "master") {
+                                        sh "docker tag custom_image ${DOCKERHUB_REPO}:latest"
+                                        sh "docker push ${DOCKERHUB_REPO}:latest"
+                                    }
                                 }
                             }
                         }
@@ -374,6 +380,7 @@ pipeline {
     post {
         always {
             sh "docker compose down --rmi all -v"
+            sh "docker logout"
             junit allowEmptyResults: true, testResults: "**/**_results.xml"
             publishHTML target: [
                 allowMissing: false,
