@@ -54,6 +54,12 @@ If any release is empty (has no requirement attached), requirement not covered w
 
 It is planned to extend this page with graphs describing project in much better details.
 
+<h5>Documentation</h5>
+Documentation page is separate place dedicated for users to define it by themselves and put project description, manuals, important notes etc. there.
+To which in this project case is just the same README.md file that you are currently reading from so documentation would look just the same way as top page of this markdown.
+
+![documentation.png](doc/documentation.PNG)
+
 <h5>+Create</h5>
 Create page is where items creation happens. 
 By choosing object type you can later fill item name, description and from Requirement type down - parent object as well. 
@@ -75,12 +81,6 @@ All created tasks and items with View page urls and statuses. Items can be addit
 ![items.png](doc/items.PNG)
 
 ![tasks.png](doc/tasks.PNG)
-
-<h5>Documentation</h5>
-Documentation page is separate place dedicated for users to define it by themselves and put project description, manuals, important notes etc. there.
-To which in this project case is just the same README.md file that you are currently reading from so documentation would look just the same way as top page of this markdown.
-
-![documentation.png](doc/documentation.PNG)
 
 <h5>Results</h5>
 All uploaded results with pass rate and correlated url to Jenkins build. Results can be added via API, and it is planned to add separate tool for that, so that it can be also used in reporting stage of CI/CD job execution.
