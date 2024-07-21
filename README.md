@@ -82,8 +82,15 @@ To which in this project case is just the same README.md file that you are curre
 
 ![documentation.png](doc/documentation.PNG)
 
-<h5>Results & Configuration</h5>
-Still in development.
+<h5>Results</h5>
+All uploaded results with pass rate and correlated url to Jenkins build. Results can be added via API, and it is planned to add separate tool for that, so that it can be also used in reporting stage of CI/CD job execution.
+
+![results.png](doc/results.PNG)
+
+NOTE: This page's layout will be revamped in one of next releases.
+
+<h5>Configuration</h5>
+<i>To be implemented in next release.</i>
 
 Happy Rhinoing ;)
 
