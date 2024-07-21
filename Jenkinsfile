@@ -137,11 +137,6 @@ pipeline {
                     }
                 }
                 stage ("mypy") {
-                    when {
-                        expression {
-                            return false
-                        }
-                    }
                     steps {
                         script {
                             sh "docker run --rm test_image python -m mypy src automated_tests tools/python"
