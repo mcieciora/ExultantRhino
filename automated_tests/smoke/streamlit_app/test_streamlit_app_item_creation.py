@@ -1,5 +1,5 @@
-from pytest import mark
 from re import findall
+from pytest import mark
 
 
 @mark.smoke

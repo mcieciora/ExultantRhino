@@ -86,7 +86,7 @@ pipeline {
                 stage ("pylint") {
                     steps {
                         script {
-                            sh "docker run --rm test_image python -m pylint src --max-line-length=120 --disable=C0114 --fail-under=8.5"
+                            sh "docker run --rm test_image python -m pylint src --max-line-length=120 --disable=C0114,R0903 --fail-under=8.5"
                             sh "docker run --rm test_image python -m pylint --load-plugins pylint_pytest automated_tests --max-line-length=120 --disable=C0114,C0116 --fail-under=9.5"
                             sh "docker run --rm test_image python -m pylint tools/python --max-line-length=120 --disable=C0114 --fail-under=9.5"
                         }

@@ -1,7 +1,7 @@
 from os import environ
 from time import sleep
-from pytest import mark
 from re import findall
+from pytest import mark
 from src.postgres_items_models import Bug, Requirement, TestCase
 from src.postgres_sql_alchemy import get_objects_by_filters
 from automated_tests.postgres_util import get_item_page_url_by_title

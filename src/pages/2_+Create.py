@@ -71,9 +71,11 @@ def get_parent_target_release(object_type, parent):
     :return: Target release value.
     """
     parent_object_type = get_parent_object_type(object_type)
+    return_value = None
     for db_object in get_all_objects_by_type(parent_object_type):
         if db_object["shortname"] == parent:
-            return db_object["target_release"]
+            return_value = db_object["target_release"]
+    return return_value
 
 
 def get_parent_object_type(input_type):
@@ -101,8 +103,7 @@ def find_available_parents(object_type, return_pretty=False):
     query = get_objects_by_filters(parent_object_type, {"project_shortname": session_state.current_project})
     if return_pretty:
         return [f"{db_object['shortname']}: {db_object['title']}" for db_object in query]
-    else:
-        return [db_object["shortname"] for db_object in query]
+    return [db_object["shortname"] for db_object in query]
 
 
 def verify_form(object_type, edit=False):
@@ -114,7 +115,7 @@ def verify_form(object_type, edit=False):
     if object_type == "Project" and edit and form_dict["title"] != item["title"]:
         warning("Project title cannot be edited.")
         return False
-    for key, value in form_dict.items():
+    for _, value in form_dict.items():
         if value in ["", None]:
             warning("All field must be filled")
             return False
@@ -141,9 +142,8 @@ def changes_detected():
     """
     if ret_dict := {key: value for key, value in form_dict.items() if value not in ["", None] and item[key] != value}:
         return ret_dict
-    else:
-        warning("Nothing was changed.")
-        return False
+    warning("Nothing was changed.")
+    return False
 
 
 def delete_item(object_type):
