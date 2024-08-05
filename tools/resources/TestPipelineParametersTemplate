@@ -1,7 +1,7 @@
     parameters {
         choice(name: "FLAG", choices: ["unittest", "smoke", "regression", "nightly"], description: "Choose test flag.")
         choice(name: "TEST_GROUP", choices: ["all", "api", "postgres", "streamlit"], description: "Choose test group.")
-        booleanParam(name: "REGULAR_BUILD", defaultValue: false, description: "If true code linters and staging will be executed too.")
+        booleanParam(name: "REGULAR_BUILD", defaultValue: true, description: "If true code linters and staging will be executed too.")
         string(name: 'BRANCH', defaultValue: 'develop', description: "Execution branch.")
         booleanParam(name: "CUSTOM_WORKSPACE", defaultValue: false, description: "If true workspace will be set up from tools/resources.")
         booleanParam(name: "FORCE_BUILD", defaultValue: false, description: "Force Docker to build test_image.")
