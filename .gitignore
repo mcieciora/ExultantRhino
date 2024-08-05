@@ -28,6 +28,7 @@ MANIFEST
 .idea/
 .env
 .test_env
+TODO
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
