@@ -1,19 +1,11 @@
-FROM python:3.12.2-slim
-
-RUN echo "deb http://deb.debian.org/debian/ unstable main contrib non-free" >> /etc/apt/sources.list.d/debian.list
-RUN apt-get update
-
-RUN apt-get install -y libpq-dev gcc firefox
+FROM python:3.12.2-alpine
 
 WORKDIR /app
-COPY pytest.ini ./
-
-WORKDIR /app/requirements
-COPY requirements/ .
+COPY requirements/testing/requirements.txt ./requirements-testing.txt
+COPY requirements/example_app/requirements.txt pytest.ini ./
 
 WORKDIR /app/automated_tests
 COPY automated_tests .
-RUN chmod -R a+x /app/automated_tests/utils
 
 WORKDIR /app/src
 COPY src .
@@ -22,5 +14,4 @@ WORKDIR /app/tools/python
 COPY tools/python .
 
 WORKDIR /app
-
-RUN python -m pip install --no-cache-dir -r requirements/app/requirements.txt -r requirements/api/requirements.txt -r requirements/testing/requirements.txt
+RUN python -m pip install --no-cache-dir -r requirements.txt -r requirements-testing.txt
