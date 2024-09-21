@@ -1,7 +1,7 @@
 pipelineJob("PromoteBranch_INPUT.PROJECT_NAME") {
     parameters {
-        string("BRANCH", "", "Branch to promote pull request from.")
-        string("TARGET_BRANCH", "develop", "Branch to merge source branch to.")
+        stringParam("BRANCH", "", "Branch to promote pull request from.")
+        stringParam("TARGET_BRANCH", "develop", "Branch to merge source branch to.")
     }
     definition {
         cpsScm {
