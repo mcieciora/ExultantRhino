@@ -1,0 +1,23 @@
+pipelineJob("PromoteBranch_INPUT.PROJECT_NAME") {
+    parameters {
+        string("BRANCH", "", "Branch to promote pull request from.")
+        string("TARGET_BRANCH", "develop", "Branch to merge source branch to.")
+    }
+    definition {
+        cpsScm {
+            scm {
+                git {
+                    remote {
+                        url("INPUT.PROJECT_URL")
+                    }
+                    branch("*/feature/merge_bot")
+                }
+            }
+            scriptPath("tools/merge_bot/PromoteBranchJenkinsfile")
+            lightweight()
+        }
+    }
+    logRotator {
+        daysToKeep(7)
+    }
+}

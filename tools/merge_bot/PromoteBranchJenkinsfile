@@ -1,0 +1,41 @@
+pipeline {
+    agent any
+    parameters {
+        string(name: "BRANCH", defaultValue: "", description: "Branch to promote pull request from.")
+        string(name: "TARGET_BRANCH", defaultValue: "develop", description: "Branch to merge source branch to.")
+    }
+    environment {
+        REPO_URL = "git@github.com:mcieciora/CarelessVaquita.git"
+        DOCKERHUB_REPO = "mcieciora/careless_vaquita"
+    }
+    options {
+        skipDefaultCheckout()
+    }
+    stages {
+        stage ("Prepare test image") {
+            steps {
+                script {
+                    sh "docker pull ${DOCKERHUB_REPO}:merge_bot"
+                    sh "docker tag ${DOCKERHUB_REPO}:merge_bot merge_bot"
+                }
+            }
+        }
+        stage("Verify dependencies") {
+            steps {
+                script {
+                    return_value = sh(script: "docker run --rm merge_bot ${env.BRANCH} ${TARGET_BRANCH}", returnStdout: true).trim()
+                    if (return_value.contains("API call failed.")) {
+                        unstable(return_value)
+                    }
+                }
+            }
+        }
+    }
+    post {
+        always {
+            script {
+                sh "docker rmi ${DOCKERHUB_REPO}:merge_bot"
+            }
+        }
+    }
+}

@@ -118,34 +118,35 @@ pipeline {
                             sh "docker run --rm test_image python -m pylint src --max-line-length=120 --disable=C0114,R0903 --fail-under=8.5"
                             sh "docker run --rm test_image python -m pylint --load-plugins pylint_pytest automated_tests --max-line-length=120 --disable=C0114,C0116 --fail-under=9.5"
                             sh "docker run --rm test_image python -m pylint tools/python --max-line-length=120 --disable=C0114 --fail-under=9.5"
+                            sh "docker run --rm test_image python -m pylint tools/merge_bot --max-line-length=120 --disable=C0114 --fail-under=9.5"
                         }
                     }
                 }
                 stage ("flake8") {
                     steps {
                         script {
-                            sh "docker run --rm test_image python -m flake8 --max-line-length 120 --max-complexity 10 src automated_tests tools/python"
+                            sh "docker run --rm test_image python -m flake8 --max-line-length 120 --max-complexity 10 src automated_tests tools/python tools/merge_bot"
                         }
                     }
                 }
                 stage ("ruff") {
                     steps {
                         script {
-                            sh "docker run --rm test_image python -m ruff check src automated_tests tools/python"
+                            sh "docker run --rm test_image python -m ruff check src automated_tests tools/python tools/merge_bot"
                         }
                     }
                 }
                 stage ("black") {
                     steps {
                         script {
-                            sh "docker run --rm test_image python -m black src automated_tests tools/python"
+                            sh "docker run --rm test_image python -m black src automated_tests tools/python tools/merge_bot"
                         }
                     }
                 }
                 stage ("bandit") {
                     steps {
                         script {
-                            sh "docker run --rm test_image python -m bandit src automated_tests tools/python"
+                            sh "docker run --rm test_image python -m bandit src automated_tests tools/python tools/merge_bot"
                         }
                     }
                 }
@@ -173,7 +174,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            sh "docker run --rm test_image python -m mypy src automated_tests tools/python"
+                            sh "docker run --rm test_image python -m mypy src automated_tests tools/python tools/merge_bot"
                         }
                     }
                 }
