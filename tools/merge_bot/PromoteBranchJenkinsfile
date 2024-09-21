@@ -23,7 +23,7 @@ pipeline {
         stage("Verify dependencies") {
             steps {
                 script {
-                    return_value = sh(script: "docker run --rm merge_bot ${env.BRANCH} ${TARGET_BRANCH}", returnStdout: true).trim()
+                    return_value = sh(script: "docker run --rm merge_bot --create ${env.BRANCH} ${TARGET_BRANCH}", returnStdout: true).trim()
                     if (return_value.contains("API call failed.")) {
                         unstable(return_value)
                     }
