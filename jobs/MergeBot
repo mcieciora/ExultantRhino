@@ -3,7 +3,7 @@ folder("MergeBot_INPUT.PROJECT_NAME") {
     description("MergeBot folder")
 }
 
-pipelineJob("MergeBot/PromoteBranch_INPUT.PROJECT_NAME") {
+pipelineJob("MergeBot_INPUT.PROJECT_NAME/PromoteBranch_INPUT.PROJECT_NAME") {
     parameters {
         stringParam("BRANCH", "", "Branch to promote pull request from.")
         stringParam("TARGET_BRANCH", "develop", "Branch to merge source branch to.")
