@@ -1,5 +1,5 @@
 folder("MergeBot_INPUT.PROJECT_NAME") {
-    displayName("MergeBot")
+    displayName("MergeBot_INPUT.PROJECT_NAME")
     description("MergeBot folder")
 }
 
