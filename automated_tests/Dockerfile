@@ -13,5 +13,8 @@ COPY src .
 WORKDIR /app/tools/python
 COPY tools/python .
 
+WORKDIR /app/tools/merge_bot
+COPY tools/merge_bot .
+
 WORKDIR /app
 RUN python -m pip install --no-cache-dir -r requirements/example_app/requirements.txt -r requirements/testing/requirements.txt
