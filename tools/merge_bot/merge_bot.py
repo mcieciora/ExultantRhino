@@ -48,7 +48,7 @@ class MergeBotAPI:
         for pull_request in response.json():
             pull_number = pull_request['number']
             response = get(f"{self.api_url}/pulls/{pull_number}/reviews", headers=self.headers, timeout=15)
-            if response.json()["state"] == "APPROVED":
+            if response.json() and response.json()["state"] == "APPROVED":
                 merge_data = {"commit_title": f"Merge #{pull_number}",
                               "commit_message": f"#{pull_number} successfully merged by MergeBot.",
                               "merge_method": "squash"}
