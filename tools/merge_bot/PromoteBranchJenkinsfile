@@ -12,7 +12,7 @@ pipeline {
         skipDefaultCheckout()
     }
     stages {
-        stage ("Prepare test image") {
+        stage ("Pull merge bot image") {
             steps {
                 script {
                     sh "docker pull ${DOCKERHUB_REPO}:merge_bot"
@@ -20,15 +20,18 @@ pipeline {
                 }
             }
         }
-        stage("Verify dependencies") {
+        stage("Promote branch") {
             steps {
                 script {
                     withCredentials([file(credentialsId: 'cv_dot_env', variable: 'cv_env_file')]) {
                         sh 'cp $cv_env_file .env'
                     }
                     return_value = sh(script: "docker run --rm --env-file .env merge_bot --create --branch ${env.BRANCH} --base ${TARGET_BRANCH}", returnStdout: true).trim()
-                    if (return_value.contains("API call failed.")) {
+                    if (return_value.contains("Pull request for ${env.BRANCH} already exists.")) {
                         unstable(return_value)
+                    }
+                    if (return_value.contains("API call failed.")) {
+                        error("API call failed.")
                     }
                 }
             }

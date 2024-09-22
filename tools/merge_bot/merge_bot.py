@@ -20,7 +20,7 @@ class MergeBotAPI:
         for pull_request in get_pull_requests.json():
             if pull_request["head"]["ref"] == branch_name:
                 return pull_request["number"]
-        return False
+        print(f"Pull request for {branch_name} already exists.")
 
     def create_pull_request(self, branch_name, base_branch):
         """
