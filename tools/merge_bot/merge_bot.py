@@ -1,7 +1,7 @@
 from os import environ
-from requests import get, post, put
 from sys import argv
 from argparse import ArgumentParser
+from requests import get, post, put
 
 
 class MergeBotAPI:
@@ -23,7 +23,7 @@ class MergeBotAPI:
         for pull_request in response.json():
             if pull_request["head"]["ref"] == branch_name:
                 print(f"Pull request for {branch_name} already exists.")
-                return False
+                return
         json = {"title": f"Merge {branch_name}",
                 "body": f"Automatically created pull request that merges {branch_name} into {base_branch}.",
                 "head": f"{environ['GITHUB_USER']}:{branch_name}",
@@ -44,7 +44,7 @@ class MergeBotAPI:
         response_json = response.json()
         if not response_json:
             print("No pull requests in the queue.")
-            return False
+            return
         for pull_request in response.json():
             pull_number = pull_request['number']
             response = get(f"{self.api_url}/pulls/{pull_number}/reviews", headers=self.headers, timeout=15)
@@ -59,8 +59,6 @@ class MergeBotAPI:
 
 
 if __name__ == '__main__':
-    from dotenv import load_dotenv
-    load_dotenv("../../.env")
     parser = ArgumentParser()
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--create", help="Create pull request. Usage: merge_bot.py --create [--branch] branch "
