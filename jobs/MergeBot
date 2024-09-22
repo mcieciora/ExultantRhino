@@ -1,4 +1,4 @@
-folder("MergeBot") {
+folder("MergeBot_INPUT.PROJECT_NAME") {
     displayName("MergeBot")
     description("MergeBot folder")
 }
