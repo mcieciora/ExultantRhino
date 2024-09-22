@@ -41,6 +41,7 @@ pipeline {
         always {
             script {
                 sh "docker rmi ${DOCKERHUB_REPO}:merge_bot"
+                cleanWs()
             }
         }
     }

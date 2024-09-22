@@ -20,7 +20,6 @@ class MergeBotAPI:
         for pull_request in get_pull_requests.json():
             if pull_request["head"]["ref"] == branch_name:
                 return pull_request["number"]
-        print(f"Pull request for {branch_name} already exists.")
 
     def create_pull_request(self, branch_name, base_branch):
         """
@@ -28,7 +27,9 @@ class MergeBotAPI:
 
         :return: None
         """
-        if not self.get_branch_pull_number(branch_name):
+        if self.get_branch_pull_number(branch_name):
+            print(f"Pull request for {branch_name} already exists.")
+        else:
             headers = {"Authorization": f"Bearer {environ['GITHUB_API_TOKEN']}",
                        "Accept": "application/vnd.github+json",
                        "X-GitHub-Api-Version": "2022-11-28"}
