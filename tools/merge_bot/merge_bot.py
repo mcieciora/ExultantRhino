@@ -5,6 +5,9 @@ from requests import get, post, put
 
 
 class MergeBotAPI:
+    """
+    Merge Bot API class.
+    """
     def __init__(self):
         self.api_url = environ["GITHUB_API_URL"]
 
@@ -14,7 +17,7 @@ class MergeBotAPI:
 
         :return: Pull request number if exists else False
         """
-        get_pull_requests = get(f"{self.api_url}/pulls")
+        get_pull_requests = get(f"{self.api_url}/pulls", timeout=15)
         for pull_request in get_pull_requests.json():
             if pull_request["head"]["ref"] == branch_name:
                 return pull_request["number"]
@@ -34,7 +37,7 @@ class MergeBotAPI:
                     "body": f"Automatically created pull request that merges {branch_name} into {base_branch}.",
                     "head": f"{environ['GITHUB_USER']}:{branch_name}",
                     "base": base_branch}
-            post_response = post(f"{self.api_url}/pulls", headers=headers, json=json)
+            post_response = post(f"{self.api_url}/pulls", headers=headers, json=json, timeout=15)
             if post_response.status_code == 201:
                 print("Pull request creation succeeded.")
             else:
@@ -62,7 +65,8 @@ class MergeBotAPI:
             merge_data = {"commit_title": f"Merge #{pull_number}",
                           "commit_message": f"{branch_name} successfully merged by MergeBot.",
                           "merge_method": "squash"}
-            merge_response = put(f"{self.api_url}/pulls/{pull_number}/merge", headers=headers, json=merge_data)
+            merge_response = put(f"{self.api_url}/pulls/{pull_number}/merge", headers=headers, json=merge_data,
+                                 timeout=15)
             if merge_response.status_code == 200:
                 self._delete_branch(branch_name)
                 print("Branch merged successfully.")
@@ -81,5 +85,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     merge_bot_api = MergeBotAPI()
-    merge_bot_api.create_pull_request(args.branch_name, args.base_branch) if args.create else \
+    if args.create:
+        merge_bot_api.create_pull_request(args.branch_name, args.base_branch)
+    else:
         merge_bot_api.merge_branch(args.merge)
