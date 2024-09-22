@@ -5,9 +5,8 @@ from requests import get, post, put
 
 
 class MergeBotAPI:
-
     """Merge Bot API class."""
-    
+
     def __init__(self):
         self.api_url = environ["GITHUB_API_URL"]
 
