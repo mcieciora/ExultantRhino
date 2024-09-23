@@ -7,8 +7,8 @@ pipelineJob("PythonDependenciesVerification_INPUT.PROJECT_NAME") {
             triggers {
                 parameterizedTimerTrigger {
                     parameterizedSpecification('''
-                            H 6 * * * %BRANCH=master
-                            H 6 * * * %BRANCH=develop
+                    H 6 * * * %BRANCH=master
+                    H 6 * * * %BRANCH=develop
                     ''')
                 }
             }
