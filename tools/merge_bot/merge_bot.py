@@ -1,7 +1,7 @@
 from os import environ
 from sys import argv
 from argparse import ArgumentParser
-from github import Auth, Github, GithubException
+from github import Auth, Github
 
 
 class MergeBot:
