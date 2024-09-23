@@ -39,7 +39,7 @@ class MergeBot:
                 pull_request.merge()
                 print(f"#{pull_request} merged successfully.")
                 break
-            print(f"#{pull_request} status is {pull_request.mergeable_state}.")
+            print(f"Pull request #{pull_request.number} status is {pull_request.mergeable_state}.")
 
     @staticmethod
     def _update_reviewers(pull_request):
