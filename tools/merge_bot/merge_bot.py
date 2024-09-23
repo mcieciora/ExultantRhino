@@ -36,7 +36,7 @@ class MergeBot:
         """
         for pull_request in self.github.get_user(self.username).get_repo(self.repository).get_pulls():
             if pull_request.mergeable and pull_request.mergeable_state == "clean":
-                pull_request.merge()
+                pull_request.merge(delete_branch=True)
                 print(f"#{pull_request} merged successfully.")
                 break
             print(f"Pull request #{pull_request.number} status is {pull_request.mergeable_state}.")
