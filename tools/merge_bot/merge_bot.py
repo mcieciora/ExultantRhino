@@ -39,12 +39,11 @@ class MergeBot:
                 pull_request.merge()
                 print(f"#{pull_request} merged successfully.")
                 break
-            else:
-                print(f"#{pull_request} status is {pull_request.mergeable_state}.")
+            print(f"#{pull_request} status is {pull_request.mergeable_state}.")
 
     @staticmethod
     def _update_reviewers(pull_request):
-        with open("required_reviewers", mode="r") as reviewers_file:
+        with open("required_reviewers", mode="r", encoding="utf-8") as reviewers_file:
             reviewers = reviewers_file.readlines()
             pull_request.create_review_request(reviewers)
 
