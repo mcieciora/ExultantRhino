@@ -4,6 +4,7 @@ WORKDIR /app
 
 COPY requirements/merge_bot/requirements.txt /app
 COPY tools/merge_bot/merge_bot.py .
+COPY required_reviewers .
 
 RUN pip3 install --no-cache-dir -r requirements.txt
 

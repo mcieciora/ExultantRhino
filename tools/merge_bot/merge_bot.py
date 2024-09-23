@@ -1,64 +1,55 @@
 from os import environ
 from sys import argv
 from argparse import ArgumentParser
-from requests import get, post, put
+from github import Auth, Github, GithubException
 
 
-class MergeBotAPI:
-    """Merge Bot API class."""
+class MergeBot:
+    """Merge Bot class."""
 
     def __init__(self):
-        self.api_url = environ["GITHUB_API_URL"]
-        self.headers = {"Authorization": f"Bearer {environ['GITHUB_API_TOKEN']}",
-                        "Accept": "application/vnd.github+json",
-                        "X-GitHub-Api-Version": "2022-11-28"}
+        self.github = Github(auth=Auth.Token(environ["GITHUB_API_TOKEN"]))
+        self.username = environ["GITHUB_USER"]
+        self.repository = environ["GITHUB_REPO"]
+        self.bot_name = environ["GITHUB_BOT"]
 
     def create_pull_request(self, branch_name, base_branch):
         """
-        Create pull request via GitHub API call.
+        Create pull request with PyGitHub library.
 
         :return: None
         """
-        response = get(f"{self.api_url}/pulls", headers=self.headers, timeout=15)
-        for pull_request in response.json():
-            if pull_request["head"]["ref"] == branch_name:
-                print(f"Pull request for {branch_name} already exists.")
-                return
-        json = {"title": f"Merge {branch_name}",
-                "body": f"Automatically created pull request that merges {branch_name} into {base_branch}.",
-                "head": f"{environ['GITHUB_USER']}:{branch_name}",
-                "base": base_branch}
-        response = post(f"{self.api_url}/pulls", headers=self.headers, json=json, timeout=15)
-        if response.status_code == 201:
-            print("Pull request creation succeeded.")
-        else:
-            print(f"API call failed. {response.reason}")
+        return_value = self.github.get_user(self.username).get_repo(self.repository).create_pull(
+            base=base_branch,
+            head=branch_name,
+            title=f"Merge {branch_name}",
+            body=f"Automatically created pull request that merges {branch_name} into {base_branch}."
+        )
+        self._update_reviewers(return_value)
+        print(f"Created pull request: #{return_value.number}")
 
     def merge_pull_request(self):
         """
-        Get all active pull requests via GitHub API call.
+        Get all active pull requests with PyGitHub library.
 
         :return: None
         """
-        response = get(f"{self.api_url}/pulls", headers=self.headers, timeout=15)
-        response_json = response.json()
-        if not response_json:
-            print("No pull requests in the queue.")
-            return
-        for pull_request in response.json():
-            pull_number = pull_request['number']
-            response = get(f"{self.api_url}/pulls/{pull_number}/reviews", headers=self.headers, timeout=15)
-            if response.json() and response.json()["state"] == "APPROVED":
-                merge_data = {"commit_title": f"Merge #{pull_number}",
-                              "commit_message": f"#{pull_number} successfully merged by MergeBot.",
-                              "merge_method": "squash"}
-                merge_response = put(f"{self.api_url}/pulls/{pull_number}/merge", headers=self.headers, json=merge_data,
-                                     timeout=15)
-                if merge_response.status_code == 200:
-                    print(f"Pull request #{pull_number} merged successfully.")
+        for pull_request in self.github.get_user(self.username).get_repo(self.repository).get_pulls():
+            if pull_request.mergeable and pull_request.mergeable_state == "clean":
+                pull_request.merge()
+                print(f"#{pull_request} merged successfully.")
+                break
+            else:
+                print(f"#{pull_request} status is {pull_request.mergeable_state}.")
+
+    @staticmethod
+    def _update_reviewers(pull_request):
+        with open("required_reviewers", mode="r") as reviewers_file:
+            reviewers = reviewers_file.readlines()
+            pull_request.create_review_request(reviewers)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     parser = ArgumentParser()
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--create", help="Create pull request. Usage: merge_bot.py --create [--branch] branch "
@@ -69,7 +60,7 @@ if __name__ == '__main__':
         parser.add_argument("--base", dest="base_branch", required=True, help="Base branch")
     args = parser.parse_args()
 
-    merge_bot_api = MergeBotAPI()
+    merge_bot_api = MergeBot()
     if args.create:
         merge_bot_api.create_pull_request(args.branch_name, args.base_branch)
     else:
