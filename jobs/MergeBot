@@ -15,7 +15,7 @@ pipelineJob("MergeBot_INPUT.PROJECT_NAME/PromoteBranch_INPUT.PROJECT_NAME") {
                     remote {
                         url("INPUT.PROJECT_URL")
                     }
-                    branch("*/feature/merge_bot")
+                    branch("*/feature/merge_bot_script_to_python")
                 }
             }
             scriptPath("tools/merge_bot/PromoteBranchJenkinsfile")
@@ -38,7 +38,7 @@ pipelineJob("MergeBot_INPUT.PROJECT_NAME/MergeBot_INPUT.PROJECT_NAME") {
                     remote {
                         url("INPUT.PROJECT_URL")
                     }
-                    branch("*/feature/merge_bot")
+                    branch("*/feature/merge_bot_script_to_python")
                 }
             }
             scriptPath("tools/merge_bot/MergeBotJenkinsfile")
