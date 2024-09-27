@@ -34,7 +34,10 @@ class MergeBot:
 
         :return: None
         """
-        for pull_request in self.github.get_user(self.username).get_repo(self.repository).get_pulls():
+        active_pulls = self.github.get_user(self.username).get_repo(self.repository).get_pulls()
+        if not list(active_pulls):
+            print("No active pull requests.")
+        for pull_request in active_pulls:
             if pull_request.mergeable and pull_request.mergeable_state == "clean":
                 pull_request.merge(delete_branch=True)
                 print(f"#{pull_request} merged successfully.")
