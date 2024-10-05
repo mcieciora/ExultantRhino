@@ -46,6 +46,6 @@ pipelineJob("MergeBot_INPUT.PROJECT_NAME/MergeBot_INPUT.PROJECT_NAME") {
         }
     }
     logRotator {
-        daysToKeep(7)
+        daysToKeep(1)
     }
 }
