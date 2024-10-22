@@ -6,7 +6,7 @@ Rhino/Rhinoceros _(Rhinocerotidae)_ is universally recognized by its massive bod
 In some species, the horns may be short or not obvious. There are five main species among rhinos, which may differ in appearance,   
 which you can read more about in following articles: 
 
-[White Rhinoceeros](https://en.wikipedia.org/wiki/White_rhinoceros) , [Black Rhinoceros](https://en.wikipedia.org/wiki/Black_rhinoceros), [Indian Rhinoceros](https://en.wikipedia.org/wiki/Indian_rhinoceros), [Javan Rhinoceros](https://en.wikipedia.org/wiki/Javan_rhinoceros), [Sumatran Rhinoceros](https://en.wikipedia.org/wiki/Sumatran_rhinoceros). 
+[White Rhinoceeros](https://en.wikipedia.org/wiki/White_rhinoceros) , [Black Rhinoceros](https://en.wikipedia.org/wiki/Black_rhinoceros), [Indian Rhinoceros](https://en.wikipedia.org/wiki/Indian_rhinoceros), [Javan Rhinoceros](https://en.wikipedia.org/wiki/Javan_rhinoceros), [Sumatran Rhinoceros](https://en.wikipedia.org/wiki/Sumatran_rhinoceros).
 
 Rhinoceroses are killed by poachers for their horns, which are bought and sold on the black market for high prices, leading to most living rhinoceros species being considered endangered. The contemporary market for rhino horn is overwhelmingly driven by China and Vietnam, where it is bought by wealthy consumers to use in traditional Chinese medicine, among other uses.  
 This animal was chosen as mascot for this project to raise awareness, that the current fate and future of many species depends on ancient human beliefs in the healing and sometimes even magical possibilities of materials or body parts obtained from animals, which have no scientific support.
