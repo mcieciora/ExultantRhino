@@ -19,7 +19,7 @@ pipeline {
                 }
             }
         }
-        stage("Promote branch") {
+        stage("Merge branch") {
             steps {
                 script {
                     withCredentials([file(credentialsId: 'cv_dot_env', variable: 'cv_env_file')]) {
