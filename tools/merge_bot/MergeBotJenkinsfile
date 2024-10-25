@@ -1,0 +1,44 @@
+pipeline {
+    agent any
+    triggers {
+        cron("H/15 * * * *")
+    }
+    environment {
+        REPO_URL = "git@github.com:mcieciora/CarelessVaquita.git"
+        DOCKERHUB_REPO = "mcieciora/careless_vaquita"
+    }
+    options {
+        skipDefaultCheckout()
+    }
+    stages {
+        stage ("Pull merge bot image") {
+            steps {
+                script {
+                    sh "docker pull ${DOCKERHUB_REPO}:merge_bot"
+                    sh "docker tag ${DOCKERHUB_REPO}:merge_bot merge_bot"
+                }
+            }
+        }
+        stage("Merge branch") {
+            steps {
+                script {
+                    withCredentials([file(credentialsId: 'cv_dot_env', variable: 'cv_env_file')]) {
+                        sh 'cp $cv_env_file .env'
+                    }
+                    return_value = sh(script: "docker run --rm --env-file .env merge_bot --merge", returnStdout: true).trim()
+                    if (!return_value.contains("merged successfully.")) {
+                        unstable(return_value)
+                    }
+                }
+            }
+        }
+    }
+    post {
+        always {
+            script {
+                sh "docker rmi ${DOCKERHUB_REPO}:merge_bot"
+                cleanWs()
+            }
+        }
+    }
+}
