@@ -4,8 +4,8 @@ pipeline {
         cron("H/15 * * * *")
     }
     environment {
-        REPO_URL = "git@github.com:mcieciora/CarelessVaquita.git"
-        DOCKERHUB_REPO = "mcieciora/careless_vaquita"
+        REPO_URL = "git@github.com:mcieciora/ExultantRhino.git"
+        DOCKERHUB_REPO = "mcieciora/exultant_rhino"
     }
     options {
         skipDefaultCheckout()
