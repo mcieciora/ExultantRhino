@@ -24,7 +24,7 @@ pipeline {
                         sh 'GIT_SSH_COMMAND="ssh -i $key"'
                         checkout scmGit(branches: [[name: "*/${BRANCH_TO_USE}"]], extensions: [], userRemoteConfigs: [[url: "${env.REPO_URL}"]])
                     }
-                    withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
+                    withCredentials([file(credentialsId: 'er_dot_env', variable: 'env_file')]) {
                         sh 'cp $env_file .env'
                     }
                     currentBuild.description = "Branch: ${env.BRANCH_TO_USE}\nFlag: ${env.FLAG}\nGroups: ${env.TEST_GROUPS}"
@@ -227,7 +227,7 @@ pipeline {
             steps {
                 script {
                     echo "Running postgres"
-                    withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
+                    withCredentials([file(credentialsId: 'er_dot_env', variable: 'env_file')]) {
                         sh "docker run --network general_network --env-file ${env_file} --privileged --name postgres_test test_image python -m pytest -m ${FLAG} -k postgres automated_tests -v --junitxml=results/postgres_results.xml"
                     }
                 }
@@ -255,7 +255,7 @@ pipeline {
             steps {
                 script {
                     echo "Running streamlit"
-                    withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
+                    withCredentials([file(credentialsId: 'er_dot_env', variable: 'env_file')]) {
                         sh "docker run --network general_network --env-file ${env_file} --privileged --name streamlit_test test_image python -m pytest -m ${FLAG} -k streamlit automated_tests -v --junitxml=results/streamlit_results.xml"
                     }
                 }
@@ -283,7 +283,7 @@ pipeline {
             steps {
                 script {
                     echo "Running api"
-                    withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
+                    withCredentials([file(credentialsId: 'er_dot_env', variable: 'env_file')]) {
                         sh "docker run --network general_network --env-file ${env_file} --privileged --name api_test test_image python -m pytest -m ${FLAG} -k api automated_tests -v --junitxml=results/api_results.xml"
                     }
                 }
