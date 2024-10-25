@@ -20,15 +20,15 @@ pipeline {
             steps {
                 script {
                     def BRANCH_REV = env.BRANCH_TO_USE.equals("develop") || env.BRANCH_TO_USE.equals("master") ? "HEAD^1" : "origin/develop"
-                    withCredentials([sshUserPrivateKey(credentialsId: "github_id", keyFileVariable: 'key')]) {
+                    withCredentials([sshUserPrivateKey(credentialsId: "agent_${env.NODE_NAME}", keyFileVariable: 'key')]) {
                         sh 'GIT_SSH_COMMAND="ssh -i $key"'
                         checkout scmGit(branches: [[name: "*/${BRANCH_TO_USE}"]], extensions: [], userRemoteConfigs: [[url: "${env.REPO_URL}"]])
                     }
-                    withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
+                    withCredentials([file(credentialsId: 'er_dot_env', variable: 'env_file')]) {
                         sh 'cp $env_file .env'
                     }
                     currentBuild.description = "Branch: ${env.BRANCH_TO_USE}\nFlag: ${env.FLAG}\nGroups: ${env.TEST_GROUPS}"
-                    build_test_image = sh(script: "git diff --name-only \$(git rev-parse HEAD) \$(git rev-parse ${BRANCH_REV}) | grep -e automated_tests -e src -e requirements",
+                    build_test_image = sh(script: "git diff --name-only \$(git rev-parse HEAD) \$(git rev-parse origin/${BRANCH_REV}) | grep -e automated_tests -e src -e requirements -e tools/python",
                                           returnStatus: true)
                 }
             }
@@ -208,8 +208,9 @@ pipeline {
         stage ("Run app & health check") {
             steps {
                 script {
+                    sh "docker compose -f docker-compose-local.yml up -d db"
                     sh "chmod +x tools/shell_scripts/app_health_check.sh"
-                    sh "tools/shell_scripts/app_health_check.sh 30 2"
+                    sh "tools/shell_scripts/app_health_check.sh 30 3"
                 }
             }
             post {
@@ -227,7 +228,7 @@ pipeline {
             steps {
                 script {
                     echo "Running postgres"
-                    withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
+                    withCredentials([file(credentialsId: 'er_dot_env', variable: 'env_file')]) {
                         sh "docker run --network general_network --env-file ${env_file} --privileged --name postgres_test test_image python -m pytest -m ${FLAG} -k postgres automated_tests -v --junitxml=results/postgres_results.xml"
                     }
                 }
@@ -255,7 +256,7 @@ pipeline {
             steps {
                 script {
                     echo "Running streamlit"
-                    withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
+                    withCredentials([file(credentialsId: 'er_dot_env', variable: 'env_file')]) {
                         sh "docker run --network general_network --env-file ${env_file} --privileged --name streamlit_test test_image python -m pytest -m ${FLAG} -k streamlit automated_tests -v --junitxml=results/streamlit_results.xml"
                     }
                 }
@@ -283,7 +284,7 @@ pipeline {
             steps {
                 script {
                     echo "Running api"
-                    withCredentials([file(credentialsId: 'dot_env', variable: 'env_file')]) {
+                    withCredentials([file(credentialsId: 'er_dot_env', variable: 'env_file')]) {
                         sh "docker run --network general_network --env-file ${env_file} --privileged --name api_test test_image python -m pytest -m ${FLAG} -k api automated_tests -v --junitxml=results/api_results.xml"
                     }
                 }
@@ -341,7 +342,7 @@ pipeline {
                     steps {
                         script {
                             def TAG_NAME = "${env.BRANCH_TO_USE}-${curDate}"
-                            withCredentials([sshUserPrivateKey(credentialsId: "github_id", keyFileVariable: 'key')]) {
+                            withCredentials([sshUserPrivateKey(credentialsId: "agent_${env.NODE_NAME}", keyFileVariable: 'key')]) {
                                 sh 'GIT_SSH_COMMAND="ssh -i $key"'
                                 sh "git tag -a $TAG_NAME -m $TAG_NAME && git push origin $TAG_NAME"
                             }
@@ -354,6 +355,7 @@ pipeline {
     post {
         always {
             sh "docker compose down --rmi all -v"
+            sh "docker compose -f docker-compose-local.yml down --rmi all -v"
             sh "docker logout"
             junit allowEmptyResults: true, testResults: "**/**_results.xml"
             publishHTML target: [

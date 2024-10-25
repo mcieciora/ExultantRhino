@@ -2,6 +2,18 @@ pipelineJob("PythonDependenciesVerification_INPUT.PROJECT_NAME") {
     parameters {
         stringParam("BRANCH", "develop", "Execution branch.")
     }
+    properties {
+        pipelineTriggers {
+            triggers {
+                parameterizedTimerTrigger {
+                    parameterizedSpecification('''
+                    H 6 * * * %BRANCH=master
+                    H 6 * * * %BRANCH=develop
+                    ''')
+                }
+            }
+        }
+    }
     definition {
         cpsScm {
             scm {

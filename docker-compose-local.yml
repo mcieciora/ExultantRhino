@@ -1,7 +1,7 @@
 services:
   db:
     image: postgres
-    container_name: postgres
+    container_name: exultant_rhino_postgres
     ports:
       - "5432:5432"
     env_file:
@@ -12,7 +12,7 @@ services:
         - proxy_net
   pgadmin:
     image: dpage/pgadmin4
-    container_name: pgadmin4
+    container_name: exultant_rhino_pgadmin4
     ports:
       - "8888:80"
     env_file:

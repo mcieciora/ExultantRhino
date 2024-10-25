@@ -1,0 +1,51 @@
+folder("MergeBot_INPUT.PROJECT_NAME") {
+    displayName("MergeBot_INPUT.PROJECT_NAME")
+    description("MergeBot folder")
+}
+
+pipelineJob("MergeBot_INPUT.PROJECT_NAME/PromoteBranch_INPUT.PROJECT_NAME") {
+    parameters {
+        stringParam("BRANCH", "", "Branch to promote pull request from.")
+        stringParam("TARGET_BRANCH", "develop", "Branch to merge source branch to.")
+    }
+    definition {
+        cpsScm {
+            scm {
+                git {
+                    remote {
+                        url("INPUT.PROJECT_URL")
+                    }
+                    branch("*/develop")
+                }
+            }
+            scriptPath("tools/merge_bot/PromoteBranchJenkinsfile")
+            lightweight()
+        }
+    }
+    logRotator {
+        daysToKeep(7)
+    }
+}
+
+pipelineJob("MergeBot_INPUT.PROJECT_NAME/MergeBot_INPUT.PROJECT_NAME") {
+    triggers {
+        cron("H/15 * * * *")
+    }
+    definition {
+        cpsScm {
+            scm {
+                git {
+                    remote {
+                        url("INPUT.PROJECT_URL")
+                    }
+                    branch("*/develop")
+                }
+            }
+            scriptPath("tools/merge_bot/MergeBotJenkinsfile")
+            lightweight()
+        }
+    }
+    logRotator {
+        numToKeep(24)
+    }
+}
