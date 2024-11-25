@@ -13,8 +13,8 @@ pipeline {
     }
     triggers {
         parameterizedCron('''
-                H 21 * * * %BRANCH=master;FLAG=unittest
-                H 21 * * * %BRANCH=develop;FLAG=unittest
+                H 21 * * * %BRANCH=master;FLAG=nightly;TEST_GROUP=streamlit
+                H 21 * * * %BRANCH=develop;FLAG=nightly;TEST_GROUP=streamlit
         ''')
     }
     environment {
