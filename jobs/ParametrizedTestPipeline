@@ -1,4 +1,16 @@
 pipelineJob("ParametrizedTestPipeline_INPUT.PROJECT_NAME") {
+    properties {
+        pipelineTriggers {
+            triggers {
+                parameterizedTimerTrigger {
+                    parameterizedSpecification('''
+                    H 21 * * * %BRANCH=master;FLAG=unittest
+                    H 21 * * * %BRANCH=develop;FLAG=unittest
+                    ''')
+                }
+            }
+        }
+    }
     parameters {
         choiceParam("FLAG", ["unittest", "smoke", "regression", "nightly"], "Choose test flag.")
         choiceParam("TEST_GROUP", ["all", "google"], "Choose test group.")
