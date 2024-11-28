@@ -14,5 +14,8 @@ if [ "$VALUE" -eq "$EXPECTED_VALUE" ]; then
   exit 0
 else
   echo "Found $VALUE running containers. Expected is $EXPECTED_VALUE."
+  # Temporary logs printout for failed docker compose set up events
+  docker logs exultant_rhino_api
+  docker logs exultant_rhino_app
   exit 1
 fi
