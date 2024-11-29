@@ -4,6 +4,8 @@ services:
     build:
       context: .
       dockerfile: app.Dockerfile
+    depends_on:
+      - db
     ports:
       - "8501:8501"
     env_file:
@@ -13,6 +15,8 @@ services:
     build:
       context: .
       dockerfile: api.Dockerfile
+    depends_on:
+      - db
     ports:
       - "8500:8500"
     env_file:
