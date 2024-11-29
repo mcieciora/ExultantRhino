@@ -208,7 +208,6 @@ pipeline {
         stage ("Run app & health check") {
             steps {
                 script {
-                    sh "docker compose -f docker-compose-local.yml up -d db"
                     sh "chmod +x tools/shell_scripts/app_health_check.sh"
                     sh "tools/shell_scripts/app_health_check.sh 30 3"
                 }
@@ -355,7 +354,6 @@ pipeline {
     post {
         always {
             sh "docker compose down --rmi all -v"
-            sh "docker compose -f docker-compose-local.yml down --rmi all -v"
             sh "docker logout"
             junit allowEmptyResults: true, testResults: "**/**_results.xml"
             publishHTML target: [

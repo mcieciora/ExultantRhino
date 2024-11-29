@@ -19,8 +19,7 @@ _source:_ [Rhinoceros - Wikipedia](https://en.wikipedia.org/wiki/Rhinoceros)
 
 <h3>Database setup</h3>
 
-As far as it is still beta release, there is no support for external databases other than PostgreSQL yet. It is recommended to use database declared in _docker-compose-local.yml_ by running:\
-```docker compose -f docker-compose-local.yml up -d db```
+As far as it is still beta release, there is no support for external databases other than PostgreSQL yet. It is recommended to use database declared in _docker-compose.yml_.
 
 <h3>Application setup</h3>
 Before starting application make sure you have got <i>.env</i> file available in project root directory. Simple rename of <i>example.env</i> is enough to make application work without additional configuration.
