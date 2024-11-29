@@ -36,3 +36,5 @@ networks:
   app_network:
       name: general_network
       external: true
+volumes:
+  postgres-volume:
