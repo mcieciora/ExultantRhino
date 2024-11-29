@@ -4,31 +4,24 @@ services:
     build:
       context: .
       dockerfile: app.Dockerfile
-    depends_on:
-      - db
     ports:
       - "8501:8501"
     env_file:
       - .env
+    networks:
+      - app_network
   api:
     container_name: exultant_rhino_api
     build:
       context: .
       dockerfile: api.Dockerfile
-    depends_on:
-      - db
     ports:
       - "8500:8500"
     env_file:
       - .env
-  db:
-    image: postgres
-    container_name: exultant_rhino_postgres
-    ports:
-      - "5432:5432"
-    env_file:
-      - .env
-    volumes:
-      - postgres-volume:/var/lib/postgresql/data
-volumes:
-  postgres-volume:
+    networks:
+      - app_network
+networks:
+  app_network:
+      name: general_network
+      external: true

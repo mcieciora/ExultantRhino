@@ -1,0 +1,17 @@
+services:
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: exultant_rhino_pgadmin4
+    ports:
+      - "8888:80"
+    env_file:
+      - .env
+    volumes:
+      - pgadmin-volume:/var/lib/pgadmin
+networks:
+  proxy_net:
+    name: general_network
+volumes:
+  postgres-volume:
+  pgadmin-volume:
