@@ -3,7 +3,8 @@
 CHECK_TIME=$1
 EXPECTED_VALUE=$2
 
-
+docker compose -f docker-compose-local.yml up -d db
+sleep 60
 docker compose up -d
 echo "Sleeping for $CHECK_TIME"
 sleep "$CHECK_TIME"
