@@ -31,7 +31,7 @@ services:
     volumes:
       - postgres-volume:/var/lib/postgresql/data
     networks:
-        - proxy_net
+        - app_network
 networks:
   app_network:
       name: general_network
