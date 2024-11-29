@@ -1,5 +1,15 @@
 services:
-
+  db:
+    image: postgres
+    container_name: exultant_rhino_postgres
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+    volumes:
+      - postgres-volume:/var/lib/postgresql/data
+    networks:
+        - proxy_net
   pgadmin:
     image: dpage/pgadmin4
     container_name: exultant_rhino_pgadmin4
