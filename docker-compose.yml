@@ -8,8 +8,6 @@ services:
       - "8501:8501"
     env_file:
       - .env
-    networks:
-      - app_network
   api:
     container_name: exultant_rhino_api
     build:
@@ -19,8 +17,6 @@ services:
       - "8500:8500"
     env_file:
       - .env
-    networks:
-      - app_network
   db:
     image: postgres
     container_name: exultant_rhino_postgres
@@ -30,10 +26,5 @@ services:
       - .env
     volumes:
       - postgres-volume:/var/lib/postgresql/data
-    networks:
-        - app_network
-networks:
-  app_network:
-      name: general_network
 volumes:
   postgres-volume:
