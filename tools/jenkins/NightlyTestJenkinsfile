@@ -14,7 +14,7 @@ pipeline {
             parallel {
                 stage ("develop") {
                     steps {
-                        build job: 'ParametrizedTestPipeline_CarelessVaquita',
+                        build job: 'ParametrizedTestPipeline_ExultantRhino',
                         parameters: [
                             string(name: 'FLAG', value: DEFAULT_NIGHTLY_FLAG),
                             string(name: 'BRANCH', value: 'develop')
@@ -24,7 +24,7 @@ pipeline {
                 }
                 stage ("master") {
                     steps {
-                        build job: 'ParametrizedTestPipeline_CarelessVaquita',
+                        build job: 'ParametrizedTestPipeline_ExultantRhino',
                         parameters: [
                             string(name: 'FLAG', value: DEFAULT_NIGHTLY_FLAG),
                             string(name: 'BRANCH', value: 'master')
@@ -36,13 +36,13 @@ pipeline {
         }
         stage ("Python verification") {
             steps {
-                build job: 'PythonDependenciesVerification_CarelessVaquita',
+                build job: 'PythonDependenciesVerification_ExultantRhino',
                 propagate: false
             }
         }
         stage ("Scan docker images") {
             steps {
-                build job: 'ScanDockerImages_CarelessVaquita',
+                build job: 'ScanDockerImages_ExultantRhino',
                 propagate: false
             }
         }
