@@ -4,7 +4,7 @@ pipeline {
         cron("H 21 * * *")
     }
     environment {
-        DEFAULT_NIGHTLY_FLAG = 'unittest'
+        DEFAULT_NIGHTLY_FLAG = 'nightly'
     }
     options {
         skipDefaultCheckout()
@@ -17,7 +17,8 @@ pipeline {
                         build job: 'ParametrizedTestPipeline_ExultantRhino',
                         parameters: [
                             string(name: 'FLAG', value: DEFAULT_NIGHTLY_FLAG),
-                            string(name: 'BRANCH', value: 'develop')
+                            string(name: 'BRANCH', value: 'develop'),
+                            string(name: 'TEST_GROUP', value: 'streamlit')
                         ],
                         propagate: false
                     }
@@ -27,7 +28,8 @@ pipeline {
                         build job: 'ParametrizedTestPipeline_ExultantRhino',
                         parameters: [
                             string(name: 'FLAG', value: DEFAULT_NIGHTLY_FLAG),
-                            string(name: 'BRANCH', value: 'master')
+                            string(name: 'BRANCH', value: 'master'),
+                            string(name: 'TEST_GROUP', value: 'streamlit')
                         ],
                         propagate: false
                     }
