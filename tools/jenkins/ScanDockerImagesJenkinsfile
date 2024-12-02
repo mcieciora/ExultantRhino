@@ -17,26 +17,25 @@ pipeline {
                         }
                     }
                 }
-                stage ("Experimental: trivy") {
+                stage ("trivy") {
                     steps {
                         script {
                             sh "chmod +x tools/shell_scripts/scan_docker_trivy.sh"
-                            sh "tools/shell_scripts/scan_docker_trivy.sh"
+                            return_value = sh(script: "tools/shell_scripts/scan_docker_trivy.sh", returnStdout: true).trim()
+                            if (return_value.contains("Script failed, because vulnerabilities were found.")) {
+                                unstable(return_value)
+                            }
                         }
                     }
                 }
-                stage ("Experimental: dive") {
+                stage ("dive") {
                     steps {
                         script {
                             sh "chmod +x tools/shell_scripts/scan_docker_dive.sh"
-                            sh "tools/shell_scripts/scan_docker_dive.sh"
-                        }
-                    }
-                }
-                stage ("TBA: clair") {
-                    steps {
-                        script {
-                            sh "echo TBA"
+                            return_value = sh(script: "tools/shell_scripts/scan_docker_dive.sh", returnStdout: true).trim()
+                            if (return_value.contains("Script failed, because vulnerabilities were found.")) {
+                                unstable(return_value)
+                            }
                         }
                     }
                 }

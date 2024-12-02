@@ -1,0 +1,55 @@
+pipeline {
+    agent any
+    triggers {
+        cron("H 21 * * *")
+    }
+    environment {
+        DEFAULT_NIGHTLY_FLAG = 'unittest'
+    }
+    options {
+        skipDefaultCheckout()
+    }
+    stages {
+        stage ("Trigger nightly builds") {
+            parallel {
+                stage ("develop") {
+                    steps {
+                        build job: 'ParametrizedTestPipeline_CarelessVaquita',
+                        parameters: [
+                            string(name: 'FLAG', value: DEFAULT_NIGHTLY_FLAG),
+                            string(name: 'BRANCH', value: 'develop')
+                        ],
+                        propagate: false
+                    }
+                }
+                stage ("master") {
+                    steps {
+                        build job: 'ParametrizedTestPipeline_CarelessVaquita',
+                        parameters: [
+                            string(name: 'FLAG', value: DEFAULT_NIGHTLY_FLAG),
+                            string(name: 'BRANCH', value: 'master')
+                        ],
+                        propagate: false
+                    }
+                }
+            }
+        }
+        stage ("Python verification") {
+            steps {
+                build job: 'PythonDependenciesVerification_CarelessVaquita',
+                propagate: false
+            }
+        }
+        stage ("Scan docker images") {
+            steps {
+                build job: 'ScanDockerImages_CarelessVaquita',
+                propagate: false
+            }
+        }
+    }
+    post {
+        always {
+            cleanWs()
+        }
+    }
+}

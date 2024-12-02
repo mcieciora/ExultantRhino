@@ -12,12 +12,6 @@ pipeline {
     options {
         skipDefaultCheckout()
     }
-    triggers {
-        parameterizedCron('''
-                H 6 * * * %BRANCH=master
-                H 6 * * * %BRANCH=develop
-        ''')
-    }
     stages {
         stage ("Checkout branch") {
             steps {
