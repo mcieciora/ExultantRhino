@@ -2,7 +2,9 @@ def curDate = new Date().format("yyMMdd-HHmm", TimeZone.getTimeZone("UTC"))
 Integer build_test_image
 
 pipeline {
-    agent any
+    agent {
+        label 'executor'
+    }
     parameters {
         choice(name: "FLAG", choices: ["unittest", "smoke", "regression", "nightly"], description: "Choose test flag.")
         choice(name: "TEST_GROUP", choices: ["all", "api", "postgres", "streamlit"], description: "Choose test group.")
@@ -10,12 +12,6 @@ pipeline {
         string(name: 'BRANCH', defaultValue: 'develop', description: "Execution branch.")
         booleanParam(name: "CUSTOM_WORKSPACE", defaultValue: false, description: "If true workspace will be set up from tools/resources.")
         booleanParam(name: "FORCE_BUILD", defaultValue: false, description: "Force Docker to build test_image.")
-    }
-    triggers {
-        parameterizedCron('''
-                H 21 * * * %BRANCH=master;FLAG=nightly
-                H 21 * * * %BRANCH=develop;FLAG=nightly
-        ''')
     }
     environment {
         FLAG = getValue("FLAG", "smoke")
@@ -234,7 +230,6 @@ pipeline {
         stage ("Run app & health check") {
             steps {
                 script {
-                    sh "docker compose -f docker-compose-local.yml up -d db"
                     sh "chmod +x tools/shell_scripts/app_health_check.sh"
                     sh "tools/shell_scripts/app_health_check.sh 30 3"
                 }

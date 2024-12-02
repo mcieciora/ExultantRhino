@@ -1,6 +1,6 @@
-pipelineJob("PythonDependenciesVerification_INPUT.PROJECT_NAME") {
-    parameters {
-        stringParam("BRANCH", "develop", "Execution branch.")
+pipelineJob("NightlyTestPipeline_INPUT.PROJECT_NAME") {
+    triggers {
+        cron("H 21 * * *")
     }
     definition {
         cpsScm {
@@ -9,10 +9,10 @@ pipelineJob("PythonDependenciesVerification_INPUT.PROJECT_NAME") {
                     remote {
                         url("INPUT.PROJECT_URL")
                     }
-                    branch("*/develop")
+                    branch('*/develop')
                 }
             }
-            scriptPath("tools/jenkins/PythonDependenciesVerificationJenkinsfile")
+            scriptPath("tools/jenkins/NightlyTestJenkinsfile")
             lightweight()
         }
     }

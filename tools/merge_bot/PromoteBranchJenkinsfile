@@ -1,5 +1,7 @@
 pipeline {
-    agent any
+    agent {
+        label 'executor'
+    }
     parameters {
         string(name: "BRANCH", defaultValue: "", description: "Branch to promote pull request from.")
         string(name: "TARGET_BRANCH", defaultValue: "develop", description: "Branch to merge source branch to.")

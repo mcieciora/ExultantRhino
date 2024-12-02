@@ -2,7 +2,9 @@ def curDate = new Date().format("yyMMdd-HHmm", TimeZone.getTimeZone("UTC"))
 Integer build_test_image
 
 pipeline {
-    agent any
+    agent {
+        label 'executor'
+    }
     environment {
         FLAG = getValue("FLAG", "smoke")
         TEST_GROUPS = getValue("TEST_GROUP", "all")
