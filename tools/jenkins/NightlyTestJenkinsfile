@@ -18,7 +18,7 @@ pipeline {
                         parameters: [
                             string(name: 'FLAG', value: DEFAULT_NIGHTLY_FLAG),
                             string(name: 'BRANCH', value: 'develop'),
-                            string(name: 'TEST_GROUP', value: 'streamlit')
+                            string(name: 'TEST_GROUP', value: 'all')
                         ],
                         propagate: false
                     }
@@ -29,7 +29,7 @@ pipeline {
                         parameters: [
                             string(name: 'FLAG', value: DEFAULT_NIGHTLY_FLAG),
                             string(name: 'BRANCH', value: 'master'),
-                            string(name: 'TEST_GROUP', value: 'streamlit')
+                            string(name: 'TEST_GROUP', value: 'al')
                         ],
                         propagate: false
                     }
