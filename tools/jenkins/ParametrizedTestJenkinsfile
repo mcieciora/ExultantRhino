@@ -11,12 +11,6 @@ pipeline {
         booleanParam(name: "CUSTOM_WORKSPACE", defaultValue: false, description: "If true workspace will be set up from tools/resources.")
         booleanParam(name: "FORCE_BUILD", defaultValue: false, description: "Force Docker to build test_image.")
     }
-    triggers {
-        parameterizedCron('''
-                H 21 * * * %BRANCH=master;FLAG=nightly
-                H 21 * * * %BRANCH=develop;FLAG=nightly
-        ''')
-    }
     environment {
         FLAG = getValue("FLAG", "smoke")
         TEST_GROUPS = getValue("TEST_GROUP", "all")
