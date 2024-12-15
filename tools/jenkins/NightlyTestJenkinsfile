@@ -52,7 +52,7 @@ pipeline {
             steps {
                 script {
                     def build = build job: 'PythonDependenciesVerification_ExultantRhino',
-                propagate: false
+                    propagate: false
                     if (build.result != 'SUCCESS') {
                         unstable('Stage reported as unstable')
                     }
