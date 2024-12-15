@@ -16,38 +16,58 @@ pipeline {
             parallel {
                 stage ("develop") {
                     steps {
-                        build job: 'ParametrizedTestPipeline_ExultantRhino',
-                        parameters: [
-                            string(name: 'FLAG', value: DEFAULT_NIGHTLY_FLAG),
-                            string(name: 'BRANCH', value: 'develop'),
-                            string(name: 'TEST_GROUP', value: 'all')
-                        ],
-                        propagate: false
+                        script {
+                            def build = build job: 'ParametrizedTestPipeline_ExultantRhino',
+                            parameters: [
+                                string(name: 'FLAG', value: DEFAULT_NIGHTLY_FLAG),
+                                string(name: 'BRANCH', value: 'develop'),
+                                string(name: 'TEST_GROUP', value: 'streamlit')
+                            ],
+                            propagate: false
+                            if (build.result != 'SUCCESS') {
+                                unstable('Stage reported as unstable')
+                            }
+                        }
                     }
                 }
                 stage ("master") {
                     steps {
-                        build job: 'ParametrizedTestPipeline_ExultantRhino',
-                        parameters: [
-                            string(name: 'FLAG', value: DEFAULT_NIGHTLY_FLAG),
-                            string(name: 'BRANCH', value: 'master'),
-                            string(name: 'TEST_GROUP', value: 'all')
-                        ],
-                        propagate: false
+                        script {
+                            def build = build job: 'ParametrizedTestPipeline_ExultantRhino',
+                            parameters: [
+                                string(name: 'FLAG', value: DEFAULT_NIGHTLY_FLAG),
+                                string(name: 'BRANCH', value: 'master'),
+                                string(name: 'TEST_GROUP', value: 'streamlit')
+                            ],
+                            propagate: false
+                            if (build.result != 'SUCCESS') {
+                                unstable('Stage reported as unstable')
+                            }
+                        }
                     }
                 }
             }
         }
         stage ("Python verification") {
             steps {
-                build job: 'PythonDependenciesVerification_ExultantRhino',
-                propagate: false
+                script {
+                    def build = build job: 'PythonDependenciesVerification_ExultantRhino',
+                    propagate: false
+                    if (build.result != 'SUCCESS') {
+                        unstable('Stage reported as unstable')
+                    }
+                }
             }
         }
         stage ("Scan docker images") {
             steps {
-                build job: 'ScanDockerImages_ExultantRhino',
+                script {
+                def build = build job: 'ScanDockerImages_ExultantRhino',
                 propagate: false
+                    if (build.result != 'SUCCESS') {
+                        unstable('Stage reported as unstable')
+                    }
+                }
             }
         }
     }
