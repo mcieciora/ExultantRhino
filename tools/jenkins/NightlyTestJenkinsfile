@@ -12,40 +12,6 @@ pipeline {
         skipDefaultCheckout()
     }
     stages {
-        stage ("Trigger nightly builds") {
-            parallel {
-                stage ("develop") {
-                    steps {
-                        script {
-                            def build = build job: 'ParametrizedTestPipeline_CarelessVaquita',
-                            parameters: [
-                                string(name: 'FLAG', value: DEFAULT_NIGHTLY_FLAG),
-                                string(name: 'BRANCH', value: 'develop')
-                            ],
-                            propagate: false
-                            if (build.result != 'SUCCESS') {
-                                unstable('Stage reported as unstable')
-                            }
-                        }
-                    }
-                }
-                stage ("master") {
-                    steps {
-                        script {
-                            def build = build job: 'ParametrizedTestPipeline_CarelessVaquita',
-                            parameters: [
-                                string(name: 'FLAG', value: DEFAULT_NIGHTLY_FLAG),
-                                string(name: 'BRANCH', value: 'master')
-                            ],
-                            propagate: false
-                            if (build.result != 'SUCCESS') {
-                                unstable('Stage reported as unstable')
-                            }
-                        }
-                    }
-                }
-            }
-        }
         stage ("Python verification") {
             steps {
                 script {
@@ -66,6 +32,32 @@ pipeline {
                             unstable('Stage reported as unstable')
                         }
                     }
+            }
+        }
+        stage ("Trigger nightly builds") {
+            parallel {
+                stage ("develop") {
+                    steps {
+                        script {
+                            def build = build job: 'ParametrizedTestPipeline_CarelessVaquita',
+                            parameters: [
+                                string(name: 'FLAG', value: DEFAULT_NIGHTLY_FLAG),
+                                string(name: 'BRANCH', value: 'develop')
+                            ]
+                        }
+                    }
+                }
+                stage ("master") {
+                    steps {
+                        script {
+                            def build = build job: 'ParametrizedTestPipeline_CarelessVaquita',
+                            parameters: [
+                                string(name: 'FLAG', value: DEFAULT_NIGHTLY_FLAG),
+                                string(name: 'BRANCH', value: 'master')
+                            ]
+                        }
+                    }
+                }
             }
         }
     }
