@@ -30,7 +30,7 @@ pipeline {
                         sh 'cp $env_file .env'
                     }
                     currentBuild.description = "Branch: ${env.BRANCH_TO_USE}\nFlag: ${env.FLAG}\nGroups: ${env.TEST_GROUPS}"
-                    build_test_image = sh(script: "git diff --name-only \$(git rev-parse HEAD) \$(git rev-parse origin/${BRANCH_REV}) | grep -e automated_tests -e src -e requirements -e tools/python",
+                    build_test_image = sh(script: "git diff --name-only \$(git rev-parse HEAD) \$(git rev-parse ${BRANCH_REV}) | grep -e automated_tests -e src -e requirements -e tools/python",
                                           returnStatus: true)
                 }
             }
