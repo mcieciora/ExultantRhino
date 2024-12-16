@@ -24,7 +24,7 @@ pipeline {
         stage("Merge branch") {
             steps {
                 script {
-                    withCredentials([file(credentialsId: 'er_dot_env', variable: 'er_env_file')]) {
+                    withCredentials([file(credentialsId: 'exultant_dot_env', variable: 'er_env_file')]) {
                         sh 'cp $er_env_file .env'
                     }
                     return_value = sh(script: "docker run --rm --env-file .env merge_bot --merge", returnStdout: true).trim()
