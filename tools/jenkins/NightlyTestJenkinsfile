@@ -12,34 +12,7 @@ pipeline {
         skipDefaultCheckout()
     }
     stages {
-        stage ("Trigger nightly builds") {
-            parallel {
-                stage ("develop") {
-                    steps {
-                        script {
-                            def build = build job: 'ParametrizedTestPipeline_ExultantRhino',
-                            parameters: [
-                                string(name: 'FLAG', value: DEFAULT_NIGHTLY_FLAG),
-                                string(name: 'BRANCH', value: 'develop'),
-                                string(name: 'TEST_GROUP', value: 'streamlit')
-                            ]
-                        }
-                    }
-                }
-                stage ("master") {
-                    steps {
-                        script {
-                            def build = build job: 'ParametrizedTestPipeline_ExultantRhino',
-                            parameters: [
-                                string(name: 'FLAG', value: DEFAULT_NIGHTLY_FLAG),
-                                string(name: 'BRANCH', value: 'master'),
-                                string(name: 'TEST_GROUP', value: 'streamlit')
-                            ]
-                        }
-                    }
-                }
-            }
-        }
+        stage ("Python verification") {
             steps {
                 script {
                     def build = build job: 'PythonDependenciesVerification_ExultantRhino',
@@ -66,10 +39,11 @@ pipeline {
                 stage ("develop") {
                     steps {
                         script {
-                            def build = build job: 'ParametrizedTestPipeline_CarelessVaquita',
+                            def build = build job: 'ParametrizedTestPipeline_ExultantRhino',
                             parameters: [
                                 string(name: 'FLAG', value: DEFAULT_NIGHTLY_FLAG),
-                                string(name: 'BRANCH', value: 'develop')
+                                string(name: 'BRANCH', value: 'develop'),
+                                string(name: 'TEST_GROUP', value: 'streamlit')
                             ]
                         }
                     }
@@ -77,10 +51,11 @@ pipeline {
                 stage ("master") {
                     steps {
                         script {
-                            def build = build job: 'ParametrizedTestPipeline_CarelessVaquita',
+                            def build = build job: 'ParametrizedTestPipeline_ExultantRhino',
                             parameters: [
                                 string(name: 'FLAG', value: DEFAULT_NIGHTLY_FLAG),
-                                string(name: 'BRANCH', value: 'master')
+                                string(name: 'BRANCH', value: 'master'),
+                                string(name: 'TEST_GROUP', value: 'streamlit')
                             ]
                         }
                     }
