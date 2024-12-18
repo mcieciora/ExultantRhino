@@ -14,7 +14,7 @@ def _get_engine():
     :return: Engine class object.
     """
     return create_engine(
-        f"postgresql://{environ['POSTGRES_USER']}:{environ['POSTGRES_PASSWORD']}@"
+        f"postgresql+psycopg://{environ['POSTGRES_USER']}:{environ['POSTGRES_PASSWORD']}@"
         f"{environ['DB_HOST']}:{environ['DB_PORT']}/{environ['POSTGRES_DB']}", pool_size=10
     )
 

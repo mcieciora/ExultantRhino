@@ -1,6 +1,6 @@
-FROM --platform="${TARGETPLATFORM:-linux/amd64}" python:3.12.2-slim
+FROM python:3.13.1-slim
 
-RUN apt-get update && apt-get install -y libpq-dev gcc firefox-esr
+RUN apt update && apt install -y libpq-dev firefox-esr
 
 WORKDIR /app
 COPY requirements /app/requirements
