@@ -10,7 +10,7 @@ def send_request(endpoint=None):
 
     :return: Post response.
     """
-    url = f"http://{environ['API_HOST']}:8500"
+    url = f"http://{environ['APX_HOST']}:8500"
     if endpoint:
         url = f"{url}/{endpoint}"
     headers = {"Content-Type": "application/json"}
@@ -23,7 +23,7 @@ def send_data(data):
 
     :return: Post response.
     """
-    url = f"http://{environ['API_HOST']}:8500/v1/result"
+    url = f"http://{environ['APX_HOST']}:8500/v1/result"
     headers = {"Content-Type": "application/json"}
     return post(url, json=data, headers=headers)
 
