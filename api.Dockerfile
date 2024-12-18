@@ -1,5 +1,7 @@
 FROM python:3.13.1-slim
 
+RUN apt update && apt install -y libpq-dev
+
 WORKDIR /app
 
 COPY requirements/api/requirements.txt ./
