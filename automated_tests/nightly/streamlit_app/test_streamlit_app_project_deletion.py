@@ -37,7 +37,7 @@ def test__nightly__streamlit_app__delete_selected_project(multiple_not_covered_i
     project_select_box = selenium_util.find_element_by_xpath_accessible_text("Selected DEFAULT. "
                                                                              "current_project_select_box")
     assert project_select_box, "Selected project was not reset to DEFAULT."
-    assert f"http://{environ['APP_HOST']}:8501/Items" == selenium_util.driver.current_url, \
+    assert f"http://{environ['APX_HOST']}:8501/Items" == selenium_util.driver.current_url, \
         "User was not redirected to Dashboard page."
 
 

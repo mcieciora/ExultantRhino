@@ -25,7 +25,7 @@ pipeline {
         stage("Promote branch") {
             steps {
                 script {
-                    withCredentials([file(credentialsId: 'er_dot_env', variable: 'er_env_file')]) {
+                    withCredentials([file(credentialsId: 'exultant_dot_env', variable: 'er_env_file')]) {
                         sh 'cp $er_env_file .env'
                     }
                     return_value = sh(script: "docker run --rm --env-file .env merge_bot --create --branch ${env.BRANCH} --base ${TARGET_BRANCH}", returnStdout: true).trim()
