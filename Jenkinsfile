@@ -29,6 +29,7 @@ pipeline {
                     withCredentials([file(credentialsId: 'exultant_dot_env', variable: 'env_file')]) {
                         sh 'cp $env_file .env'
                     }
+                    sh 'sed -i "s/APX_HOST=localhost/APX_HOST=$(hostname -I | awk '{print $1}')/" .env'
                     currentBuild.description = "Branch: ${env.BRANCH_TO_USE}\nFlag: ${env.FLAG}\nGroups: ${env.TEST_GROUPS}"
                     build_test_image = sh(script: "git diff --name-only \$(git rev-parse HEAD) \$(git rev-parse ${BRANCH_REV}) | grep -e automated_tests -e src -e requirements -e tools/python",
                                           returnStatus: true)
