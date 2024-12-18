@@ -230,9 +230,7 @@ pipeline {
             steps {
                 script {
                     echo "Running postgres"
-                    withCredentials([file(credentialsId: 'exultant_dot_env', variable: 'env_file')]) {
-                        sh "docker run --network general_network --env-file ${env_file} --privileged --name postgres_test test_image python -m pytest -m ${FLAG} -k postgres automated_tests -v --junitxml=results/postgres_results.xml"
-                    }
+                    sh "docker run --network general_network --env-file .env --privileged --name postgres_test test_image python -m pytest -m ${FLAG} -k postgres automated_tests -v --junitxml=results/postgres_results.xml"
                 }
             }
             post {
@@ -258,9 +256,7 @@ pipeline {
             steps {
                 script {
                     echo "Running streamlit"
-                    withCredentials([file(credentialsId: 'exultant_dot_env', variable: 'env_file')]) {
-                        sh "docker run --network general_network --env-file ${env_file} --privileged --name streamlit_test test_image python -m pytest -m ${FLAG} -k streamlit automated_tests -v --junitxml=results/streamlit_results.xml"
-                    }
+                    sh "docker run --network general_network --env-file .env --privileged --name streamlit_test test_image python -m pytest -m ${FLAG} -k streamlit automated_tests -v --junitxml=results/streamlit_results.xml"
                 }
             }
             post {
@@ -286,9 +282,7 @@ pipeline {
             steps {
                 script {
                     echo "Running api"
-                    withCredentials([file(credentialsId: 'exultant_dot_env', variable: 'env_file')]) {
-                        sh "docker run --network general_network --env-file ${env_file} --privileged --name api_test test_image python -m pytest -m ${FLAG} -k api automated_tests -v --junitxml=results/api_results.xml"
-                    }
+                    sh "docker run --network general_network --env-file .env --privileged --name api_test test_image python -m pytest -m ${FLAG} -k api automated_tests -v --junitxml=results/api_results.xml"
                 }
             }
             post {
