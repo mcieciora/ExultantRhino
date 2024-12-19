@@ -35,7 +35,7 @@ def status():
     """
     return {
         "api_version": "0_1",
-        "app_version": "0_5_2",
+        "app_version": "0_5_1",
         "api_status": 200,
         "app_status": get_app_status(),
         "db_status": get_db_status()

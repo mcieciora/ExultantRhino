@@ -4,7 +4,7 @@ from automated_tests.api_util import send_request
 
 @mark.smoke
 def test__smoke__api__verify_versions(empty_database_fixture_function):
-    expected_values = {"api_version": "0_1", "app_version": "0_3"}
+    expected_values = {"api_version": "0_1", "app_version": "0_5_1"}
     for endpoint in ["v1", "v1/status"]:
         request_response = send_request(endpoint)
         assert request_response.status_code == 200, f"Expected: 200, actual: {request_response.status_code}"
