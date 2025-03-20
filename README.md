@@ -15,6 +15,9 @@ This animal was chosen as mascot for this project to raise awareness, that the c
 
 _source:_ [Rhinoceros - Wikipedia](https://en.wikipedia.org/wiki/Rhinoceros)
 
+<h3>Discontinuation note</h3>
+This project is currently discontinued, because author has no further plans for application development. Similar projects may be started in the future, but as far as this note is available here, probably none did.
+
 <h2>How to setup</h2>
 
 <h3>Database setup</h3>
